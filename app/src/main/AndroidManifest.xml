@@ -38,6 +38,12 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.activity.LiquidGlassHomeActivity"
+            android:exported="true"
+            android:screenOrientation="behind"
+            android:theme="@style/Theme.AppDefault" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -53,7 +59,7 @@
             android:exported="true"
             android:label="@string/app_name"
             android:screenOrientation="behind"
-            android:targetActivity=".ui.activity.MainActivity">
+            android:targetActivity=".ui.activity.LiquidGlassHomeActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
