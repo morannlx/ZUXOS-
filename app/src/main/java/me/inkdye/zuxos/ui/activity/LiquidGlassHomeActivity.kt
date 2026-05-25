@@ -52,11 +52,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.kyant.backdrop.Backdrop
+import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import com.kyant.backdrop.drawBackdrop
 import com.kyant.backdrop.effects.blur
-import com.kyant.backdrop.effects.colorControls
 import com.kyant.backdrop.effects.lens
+import com.kyant.backdrop.effects.vibrancy
 import me.inkdye.zuxos.BuildConfig
 
 class LiquidGlassHomeActivity : ComponentActivity() {
@@ -73,15 +75,19 @@ class LiquidGlassHomeActivity : ComponentActivity() {
 /* ── Colors ─────────────────────────────────────── */
 private val AccentGreen = Color(0xFF22C55E)
 private val AccentBlue = Color(0xFF3B82F6)
-private val AccentPurple = Color(0xFF8B5CF6)
 private val AccentRed = Color(0xFFEF4444)
-private val SurfaceLight = Color(0xFFF5F5F5)
-private val SurfaceCard = Color.White
 private val TextPrimary = Color(0xFF111827)
 private val TextSecondary = Color(0xFF6B7280)
 private val TextDim = Color(0xFF9CA3AF)
-private val BorderLight = Color(0xFFE5E7EB)
-private val NavBg = Color.White
+
+/* Background gradient — gives the backdrop something rich to refract */
+private val BgGradientTop = Color(0xFFE8F5E9)
+private val BgGradientMid = Color(0xFFE3F2FD)
+private val BgGradientBottom = Color(0xFFF3E5F5)
+
+/* Glass card styling — white with inner highlight gradient for depth */
+private val CardBorder = Color.White
+private val GlassNavTint = Color.White.copy(alpha = 0.45f)
 
 /* ── Navigation ─────────────────────────────────── */
 private enum class NavPage(val label: String, val icon: String) {
@@ -97,26 +103,48 @@ private const val TABLET_WIDTH_DP = 600
 private fun LiquidGlassHome() {
     var selectedTab by remember { mutableIntStateOf(0) }
 
+    // Backdrop captures the gradient + page content for glass nav to refract
+    val backdrop = rememberLayerBackdrop {
+        drawRect(Brush.verticalGradient(listOf(BgGradientTop, BgGradientMid, BgGradientBottom)))
+        drawContent()
+    }
+
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val isTablet = maxWidth >= TABLET_WIDTH_DP.dp
 
         if (isTablet) {
-            Row(Modifier.fillMaxSize().background(SurfaceLight).safeContentPadding()) {
-                GlassNavigationRail(selectedTab) { selectedTab = it }
+            Row(
+                Modifier
+                    .fillMaxSize()
+                    .background(Brush.verticalGradient(listOf(BgGradientTop, BgGradientMid, BgGradientBottom)))
+                    .safeContentPadding()
+            ) {
+                GlassNavigationRail(selectedTab, backdrop) { selectedTab = it }
                 AnimatedContent(
                     targetState = selectedTab,
                     transitionSpec = { fadeIn() togetherWith fadeOut() },
-                    modifier = Modifier.weight(1f).fillMaxHeight()
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .layerBackdrop(backdrop)
                 ) { page -> PageContent(page) }
             }
         } else {
-            Column(Modifier.fillMaxSize().background(SurfaceLight).safeContentPadding()) {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .background(Brush.verticalGradient(listOf(BgGradientTop, BgGradientMid, BgGradientBottom)))
+                    .safeContentPadding()
+            ) {
                 AnimatedContent(
                     targetState = selectedTab,
                     transitionSpec = { fadeIn() togetherWith fadeOut() },
-                    modifier = Modifier.weight(1f).fillMaxWidth()
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .layerBackdrop(backdrop)
                 ) { page -> PageContent(page) }
-                GlassNavigationBar(selectedTab) { selectedTab = it }
+                GlassNavigationBar(selectedTab, backdrop) { selectedTab = it }
             }
         }
     }
@@ -133,18 +161,23 @@ private fun PageContent(page: Int) {
 
 /* ── Glass Bottom NavigationBar (Phone) ─────────── */
 @Composable
-private fun GlassNavigationBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
-    val backdrop = rememberLayerBackdrop {
-        drawRect(NavBg)
-        drawContent()
-    }
+private fun GlassNavigationBar(
+    selectedTab: Int,
+    backdrop: Backdrop,
+    onTabSelected: (Int) -> Unit
+) {
     Box(
-        Modifier.fillMaxWidth()
+        Modifier
+            .fillMaxWidth()
             .drawBackdrop(
                 backdrop = backdrop,
-                shape = { RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp) },
-                effects = { blur(12f.dp.toPx()); lens(8f.dp.toPx(), 16f.dp.toPx()) },
-                onDrawSurface = { drawRect(NavBg); drawRect(Color.White.copy(alpha = 0.5f)) }
+                shape = { RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp) },
+                effects = {
+                    vibrancy()
+                    blur(20f.dp.toPx())
+                    lens(10f.dp.toPx(), 20f.dp.toPx())
+                },
+                onDrawSurface = { drawRect(GlassNavTint) }
             )
     ) {
         NavigationBar(containerColor = Color.Transparent, contentColor = TextPrimary) {
@@ -153,11 +186,19 @@ private fun GlassNavigationBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
                     selected = selectedTab == index,
                     onClick = { onTabSelected(index) },
                     icon = { Text(page.icon, fontSize = 20.sp) },
-                    label = { Text(page.label, fontSize = 11.sp, fontWeight = if (selectedTab == index) FontWeight.SemiBold else FontWeight.Normal) },
+                    label = {
+                        Text(
+                            page.label,
+                            fontSize = 11.sp,
+                            fontWeight = if (selectedTab == index) FontWeight.SemiBold else FontWeight.Normal
+                        )
+                    },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = AccentGreen, selectedTextColor = AccentGreen,
-                        unselectedIconColor = TextDim, unselectedTextColor = TextDim,
-                        indicatorColor = AccentGreen.copy(alpha = 0.1f),
+                        selectedIconColor = AccentGreen,
+                        selectedTextColor = AccentGreen,
+                        unselectedIconColor = TextDim,
+                        unselectedTextColor = TextDim,
+                        indicatorColor = AccentGreen.copy(alpha = 0.12f),
                     ),
                 )
             }
@@ -167,18 +208,23 @@ private fun GlassNavigationBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
 
 /* ── Glass NavigationRail (Tablet) ──────────────── */
 @Composable
-private fun GlassNavigationRail(selectedTab: Int, onTabSelected: (Int) -> Unit) {
-    val backdrop = rememberLayerBackdrop {
-        drawRect(NavBg)
-        drawContent()
-    }
+private fun GlassNavigationRail(
+    selectedTab: Int,
+    backdrop: Backdrop,
+    onTabSelected: (Int) -> Unit
+) {
     Box(
-        Modifier.fillMaxHeight()
+        Modifier
+            .fillMaxHeight()
             .drawBackdrop(
                 backdrop = backdrop,
-                shape = { RoundedCornerShape(topEnd = 20.dp, bottomEnd = 20.dp) },
-                effects = { blur(12f.dp.toPx()); lens(8f.dp.toPx(), 16f.dp.toPx()) },
-                onDrawSurface = { drawRect(NavBg); drawRect(Color.White.copy(alpha = 0.5f)) }
+                shape = { RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp) },
+                effects = {
+                    vibrancy()
+                    blur(20f.dp.toPx())
+                    lens(10f.dp.toPx(), 20f.dp.toPx())
+                },
+                onDrawSurface = { drawRect(GlassNavTint) }
             )
     ) {
         NavigationRail(
@@ -186,11 +232,21 @@ private fun GlassNavigationRail(selectedTab: Int, onTabSelected: (Int) -> Unit) 
             contentColor = TextPrimary,
             header = {
                 Box(
-                    Modifier.size(44.dp).background(
-                        Brush.linearGradient(listOf(AccentGreen, AccentBlue)), RoundedCornerShape(12.dp)
-                    ),
+                    Modifier
+                        .size(44.dp)
+                        .background(
+                            Brush.linearGradient(listOf(AccentGreen, AccentBlue)),
+                            CircleShape
+                        ),
                     contentAlignment = Alignment.Center
-                ) { Text("Z", fontWeight = FontWeight.ExtraBold, fontSize = 18.sp, color = Color.White) }
+                ) {
+                    Text(
+                        "Z",
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 18.sp,
+                        color = Color.White
+                    )
+                }
             },
         ) {
             NavPage.entries.forEachIndexed { index, page ->
@@ -198,15 +254,38 @@ private fun GlassNavigationRail(selectedTab: Int, onTabSelected: (Int) -> Unit) 
                     selected = selectedTab == index,
                     onClick = { onTabSelected(index) },
                     icon = { Text(page.icon, fontSize = 22.sp) },
-                    label = { Text(page.label, fontSize = 11.sp, fontWeight = if (selectedTab == index) FontWeight.SemiBold else FontWeight.Normal) },
+                    label = {
+                        Text(
+                            page.label,
+                            fontSize = 11.sp,
+                            fontWeight = if (selectedTab == index) FontWeight.SemiBold else FontWeight.Normal
+                        )
+                    },
                     colors = NavigationRailItemDefaults.colors(
-                        selectedIconColor = AccentGreen, selectedTextColor = AccentGreen,
-                        unselectedIconColor = TextDim, unselectedTextColor = TextDim,
-                        indicatorColor = AccentGreen.copy(alpha = 0.1f),
+                        selectedIconColor = AccentGreen,
+                        selectedTextColor = AccentGreen,
+                        unselectedIconColor = TextDim,
+                        unselectedTextColor = TextDim,
+                        indicatorColor = AccentGreen.copy(alpha = 0.12f),
                     ),
                 )
             }
         }
+    }
+}
+
+/* ── Glass Card — layered for depth ─────────────── */
+@Composable
+private fun GlassCard(
+    shape: RoundedCornerShape = RoundedCornerShape(16.dp),
+    content: @Composable () -> Unit
+) {
+    Box(
+        Modifier
+            .clip(shape)
+            .background(Color.White, shape)
+    ) {
+        content()
     }
 }
 
@@ -221,21 +300,15 @@ private fun HomePage() {
         contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 24.dp, bottom = 100.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        // Title
         item {
             Text("ZUXOS+", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
             Spacer(Modifier.height(4.dp))
-            Text("Xposed Module for OriginOS", fontSize = 14.sp, color = TextSecondary)
+            Text("Xposed Module for ZUXOS", fontSize = 14.sp, color = TextSecondary)
             Spacer(Modifier.height(8.dp))
         }
 
-        // Activation status card
         item { ActivationStatusCard(isXposedActive) }
-
-        // Module info card
         item { ModuleInfoCard(isXposedActive) }
-
-        // Device info card
         item { DeviceInfoCard(context) }
     }
 }
@@ -243,31 +316,23 @@ private fun HomePage() {
 /* ── LSPosed Activation Status Card ─────────────── */
 @Composable
 private fun ActivationStatusCard(isActive: Boolean) {
-    val backdrop = rememberLayerBackdrop {
-        drawRect(SurfaceCard)
-        drawContent()
-    }
-
     val statusColor = if (isActive) AccentGreen else AccentRed
-    val statusBg = if (isActive) AccentGreen.copy(alpha = 0.08f) else AccentRed.copy(alpha = 0.06f)
+    val shape = RoundedCornerShape(20.dp)
+    val cardBg = Brush.verticalGradient(
+        listOf(
+            statusColor.copy(alpha = 0.12f),
+            statusColor.copy(alpha = 0.04f),
+        )
+    )
 
     Box(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .drawBackdrop(
-                backdrop = backdrop,
-                shape = { RoundedCornerShape(20.dp) },
-                effects = { blur(8f.dp.toPx()); lens(16f.dp.toPx(), 32f.dp.toPx()) },
-                onDrawSurface = {
-                    drawRect(statusBg)
-                    drawRect(statusColor.copy(alpha = 0.15f))
-                }
-            )
+            .clip(shape)
+            .background(cardBg, shape)
             .padding(24.dp)
     ) {
         Column {
-            // Status indicator
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     Modifier
@@ -285,7 +350,6 @@ private fun ActivationStatusCard(isActive: Boolean) {
 
             Spacer(Modifier.height(16.dp))
 
-            // Status text
             Text(
                 if (isActive) "Module Activated" else "Module Not Activated",
                 fontSize = 24.sp,
@@ -295,7 +359,6 @@ private fun ActivationStatusCard(isActive: Boolean) {
 
             Spacer(Modifier.height(8.dp))
 
-            // Description
             Text(
                 if (isActive)
                     "The module is running under LSPosed. All hook features are available."
@@ -312,24 +375,8 @@ private fun ActivationStatusCard(isActive: Boolean) {
 /* ── Module Info Card ───────────────────────────── */
 @Composable
 private fun ModuleInfoCard(isActive: Boolean) {
-    val backdrop = rememberLayerBackdrop {
-        drawRect(SurfaceCard)
-        drawContent()
-    }
-
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .drawBackdrop(
-                backdrop = backdrop,
-                shape = { RoundedCornerShape(16.dp) },
-                effects = { blur(4f.dp.toPx()); lens(10f.dp.toPx(), 20f.dp.toPx()) },
-                onDrawSurface = { drawRect(SurfaceCard) }
-            )
-            .padding(20.dp)
-    ) {
-        Column {
+    GlassCard {
+        Column(Modifier.padding(20.dp)) {
             Text("Module Info", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             Spacer(Modifier.height(14.dp))
 
@@ -337,7 +384,7 @@ private fun ModuleInfoCard(isActive: Boolean) {
             Spacer(Modifier.height(10.dp))
             InfoRow("Package", BuildConfig.APPLICATION_ID)
             Spacer(Modifier.height(10.dp))
-            InfoRow("Min SDK", "${android.os.Build.VERSION.SDK_INT}")
+            InfoRow("SDK", "${android.os.Build.VERSION.SDK_INT}")
             Spacer(Modifier.height(10.dp))
             InfoRow("Status", if (isActive) "Active" else "Inactive")
         }
@@ -347,24 +394,8 @@ private fun ModuleInfoCard(isActive: Boolean) {
 /* ── Device Info Card ───────────────────────────── */
 @Composable
 private fun DeviceInfoCard(context: Context) {
-    val backdrop = rememberLayerBackdrop {
-        drawRect(SurfaceCard)
-        drawContent()
-    }
-
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .drawBackdrop(
-                backdrop = backdrop,
-                shape = { RoundedCornerShape(16.dp) },
-                effects = { blur(4f.dp.toPx()); lens(10f.dp.toPx(), 20f.dp.toPx()) },
-                onDrawSurface = { drawRect(SurfaceCard) }
-            )
-            .padding(20.dp)
-    ) {
-        Column {
+    GlassCard {
+        Column(Modifier.padding(20.dp)) {
             Text("Device Info", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             Spacer(Modifier.height(14.dp))
 
@@ -422,18 +453,8 @@ private fun FeaturesPage() {
 
 @Composable
 private fun FeatureGroupCard(group: String, items: List<String>) {
-    val backdrop = rememberLayerBackdrop {
-        drawRect(SurfaceCard)
-        drawContent()
-    }
-    Box(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp))
-            .drawBackdrop(backdrop = backdrop, shape = { RoundedCornerShape(16.dp) },
-                effects = { blur(4f.dp.toPx()); lens(10f.dp.toPx(), 20f.dp.toPx()) },
-                onDrawSurface = { drawRect(SurfaceCard) })
-            .padding(16.dp)
-    ) {
-        Column {
+    GlassCard {
+        Column(Modifier.padding(16.dp)) {
             Text(group, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = AccentBlue)
             Spacer(Modifier.height(10.dp))
             items.forEach { item ->
@@ -473,21 +494,20 @@ private fun SettingsPage() {
 
 @Composable
 private fun SettingsCard(icon: String, title: String, description: String) {
-    val backdrop = rememberLayerBackdrop {
-        drawRect(SurfaceCard)
-        drawContent()
-    }
-    Box(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp))
-            .drawBackdrop(backdrop = backdrop, shape = { RoundedCornerShape(16.dp) },
-                effects = { blur(4f.dp.toPx()); lens(10f.dp.toPx(), 20f.dp.toPx()) },
-                onDrawSurface = { drawRect(SurfaceCard) })
-            .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { }
-            .padding(horizontal = 16.dp, vertical = 16.dp)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(44.dp).background(SurfaceLight, RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
-                Text(icon, fontSize = 20.sp)
+    GlassCard {
+        Row(
+            Modifier
+                .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { }
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                Modifier
+                    .size(36.dp)
+                    .background(AccentBlue.copy(alpha = 0.1f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(icon, fontSize = 16.sp)
             }
             Spacer(Modifier.width(14.dp))
             Column {

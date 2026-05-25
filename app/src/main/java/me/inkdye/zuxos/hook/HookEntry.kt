@@ -21,7 +21,7 @@ class HookEntry : IYukiHookXposedInit {
 
     override fun onHook() = encase {
         loadApp(BuildConfig.APPLICATION_ID) {
-            "me.inkdye.zuxos.ui.activity.MainActivity".toClass().method {
+            "me.inkdye.zuxos.ui.activity.LiquidGlassHomeActivity".toClass().method {
                 name = "isModuleActivated"
             }.hook {
                 replaceAny { true }
