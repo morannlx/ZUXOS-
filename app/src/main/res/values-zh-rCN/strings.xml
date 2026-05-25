@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ZUXOS+</string>
+    <string name="xposed_desc">ZUXOS+ 扩展模块</string>
+    <string name="module_version">模块版本：%1$s</string>
+    <string name="module_not_activated">模块未激活</string>
+    <string name="module_is_activated">模块已激活</string>
+</resources>

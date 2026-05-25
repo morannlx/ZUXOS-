@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ZUXOS+</string>
+    <string name="xposed_desc">ZUXOS+ Extension Module</string>
+    <string name="module_version">Module Version: %1$s</string>
+    <string name="module_not_activated">Module Not Activated</string>
+    <string name="module_is_activated">Module Activated</string>
+</resources>
