@@ -1,6 +1,5 @@
 package me.inkdye.zuxos.ui.activity
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -9,7 +8,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +20,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Switch
@@ -76,87 +80,99 @@ private fun AppInfoSettingsPage(onBack: () -> Unit) {
         Triple("app_info_enable_long_copy", R.string.app_info_enable_long_copy, R.string.app_info_enable_long_copy_desc),
     )
 
-    LazyColumn(
+    BoxWithConstraints(
         Modifier
             .fillMaxSize()
             .background(Brush.verticalGradient(listOf(BgGradientTop, BgGradientMid, BgGradientBottom)))
             .safeContentPadding()
-            .padding(horizontal = 20.dp),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 24.dp, bottom = 100.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        item {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(AccentBlue.copy(alpha = 0.1f))
-                        .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { onBack() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("←", fontSize = 18.sp, color = AccentBlue)
-                }
-                Spacer(Modifier.width(12.dp))
-                Text(stringResource(R.string.app_info_settings_title), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
-            }
-            Spacer(Modifier.height(4.dp))
-            Text(stringResource(R.string.app_info_settings_desc), fontSize = 14.sp, color = TextSecondary)
-            Spacer(Modifier.height(16.dp))
-        }
+        val isTablet = maxWidth >= 600.dp
+        val columns = if (isTablet) 3 else 2
 
-        item {
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color.White)
-                    .padding(16.dp)
-            ) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(columns),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
+            contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item(span = { GridItemSpan(columns) }) {
                 Column {
-                    switches.forEachIndexed { index, (key, titleRes, descRes) ->
-                        SwitchRow(key, titleRes, descRes)
-                        if (index < switches.lastIndex) {
-                            Spacer(Modifier.height(12.dp))
-                            Box(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(1.dp)
-                                    .background(Color.Gray.copy(alpha = 0.1f))
-                            )
-                            Spacer(Modifier.height(12.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(AccentBlue.copy(alpha = 0.1f))
+                                .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { onBack() },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("←", fontSize = 18.sp, color = AccentBlue)
                         }
+                        Spacer(Modifier.width(12.dp))
+                        Text(stringResource(R.string.app_info_settings_title), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
                     }
+                    Spacer(Modifier.height(4.dp))
+                    Text(stringResource(R.string.app_info_settings_desc), fontSize = 14.sp, color = TextSecondary)
+                    Spacer(Modifier.height(16.dp))
                 }
+            }
+
+            items(switches) { (key, titleRes, descRes) ->
+                SwitchGridCard(key, titleRes, descRes)
             }
         }
     }
 }
 
 @Composable
-private fun SwitchRow(key: String, titleRes: Int, descRes: Int) {
+private fun SwitchGridCard(key: String, titleRes: Int, descRes: Int) {
     val context = LocalContext.current
     var checked by remember { mutableStateOf(ModuleConfig.loadBoolean(context, key, false)) }
 
-    Column {
-        Row(
-            Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(stringResource(titleRes), fontSize = 16.sp, color = TextPrimary, modifier = Modifier.weight(1f))
-            Switch(
-                checked = checked,
-                onCheckedChange = {
-                    checked = it
-                    ModuleConfig.saveBoolean(context, key, it)
-                },
-                colors = SwitchDefaults.colors(
-                    checkedTrackColor = AccentGreen,
-                    checkedThumbColor = Color.White,
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(Color.White)
+            .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {
+                checked = !checked
+                ModuleConfig.saveBoolean(context, key, checked)
+            }
+            .padding(18.dp)
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    stringResource(titleRes),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = AccentBlue,
+                    modifier = Modifier.weight(1f)
                 )
+                Switch(
+                    checked = checked,
+                    onCheckedChange = {
+                        checked = it
+                        ModuleConfig.saveBoolean(context, key, it)
+                    },
+                    colors = SwitchDefaults.colors(
+                        checkedTrackColor = AccentGreen,
+                        checkedThumbColor = Color.White,
+                    ),
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+            Text(
+                stringResource(descRes),
+                fontSize = 12.sp,
+                color = TextSecondary,
+                lineHeight = 18.sp
             )
         }
-        Spacer(Modifier.height(4.dp))
-        Text(stringResource(descRes), fontSize = 12.sp, color = TextSecondary, lineHeight = 18.sp)
     }
 }

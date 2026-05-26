@@ -103,13 +103,14 @@ private data class FeatureGroup(
     val icon: String,
     val titleRes: Int,
     val items: List<Int>,
-    val targetPackage: String? = null
+    val targetPackage: String? = null,
+    val accentColor: Color = Color(0xFF3B82F6)
 )
 
 private val featureGroups = listOf(
-    FeatureGroup("🔧", R.string.feature_group_system, listOf(
+    FeatureGroup("⚙", R.string.feature_group_system, listOf(
         R.string.feature_group_system_item1
-    ), "com.android.settings")
+    ), "com.android.settings", Color(0xFF94A3B8))
 )
 
 /* ── Navigation ─────────────────────────────────── */
@@ -451,8 +452,8 @@ private fun FeaturesPage() {
             .fillMaxSize()
             .padding(horizontal = 20.dp),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 24.dp, bottom = 100.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item(span = { GridItemSpan(2) }) {
             Column {
@@ -463,9 +464,20 @@ private fun FeaturesPage() {
             }
         }
 
-        items(featureGroups.size) { index ->
-            FeatureGroupCard(context, featureGroups[index]) {
-                context.startActivity(Intent(context, SystemSettingsActivity::class.java))
+        if (featureGroups.isEmpty()) {
+            item(span = { GridItemSpan(2) }) {
+                Box(Modifier.fillMaxWidth().padding(top = 40.dp), contentAlignment = Alignment.Center) {
+                    Text(stringResource(R.string.no_features_available), color = TextDim, fontSize = 14.sp)
+                }
+            }
+        } else {
+            items(featureGroups.size) { index ->
+                val group = featureGroups[index]
+                FeatureGroupCard(context, group) {
+                    if (group.targetPackage == "com.android.settings") {
+                        context.startActivity(Intent(context, SystemSettingsActivity::class.java))
+                    }
+                }
             }
         }
     }
@@ -475,63 +487,69 @@ private fun FeaturesPage() {
 private fun FeatureGroupCard(context: Context, group: FeatureGroup, onClick: () -> Unit = {}) {
     val appIcon = remember(group.targetPackage) {
         group.targetPackage?.let { pkg ->
-            try { context.packageManager.getApplicationIcon(pkg) } catch (_: Exception) { null }
+            try {
+                if (pkg == "android") null // 系统框架通常不显示图标
+                else context.packageManager.getApplicationIcon(pkg)
+            } catch (_: Exception) {
+                null
+            }
         }
     }
 
-    GlassCard {
+    GlassCard(
+        modifier = Modifier.clickable(
+            indication = null,
+            interactionSource = remember { MutableInteractionSource() }
+        ) { onClick() }
+    ) {
         Column(
-            Modifier
-                .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { onClick() }
-                .padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (appIcon != null) {
                     Image(
-                        bitmap = appIcon.toBitmap(48, 48).asImageBitmap(),
+                        bitmap = appIcon.toBitmap(96, 96).asImageBitmap(),
                         contentDescription = null,
                         modifier = Modifier
-                            .size(36.dp)
-                            .clip(RoundedCornerShape(8.dp))
+                            .size(42.dp)
+                            .clip(RoundedCornerShape(12.dp))
                     )
                 } else {
                     Box(
                         Modifier
-                            .size(36.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(AccentBlue.copy(alpha = 0.1f)),
+                            .size(42.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(group.accentColor),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(group.icon, fontSize = 16.sp)
+                        Text(group.icon, fontSize = 20.sp, color = Color.White)
                     }
                 }
-                Spacer(Modifier.width(10.dp))
+                Spacer(Modifier.width(12.dp))
                 Text(
                     stringResource(group.titleRes),
                     fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                     color = AccentBlue
                 )
             }
 
-            group.items.forEach { itemRes ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        Modifier
-                            .size(4.dp)
-                            .background(TextSecondary.copy(alpha = 0.5f), CircleShape)
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        stringResource(itemRes),
-                        fontSize = 12.sp,
-                        color = TextSecondary
-                    )
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                group.items.forEach { itemRes ->
+                    Row(
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Text("•", fontSize = 14.sp, color = TextSecondary, modifier = Modifier.padding(end = 8.dp))
+                        Text(
+                            stringResource(itemRes),
+                            fontSize = 13.sp,
+                            color = TextSecondary,
+                            lineHeight = 18.sp
+                        )
+                    }
                 }
             }
         }
