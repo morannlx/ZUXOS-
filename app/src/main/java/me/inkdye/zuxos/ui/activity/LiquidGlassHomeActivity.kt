@@ -1,6 +1,7 @@
 package me.inkdye.zuxos.ui.activity
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,6 +10,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -28,6 +30,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.NavigationBar
@@ -47,10 +52,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.drawable.toBitmap
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.kyant.backdrop.Backdrop
 import com.kyant.backdrop.backdrops.layerBackdrop
@@ -60,8 +68,12 @@ import com.kyant.backdrop.effects.blur
 import com.kyant.backdrop.effects.lens
 import com.kyant.backdrop.effects.vibrancy
 import me.inkdye.zuxos.BuildConfig
+import me.inkdye.zuxos.R
 
 class LiquidGlassHomeActivity : ComponentActivity() {
+
+    @androidx.annotation.Keep
+    fun isModuleActivated(): Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,20 +92,31 @@ private val TextPrimary = Color(0xFF111827)
 private val TextSecondary = Color(0xFF6B7280)
 private val TextDim = Color(0xFF9CA3AF)
 
-/* Background gradient — gives the backdrop something rich to refract */
 private val BgGradientTop = Color(0xFFE8F5E9)
 private val BgGradientMid = Color(0xFFE3F2FD)
 private val BgGradientBottom = Color(0xFFF3E5F5)
 
-/* Glass card styling — white with inner highlight gradient for depth */
-private val CardBorder = Color.White
 private val GlassNavTint = Color.White.copy(alpha = 0.45f)
 
+/* ── Feature Groups ─────────────────────────────── */
+private data class FeatureGroup(
+    val icon: String,
+    val titleRes: Int,
+    val items: List<Int>,
+    val targetPackage: String? = null
+)
+
+private val featureGroups = listOf(
+    FeatureGroup("🔧", R.string.feature_group_system, listOf(
+        R.string.feature_group_system_item1
+    ), "com.android.settings")
+)
+
 /* ── Navigation ─────────────────────────────────── */
-private enum class NavPage(val label: String, val icon: String) {
-    Home("Home", "⌂"),
-    Features("Features", "≡"),
-    Settings("Settings", "⚙"),
+private enum class NavPage(val labelRes: Int, val icon: String) {
+    Home(R.string.nav_home, "⌂"),
+    Features(R.string.nav_features, "≡"),
+    Settings(R.string.nav_settings, "⚙"),
 }
 
 private const val TABLET_WIDTH_DP = 600
@@ -103,7 +126,6 @@ private const val TABLET_WIDTH_DP = 600
 private fun LiquidGlassHome() {
     var selectedTab by remember { mutableIntStateOf(0) }
 
-    // Backdrop captures the gradient + page content for glass nav to refract
     val backdrop = rememberLayerBackdrop {
         drawRect(Brush.verticalGradient(listOf(BgGradientTop, BgGradientMid, BgGradientBottom)))
         drawContent()
@@ -188,7 +210,7 @@ private fun GlassNavigationBar(
                     icon = { Text(page.icon, fontSize = 20.sp) },
                     label = {
                         Text(
-                            page.label,
+                            stringResource(page.labelRes),
                             fontSize = 11.sp,
                             fontWeight = if (selectedTab == index) FontWeight.SemiBold else FontWeight.Normal
                         )
@@ -256,7 +278,7 @@ private fun GlassNavigationRail(
                     icon = { Text(page.icon, fontSize = 22.sp) },
                     label = {
                         Text(
-                            page.label,
+                            stringResource(page.labelRes),
                             fontSize = 11.sp,
                             fontWeight = if (selectedTab == index) FontWeight.SemiBold else FontWeight.Normal
                         )
@@ -274,14 +296,16 @@ private fun GlassNavigationRail(
     }
 }
 
-/* ── Glass Card — layered for depth ─────────────── */
+/* ── Glass Card ─────────────────────────────────── */
 @Composable
 private fun GlassCard(
     shape: RoundedCornerShape = RoundedCornerShape(16.dp),
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     Box(
-        Modifier
+        modifier
+            .fillMaxWidth()
             .clip(shape)
             .background(Color.White, shape)
     ) {
@@ -293,7 +317,7 @@ private fun GlassCard(
 @Composable
 private fun HomePage() {
     val context = LocalContext.current
-    val isXposedActive = YukiHookAPI.Status.isXposedModuleActive || isModuleActivated()
+    val isXposedActive = YukiHookAPI.Status.isXposedModuleActive || (context as? LiquidGlassHomeActivity)?.isModuleActivated() == true
 
     LazyColumn(
         Modifier.fillMaxSize().padding(horizontal = 20.dp),
@@ -301,9 +325,9 @@ private fun HomePage() {
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         item {
-            Text("ZUXOS+", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+            Text(stringResource(R.string.page_home_title), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
             Spacer(Modifier.height(4.dp))
-            Text("Xposed Module for ZUXOS", fontSize = 14.sp, color = TextSecondary)
+            Text(stringResource(R.string.page_home_subtitle), fontSize = 14.sp, color = TextSecondary)
             Spacer(Modifier.height(8.dp))
         }
 
@@ -313,7 +337,6 @@ private fun HomePage() {
     }
 }
 
-/* ── LSPosed Activation Status Card ─────────────── */
 @Composable
 private fun ActivationStatusCard(isActive: Boolean) {
     val statusColor = if (isActive) AccentGreen else AccentRed
@@ -341,7 +364,7 @@ private fun ActivationStatusCard(isActive: Boolean) {
                 )
                 Spacer(Modifier.width(10.dp))
                 Text(
-                    if (isActive) "LSPosed Active" else "LSPosed Not Active",
+                    stringResource(if (isActive) R.string.home_status_active else R.string.home_status_inactive),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     color = statusColor
@@ -351,7 +374,7 @@ private fun ActivationStatusCard(isActive: Boolean) {
             Spacer(Modifier.height(16.dp))
 
             Text(
-                if (isActive) "Module Activated" else "Module Not Activated",
+                stringResource(if (isActive) R.string.home_module_active else R.string.home_module_inactive),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = TextPrimary
@@ -360,10 +383,7 @@ private fun ActivationStatusCard(isActive: Boolean) {
             Spacer(Modifier.height(8.dp))
 
             Text(
-                if (isActive)
-                    "The module is running under LSPosed. All hook features are available."
-                else
-                    "Please activate this module in LSPosed Manager and reboot your device.",
+                stringResource(if (isActive) R.string.home_desc_active else R.string.home_desc_inactive),
                 fontSize = 14.sp,
                 color = TextSecondary,
                 lineHeight = 22.sp
@@ -372,45 +392,42 @@ private fun ActivationStatusCard(isActive: Boolean) {
     }
 }
 
-/* ── Module Info Card ───────────────────────────── */
 @Composable
 private fun ModuleInfoCard(isActive: Boolean) {
     GlassCard {
         Column(Modifier.padding(20.dp)) {
-            Text("Module Info", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+            Text(stringResource(R.string.home_module_info), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             Spacer(Modifier.height(14.dp))
 
-            InfoRow("Version", BuildConfig.VERSION_NAME)
+            InfoRow(stringResource(R.string.info_version), BuildConfig.VERSION_NAME)
             Spacer(Modifier.height(10.dp))
-            InfoRow("Package", BuildConfig.APPLICATION_ID)
+            InfoRow(stringResource(R.string.info_package), BuildConfig.APPLICATION_ID)
             Spacer(Modifier.height(10.dp))
-            InfoRow("SDK", "${android.os.Build.VERSION.SDK_INT}")
+            InfoRow(stringResource(R.string.info_sdk), "${android.os.Build.VERSION.SDK_INT}")
             Spacer(Modifier.height(10.dp))
-            InfoRow("Status", if (isActive) "Active" else "Inactive")
+            InfoRow(stringResource(R.string.info_status), stringResource(if (isActive) R.string.info_active else R.string.info_inactive))
         }
     }
 }
 
-/* ── Device Info Card ───────────────────────────── */
 @Composable
 private fun DeviceInfoCard(context: Context) {
     GlassCard {
         Column(Modifier.padding(20.dp)) {
-            Text("Device Info", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+            Text(stringResource(R.string.home_device_info), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             Spacer(Modifier.height(14.dp))
 
-            InfoRow("Brand", android.os.Build.BRAND)
+            InfoRow(stringResource(R.string.info_brand), android.os.Build.BRAND)
             Spacer(Modifier.height(10.dp))
-            InfoRow("Model", android.os.Build.MODEL)
+            InfoRow(stringResource(R.string.info_model), android.os.Build.MODEL)
             Spacer(Modifier.height(10.dp))
-            InfoRow("Android", android.os.Build.VERSION.RELEASE)
+            InfoRow(stringResource(R.string.info_android), android.os.Build.VERSION.RELEASE)
             Spacer(Modifier.height(10.dp))
-            InfoRow("SDK", "${android.os.Build.VERSION.SDK_INT}")
+            InfoRow(stringResource(R.string.info_sdk), "${android.os.Build.VERSION.SDK_INT}")
         }
     }
 }
 
-/* ── Info Row ───────────────────────────────────── */
 @Composable
 private fun InfoRow(label: String, value: String) {
     Row(
@@ -426,42 +443,95 @@ private fun InfoRow(label: String, value: String) {
 /* ── Page: Features ─────────────────────────────── */
 @Composable
 private fun FeaturesPage() {
-    val featureGroups = listOf(
-        "Theme" to listOf("VIP theme unlock", "Wallpaper bypass"),
-        "Installer" to listOf("Skip virus scan", "ADB auto-install", "Skip password", "Block low-version check"),
-        "Display" to listOf("120Hz / 144Hz unlock", "Extended lock timeout"),
-        "Desktop" to listOf("Dock bar customization", "5x6 / 5x7 grid layout"),
-        "Audio" to listOf("VAFX framework", "Spatial audio", "Holographic audio", "Dolby Atmos"),
-        "GameBox" to listOf("Graphics boost", "Touch enhancement", "4D haptic", "Game assistant"),
-        "Framework" to listOf("Force screenshot allowed"),
-    )
+    val context = LocalContext.current
 
-    LazyColumn(
-        Modifier.fillMaxSize().padding(horizontal = 20.dp),
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 24.dp, bottom = 100.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        item {
-            Text("Features", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
-            Spacer(Modifier.height(4.dp))
-            Text("All available system enhancements", fontSize = 14.sp, color = TextSecondary)
-            Spacer(Modifier.height(16.dp))
+        item(span = { GridItemSpan(2) }) {
+            Column {
+                Text(stringResource(R.string.page_features_title), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                Spacer(Modifier.height(4.dp))
+                Text(stringResource(R.string.page_features_subtitle), fontSize = 14.sp, color = TextSecondary)
+                Spacer(Modifier.height(16.dp))
+            }
         }
-        items(featureGroups) { (group, items) -> FeatureGroupCard(group, items) }
+
+        items(featureGroups.size) { index ->
+            FeatureGroupCard(context, featureGroups[index]) {
+                context.startActivity(Intent(context, SystemSettingsActivity::class.java))
+            }
+        }
     }
 }
 
 @Composable
-private fun FeatureGroupCard(group: String, items: List<String>) {
+private fun FeatureGroupCard(context: Context, group: FeatureGroup, onClick: () -> Unit = {}) {
+    val appIcon = remember(group.targetPackage) {
+        group.targetPackage?.let { pkg ->
+            try { context.packageManager.getApplicationIcon(pkg) } catch (_: Exception) { null }
+        }
+    }
+
     GlassCard {
-        Column(Modifier.padding(16.dp)) {
-            Text(group, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = AccentBlue)
-            Spacer(Modifier.height(10.dp))
-            items.forEach { item ->
-                Row(Modifier.padding(vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Box(Modifier.size(4.dp).background(AccentBlue.copy(alpha = 0.5f), CircleShape))
-                    Spacer(Modifier.width(10.dp))
-                    Text(item, fontSize = 13.sp, color = TextSecondary)
+        Column(
+            Modifier
+                .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { onClick() }
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (appIcon != null) {
+                    Image(
+                        bitmap = appIcon.toBitmap(48, 48).asImageBitmap(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                    )
+                } else {
+                    Box(
+                        Modifier
+                            .size(36.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(AccentBlue.copy(alpha = 0.1f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(group.icon, fontSize = 16.sp)
+                    }
+                }
+                Spacer(Modifier.width(10.dp))
+                Text(
+                    stringResource(group.titleRes),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    color = AccentBlue
+                )
+            }
+
+            group.items.forEach { itemRes ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        Modifier
+                            .size(4.dp)
+                            .background(TextSecondary.copy(alpha = 0.5f), CircleShape)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        stringResource(itemRes),
+                        fontSize = 12.sp,
+                        color = TextSecondary
+                    )
                 }
             }
         }
@@ -471,11 +541,12 @@ private fun FeatureGroupCard(group: String, items: List<String>) {
 /* ── Page: Settings ─────────────────────────────── */
 @Composable
 private fun SettingsPage() {
+    val context = LocalContext.current
     val settingsItems = listOf(
-        Triple("⚙", "General", "Module preferences and defaults"),
-        Triple("🎨", "Appearance", "Theme and color settings"),
-        Triple("📦", "Export / Import", "Backup and restore configurations"),
-        Triple("ℹ", "About", "Version info and credits"),
+        Triple("⚙", R.string.settings_general, R.string.settings_general_desc),
+        Triple("🎨", R.string.settings_appearance, R.string.settings_appearance_desc),
+        Triple("📦", R.string.settings_export, R.string.settings_export_desc),
+        Triple("ℹ", R.string.settings_about, R.string.settings_about_desc),
     )
     LazyColumn(
         Modifier.fillMaxSize().padding(horizontal = 20.dp),
@@ -483,21 +554,22 @@ private fun SettingsPage() {
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         item {
-            Text("Settings", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+            Text(stringResource(R.string.page_settings_title), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
             Spacer(Modifier.height(4.dp))
-            Text("Configure module behavior", fontSize = 14.sp, color = TextSecondary)
+            Text(stringResource(R.string.page_settings_subtitle), fontSize = 14.sp, color = TextSecondary)
             Spacer(Modifier.height(16.dp))
         }
-        items(settingsItems) { (icon, title, desc) -> SettingsCard(icon, title, desc) }
+        items(settingsItems) { (icon, titleRes, descRes) ->
+            SettingsCard(icon, titleRes, descRes)
+        }
     }
 }
 
 @Composable
-private fun SettingsCard(icon: String, title: String, description: String) {
+private fun SettingsCard(icon: String, titleRes: Int, descRes: Int) {
     GlassCard {
         Row(
             Modifier
-                .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { }
                 .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -511,14 +583,10 @@ private fun SettingsCard(icon: String, title: String, description: String) {
             }
             Spacer(Modifier.width(14.dp))
             Column {
-                Text(title, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = TextPrimary)
+                Text(stringResource(titleRes), fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = TextPrimary)
                 Spacer(Modifier.height(2.dp))
-                Text(description, fontSize = 12.sp, color = TextDim)
+                Text(stringResource(descRes), fontSize = 12.sp, color = TextDim)
             }
         }
     }
 }
-
-/* ── Helper ─────────────────────────────────────── */
-@androidx.annotation.Keep
-private fun isModuleActivated(): Boolean = false

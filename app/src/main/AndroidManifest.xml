@@ -44,6 +44,16 @@
             android:screenOrientation="behind"
             android:theme="@style/Theme.AppDefault" />
 
+        <activity
+            android:name=".ui.activity.SystemSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="behind" />
+
+        <activity
+            android:name=".ui.activity.AppInfoSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="behind" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

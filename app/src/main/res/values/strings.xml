@@ -4,4 +4,86 @@
     <string name="module_version">Module Version: %1$s</string>
     <string name="module_not_activated">Module Not Activated</string>
     <string name="module_is_activated">Module Activated</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_features">Features</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Home Page -->
+    <string name="page_home_title">ZUXOS+</string>
+    <string name="page_home_subtitle">Xposed Module for ZUXOS</string>
+    <string name="home_status_active">LSPosed Active</string>
+    <string name="home_status_inactive">LSPosed Not Active</string>
+    <string name="home_module_active">Module Activated</string>
+    <string name="home_module_inactive">Module Not Activated</string>
+    <string name="home_desc_active">The module is running under LSPosed. All hook features are available.</string>
+    <string name="home_desc_inactive">Please activate this module in LSPosed Manager and reboot your device.</string>
+    <string name="home_module_info">Module Info</string>
+    <string name="home_device_info">Device Info</string>
+    <string name="info_version">Version</string>
+    <string name="info_package">Package</string>
+    <string name="info_sdk">SDK</string>
+    <string name="info_status">Status</string>
+    <string name="info_active">Active</string>
+    <string name="info_inactive">Inactive</string>
+    <string name="info_brand">Brand</string>
+    <string name="info_model">Model</string>
+    <string name="info_android">Android</string>
+
+    <!-- Features Page -->
+    <string name="page_features_title">Features</string>
+    <string name="page_features_subtitle">Hook-enabled system enhancements</string>
+    <string name="feature_group_desktop">Desktop</string>
+    <string name="feature_group_desktop_item1">Dock bar customization</string>
+    <string name="feature_group_desktop_item2">5x6 / 5x7 grid layout</string>
+    <string name="feature_group_audio">Audio</string>
+    <string name="feature_group_audio_item1">VAFX framework</string>
+    <string name="feature_group_audio_item2">Spatial audio</string>
+    <string name="feature_group_audio_item3">Holographic audio</string>
+    <string name="feature_group_audio_item4">Dolby Atmos</string>
+    <string name="feature_group_gamebox">GameBox</string>
+    <string name="feature_group_gamebox_item1">Graphics boost</string>
+    <string name="feature_group_gamebox_item2">Touch enhancement</string>
+    <string name="feature_group_gamebox_item3">4D haptic</string>
+    <string name="feature_group_gamebox_item4">Game assistant</string>
+    <string name="feature_group_framework">Framework</string>
+    <string name="feature_group_framework_item1">Force screenshot allowed</string>
+    <string name="feature_group_system">System Settings</string>
+    <string name="feature_group_system_item1">App Info details</string>
+    <string name="no_features_available">No hook features available</string>
+
+    <!-- Settings Page -->
+    <string name="page_settings_title">Settings</string>
+    <string name="page_settings_subtitle">Configure module behavior</string>
+    <string name="settings_general">General</string>
+    <string name="settings_general_desc">Module preferences and defaults</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_appearance_desc">Theme and color settings</string>
+    <string name="settings_export">Export / Import</string>
+    <string name="settings_export_desc">Backup and restore configurations</string>
+    <string name="settings_about">About</string>
+    <string name="settings_about_desc">Version info and credits</string>
+
+    <!-- System Settings -->
+    <string name="system_settings_title">System Settings</string>
+    <string name="system_settings_desc">Configure system-level hook features</string>
+
+    <!-- App Info -->
+    <string name="app_info_function">App Info</string>
+    <string name="app_info_function_desc">View extended app details in App Info page</string>
+    <string name="app_info_settings_title">App Info Settings</string>
+    <string name="app_info_settings_desc">Configure what to display in App Info page</string>
+    <string name="app_info_show_package_name">Show Package Name</string>
+    <string name="app_info_show_package_name_desc">Display package name in app details page</string>
+    <string name="app_info_show_sdk_version">Show SDK Version</string>
+    <string name="app_info_show_sdk_version_desc">Display targetSdkVersion and minSdkVersion</string>
+    <string name="app_info_show_install_time">Show First Install Time</string>
+    <string name="app_info_show_install_time_desc">Display the app\'s first installation time</string>
+    <string name="app_info_show_update_time">Show Last Update Time</string>
+    <string name="app_info_show_update_time_desc">Display the app\'s last update time</string>
+    <string name="app_info_show_install_source">Show Install Source</string>
+    <string name="app_info_show_install_source_desc">Display the installer package name</string>
+    <string name="app_info_enable_long_copy">Enable Long Press Copy</string>
+    <string name="app_info_enable_long_copy_desc">Long press to copy all app info text to clipboard</string>
 </resources>

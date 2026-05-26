@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">ZUXOS+</string>
+    <string name="xposed_desc">ZUXOS+ 扩展模块</string>
+    <string name="module_version">模块版本：%1$s</string>
+    <string name="module_not_activated">模块未激活</string>
+    <string name="module_is_activated">模块已激活</string>
+
+    <!-- 系统设置 -->
+    <string name="system_settings_title">系统设置</string>
+    <string name="system_settings_desc">配置系统级 Hook 功能</string>
+    <string name="no_features_available">暂无可用的 Hook 功能</string>
+
+    <!-- 应用信息 -->
+    <string name="app_info_function">应用信息</string>
+    <string name="app_info_function_desc">在应用详情页显示扩展信息</string>
+    <string name="app_info_settings_title">应用信息设置</string>
+    <string name="app_info_settings_desc">配置在应用详情页中显示的内容</string>
+    <string name="app_info_show_package_name">显示包名</string>
+    <string name="app_info_show_package_name_desc">在应用详情页显示当前应用的包名</string>
+    <string name="app_info_show_sdk_version">显示 SDK 版本</string>
+    <string name="app_info_show_sdk_version_desc">显示 targetSdkVersion 和 minSdkVersion</string>
+    <string name="app_info_show_install_time">显示首次安装时间</string>
+    <string name="app_info_show_install_time_desc">显示应用的首次安装时间</string>
+    <string name="app_info_show_update_time">显示最后更新时间</string>
+    <string name="app_info_show_update_time_desc">显示应用的最后更新时间</string>
+    <string name="app_info_show_install_source">显示安装来源</string>
+    <string name="app_info_show_install_source_desc">显示应用的安装来源包名</string>
+    <string name="app_info_enable_long_copy">启用长按复制</string>
+    <string name="app_info_enable_long_copy_desc">长按将应用信息文本复制到剪贴板</string>
+</resources>

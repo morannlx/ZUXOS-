@@ -4,15 +4,15 @@ import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import me.inkdye.zuxos.BuildConfig
+import me.inkdye.zuxos.hook.settings.AppInfoExtend
 
 @InjectYukiHookWithXposed
 class HookEntry : IYukiHookXposedInit {
 
     init {
-        // 在此注册 Hook 模块
-        // Hooks.register(
-        //     ExampleHook,
-        // )
+        Hooks.register(
+            AppInfoExtend,
+        )
     }
 
     override fun onInit() = configs {
