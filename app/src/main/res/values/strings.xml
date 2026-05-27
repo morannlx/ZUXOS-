@@ -69,6 +69,19 @@
     <string name="system_settings_title">System Settings</string>
     <string name="system_settings_desc">Configure system-level hook features</string>
 
+    <!-- Appearance Settings -->
+    <string name="appearance_title">Appearance</string>
+    <string name="appearance_desc">Theme and visual effects</string>
+    <string name="appearance_theme_mode">Theme Mode</string>
+    <string name="appearance_theme_mode_desc">Choose light, dark, or follow system</string>
+    <string name="appearance_theme_light">Light</string>
+    <string name="appearance_theme_dark">Dark</string>
+    <string name="appearance_theme_system">System</string>
+    <string name="appearance_floating_nav">Floating Navigation Bar</string>
+    <string name="appearance_floating_nav_desc">Detached floating style for tablet navigation</string>
+    <string name="appearance_liquid_glass">Liquid Glass Effect</string>
+    <string name="appearance_liquid_glass_desc">Blur and glassmorphism on navigation bars</string>
+
     <!-- App Info -->
     <string name="app_info_function">App Info</string>
     <string name="app_info_function_desc">View extended app details in App Info page</string>

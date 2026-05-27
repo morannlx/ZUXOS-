@@ -27,4 +27,17 @@
     <string name="app_info_show_install_source_desc">显示应用的安装来源包名</string>
     <string name="app_info_enable_long_copy">启用长按复制</string>
     <string name="app_info_enable_long_copy_desc">长按将应用信息文本复制到剪贴板</string>
+
+    <!-- 外观设置 -->
+    <string name="appearance_title">外观</string>
+    <string name="appearance_desc">主题和视觉效果</string>
+    <string name="appearance_theme_mode">主题模式</string>
+    <string name="appearance_theme_mode_desc">选择浅色、深色或跟随系统</string>
+    <string name="appearance_theme_light">浅色</string>
+    <string name="appearance_theme_dark">深色</string>
+    <string name="appearance_theme_system">跟随系统</string>
+    <string name="appearance_floating_nav">悬浮导航栏</string>
+    <string name="appearance_floating_nav_desc">平板端导航栏采用悬浮卡片样式</string>
+    <string name="appearance_liquid_glass">液态玻璃效果</string>
+    <string name="appearance_liquid_glass_desc">导航栏启用模糊和毛玻璃特效</string>
 </resources>
