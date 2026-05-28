@@ -213,6 +213,10 @@ private val featureGroups = listOf(
     FeatureGroup("⚙", R.string.feature_group_system, listOf(
         R.string.feature_group_system_item1
     ), "com.android.settings", FeatureNeutral),
+    FeatureGroup("↻", R.string.feature_group_lenovo_system_update, listOf(
+        R.string.feature_group_lenovo_system_update_item1,
+        R.string.feature_group_lenovo_system_update_item2
+    ), "com.lenovo.ota", FeatureGreen),
     FeatureGroup("▣", R.string.feature_group_package_installer, listOf(
         R.string.feature_group_package_installer_item1,
         R.string.feature_group_package_installer_item2
@@ -1000,6 +1004,8 @@ private fun FeaturesPage(cs: AppColorScheme) {
                         context.startActivity(Intent(context, SystemFrameworkSettingsActivity::class.java))
                     } else if (group.targetPackage == "com.android.settings") {
                         context.startActivity(Intent(context, SystemSettingsActivity::class.java))
+                    } else if (group.targetPackage == "com.lenovo.ota") {
+                        context.startActivity(Intent(context, LenovoSystemUpdateSettingsActivity::class.java))
                     } else if (group.targetPackage == "com.android.packageinstaller") {
                         context.startActivity(Intent(context, PackageInstallerSettingsActivity::class.java))
                     }
@@ -1017,8 +1023,7 @@ private fun FeatureGroupCard(context: Context, group: FeatureGroup, cs: AppColor
     val appIcon = remember(group.targetPackage, iconBitmapSize) {
         group.targetPackage?.let { pkg ->
             try {
-                if (pkg == "android") null // 系统框架通常不显示图标
-                else context.packageManager.getApplicationIcon(pkg)
+                context.packageManager.getApplicationIcon(pkg)
             } catch (_: Exception) {
                 null
             }

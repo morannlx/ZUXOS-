@@ -18,6 +18,10 @@ object SettingKeys {
     const val PACKAGE_INSTALLER_DISABLE_INSTALLER_AD = "disable_installerAD"
     const val PACKAGE_INSTALLER_STYLE_HOOK = "packageInstallerStyle_hook"
     const val PACKAGE_INSTALLER_DISABLE_DELETE = "package_installer_disable_delete"
+    const val LENOVO_SYSTEM_UPDATE_HIDE_NEW_VERSION_REMINDER =
+        ModuleConfig.LENOVO_SYSTEM_UPDATE_HIDE_NEW_VERSION_REMINDER
+    const val LENOVO_SYSTEM_UPDATE_FORCE_LOCAL_INSTALL =
+        ModuleConfig.LENOVO_SYSTEM_UPDATE_FORCE_LOCAL_INSTALL
     const val HOOK_LOGGING_ENABLED = "hook_logging_enabled"
     const val DISABLE_FLAG_SECURE = ModuleConfig.DISABLE_FLAG_SECURE
     const val CORE_PATCH_ENABLED = ModuleConfig.CORE_PATCH_ENABLED
@@ -89,6 +93,25 @@ val PackageInstallerFeatureSettings = listOf(
         R.string.package_installer_disable_delete_desc,
         false,
     ),
+)
+
+val LenovoSystemUpdateReminderSetting = BooleanSettingSpec(
+    key = SettingKeys.LENOVO_SYSTEM_UPDATE_HIDE_NEW_VERSION_REMINDER,
+    titleRes = R.string.lenovo_system_update_hide_new_version_reminder_title,
+    descRes = R.string.lenovo_system_update_hide_new_version_reminder_desc,
+    defaultValue = false,
+)
+
+val LenovoSystemUpdateLocalInstallSetting = BooleanSettingSpec(
+    key = SettingKeys.LENOVO_SYSTEM_UPDATE_FORCE_LOCAL_INSTALL,
+    titleRes = R.string.lenovo_system_update_force_local_install_title,
+    descRes = R.string.lenovo_system_update_force_local_install_desc,
+    defaultValue = false,
+)
+
+val LenovoSystemUpdateFeatureSettings = listOf(
+    LenovoSystemUpdateReminderSetting,
+    LenovoSystemUpdateLocalInstallSetting,
 )
 
 val DisableFlagSecureSetting = BooleanSettingSpec(
@@ -196,5 +219,11 @@ val AppInfoDetailSettings = listOf(
 )
 
 val ModuleBooleanSettings =
-    listOf(HookLoggingSetting, AppInfoFeatureSetting, DisableFlagSecureSetting, CorePatchMasterSetting) +
-        AppInfoDetailSettings + PackageInstallerFeatureSettings + CorePatchFeatureSettings
+    listOf(
+        HookLoggingSetting,
+        AppInfoFeatureSetting,
+        DisableFlagSecureSetting,
+        CorePatchMasterSetting,
+    ) +
+        AppInfoDetailSettings + PackageInstallerFeatureSettings +
+        LenovoSystemUpdateFeatureSettings + CorePatchFeatureSettings

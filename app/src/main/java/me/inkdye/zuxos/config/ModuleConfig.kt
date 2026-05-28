@@ -27,6 +27,8 @@ object ModuleConfig {
     const val PACKAGE_INSTALLER_DISABLE_INSTALLER_AD = "disable_installerAD"
     const val PACKAGE_INSTALLER_STYLE_HOOK = "packageInstallerStyle_hook"
     const val PACKAGE_INSTALLER_DISABLE_DELETE = "package_installer_disable_delete"
+    const val LENOVO_SYSTEM_UPDATE_HIDE_NEW_VERSION_REMINDER = "lenovo_system_update_hide_new_version_reminder"
+    const val LENOVO_SYSTEM_UPDATE_FORCE_LOCAL_INSTALL = "lenovo_system_update_force_local_install"
     const val HOOK_LOGGING_ENABLED = "hook_logging_enabled"
     const val DISABLE_FLAG_SECURE = "disable_flag_secure"
     const val CORE_PATCH_ENABLED = "core_patch_enabled"

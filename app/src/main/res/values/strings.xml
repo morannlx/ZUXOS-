@@ -66,6 +66,9 @@
     <string name="feature_group_framework_item2">Force screenshot allowed</string>
     <string name="feature_group_system">System Settings</string>
     <string name="feature_group_system_item1">App Info details</string>
+    <string name="feature_group_lenovo_system_update">Lenovo System Update</string>
+    <string name="feature_group_lenovo_system_update_item1">New-version reminder suppression</string>
+    <string name="feature_group_lenovo_system_update_item2">Local update package entry</string>
     <string name="feature_group_package_installer">Package Installer</string>
     <string name="feature_group_package_installer_item1">Skip safety scan and warning page</string>
     <string name="feature_group_package_installer_item2">Keep APK files after installation</string>
@@ -180,6 +183,16 @@
     <string name="app_info_show_install_source_desc">Display the installer package name</string>
     <string name="app_info_enable_long_copy">Enable Long Press Copy</string>
     <string name="app_info_enable_long_copy_desc">Long press to copy all app info text to clipboard</string>
+
+    <!-- Lenovo System Update -->
+    <string name="lenovo_system_update_function">Lenovo System Update</string>
+    <string name="lenovo_system_update_function_desc">Suppress OTA new-version badges and notifications</string>
+    <string name="lenovo_system_update_settings_title">Lenovo System Update</string>
+    <string name="lenovo_system_update_settings_desc">Configure OTA reminder behavior in Lenovo System Update and Settings</string>
+    <string name="lenovo_system_update_hide_new_version_reminder_title">Hide New Version Reminder</string>
+    <string name="lenovo_system_update_hide_new_version_reminder_desc">Keep system update new-version badges, About page labels, and new-version notifications hidden while preserving the update entry itself</string>
+    <string name="lenovo_system_update_force_local_install_title">Force Local Install Entry</string>
+    <string name="lenovo_system_update_force_local_install_desc">Always show the local update package menu item and keep the original System Update tap flow</string>
 
     <!-- Package Installer -->
     <string name="package_installer_settings_title">Package Installer</string>

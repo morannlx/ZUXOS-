@@ -15,6 +15,11 @@
     <string name="feature_group_framework">系统框架</string>
     <string name="feature_group_framework_item1">核心破解</string>
     <string name="feature_group_framework_item2">强制允许截屏</string>
+    <string name="feature_group_system">系统设置</string>
+    <string name="feature_group_system_item1">应用信息详情</string>
+    <string name="feature_group_lenovo_system_update">联想系统更新</string>
+    <string name="feature_group_lenovo_system_update_item1">新版本提醒屏蔽</string>
+    <string name="feature_group_lenovo_system_update_item2">本地更新包入口</string>
     <string name="core_patch_settings">核心破解</string>
     <string name="core_patch_settings_desc">配置软件包签名与安装校验</string>
     <string name="core_patch_function">核心破解</string>
@@ -103,6 +108,16 @@
     <string name="app_info_show_install_source_desc">显示应用的安装来源包名</string>
     <string name="app_info_enable_long_copy">启用长按复制</string>
     <string name="app_info_enable_long_copy_desc">长按将应用信息文本复制到剪贴板</string>
+
+    <!-- 联想系统更新 -->
+    <string name="lenovo_system_update_function">联想系统更新</string>
+    <string name="lenovo_system_update_function_desc">隐藏 OTA 新版本角标和通知</string>
+    <string name="lenovo_system_update_settings_title">联想系统更新</string>
+    <string name="lenovo_system_update_settings_desc">配置联想系统更新与设置页中的 OTA 提醒行为</string>
+    <string name="lenovo_system_update_hide_new_version_reminder_title">隐藏新版本提醒</string>
+    <string name="lenovo_system_update_hide_new_version_reminder_desc">隐藏系统更新新版本角标、关于页标签和新版本通知，同时保留系统更新入口</string>
+    <string name="lenovo_system_update_force_local_install_title">强制显示本地安装入口</string>
+    <string name="lenovo_system_update_force_local_install_desc">始终显示本地更新包菜单项，并保留系统更新原生点击流程</string>
 
     <!-- 软件包安装程序 -->
     <string name="feature_group_package_installer">软件包安装程序</string>
