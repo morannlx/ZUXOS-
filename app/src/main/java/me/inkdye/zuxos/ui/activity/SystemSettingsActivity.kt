@@ -85,6 +85,16 @@ private fun SystemSettingsPage(onBack: () -> Unit) {
             }
             item {
                 SettingGridCard(
+                    title = stringResource(R.string.system_framework_function),
+                    desc = stringResource(R.string.system_framework_function_desc),
+                    cs = cs,
+                    onClick = {
+                        context.startActivity(Intent(context, SystemFrameworkSettingsActivity::class.java))
+                    },
+                )
+            }
+            item {
+                SettingGridCard(
                     title = stringResource(R.string.app_info_function),
                     desc = stringResource(R.string.app_info_function_desc),
                     cs = cs,

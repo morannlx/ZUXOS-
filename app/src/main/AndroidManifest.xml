@@ -50,6 +50,16 @@
             android:screenOrientation="behind" />
 
         <activity
+            android:name=".ui.activity.SystemFrameworkSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="behind" />
+
+        <activity
+            android:name=".ui.activity.CorePatchSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="behind" />
+
+        <activity
             android:name=".ui.activity.AppInfoSettingsActivity"
             android:exported="false"
             android:screenOrientation="behind" />

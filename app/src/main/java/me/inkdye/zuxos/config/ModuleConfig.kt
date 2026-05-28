@@ -17,7 +17,7 @@ import de.robv.android.xposed.XSharedPreferences
  */
 object ModuleConfig {
 
-    private const val PREFS_NAME = "xposed_module_config"
+    const val PREFS_NAME = "xposed_module_config"
     private const val MODULE_PACKAGE = "me.inkdye.zuxos"
     private const val TAG = "ModuleConfig"
 
@@ -28,6 +28,16 @@ object ModuleConfig {
     const val PACKAGE_INSTALLER_STYLE_HOOK = "packageInstallerStyle_hook"
     const val PACKAGE_INSTALLER_DISABLE_DELETE = "package_installer_disable_delete"
     const val HOOK_LOGGING_ENABLED = "hook_logging_enabled"
+    const val DISABLE_FLAG_SECURE = "disable_flag_secure"
+    const val CORE_PATCH_ENABLED = "core_patch_enabled"
+    const val CORE_PATCH_DOWNGRADE = "downgrade"
+    const val CORE_PATCH_AUTH_CREAK = "authcreak"
+    const val CORE_PATCH_DIGEST_CREAK = "digestCreak"
+    const val CORE_PATCH_EXACT_SIG_CHECK = "exactSigCheck"
+    const val CORE_PATCH_USE_PRE_SIG = "UsePreSig"
+    const val CORE_PATCH_BYPASS_BLOCK = "bypassBlock"
+    const val CORE_PATCH_SHARED_USER = "sharedUser"
+    const val CORE_PATCH_DISABLE_VERIFICATION_AGENT = "disableVerificationAgent"
 
     /**
      * 读取配置（Hook 进程调用）

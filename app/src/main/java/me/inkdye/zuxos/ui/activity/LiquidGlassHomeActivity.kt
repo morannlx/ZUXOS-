@@ -199,6 +199,10 @@ private data class FeatureGroup(
 )
 
 private val featureGroups = listOf(
+    FeatureGroup("▦", R.string.feature_group_framework, listOf(
+        R.string.feature_group_framework_item1,
+        R.string.feature_group_framework_item2
+    ), "android", Color(0xFF22C55E)),
     FeatureGroup("⚙", R.string.feature_group_system, listOf(
         R.string.feature_group_system_item1
     ), "com.android.settings", Color(0xFF94A3B8)),
@@ -893,7 +897,9 @@ private fun FeaturesPage(cs: AppColorScheme) {
             items(featureGroups.size) { index ->
                 val group = featureGroups[index]
                 FeatureGroupCard(context, group, cs) {
-                    if (group.targetPackage == "com.android.settings") {
+                    if (group.targetPackage == "android") {
+                        context.startActivity(Intent(context, SystemFrameworkSettingsActivity::class.java))
+                    } else if (group.targetPackage == "com.android.settings") {
                         context.startActivity(Intent(context, SystemSettingsActivity::class.java))
                     } else if (group.targetPackage == "com.android.packageinstaller") {
                         context.startActivity(Intent(context, PackageInstallerSettingsActivity::class.java))

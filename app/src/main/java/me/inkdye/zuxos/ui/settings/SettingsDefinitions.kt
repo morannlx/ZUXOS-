@@ -2,6 +2,7 @@ package me.inkdye.zuxos.ui.settings
 
 import androidx.annotation.StringRes
 import me.inkdye.zuxos.R
+import me.inkdye.zuxos.config.ModuleConfig
 
 object SettingKeys {
     const val APP_INFO_EXTEND_ENABLED = "app_info_extend_enabled"
@@ -18,6 +19,16 @@ object SettingKeys {
     const val PACKAGE_INSTALLER_STYLE_HOOK = "packageInstallerStyle_hook"
     const val PACKAGE_INSTALLER_DISABLE_DELETE = "package_installer_disable_delete"
     const val HOOK_LOGGING_ENABLED = "hook_logging_enabled"
+    const val DISABLE_FLAG_SECURE = ModuleConfig.DISABLE_FLAG_SECURE
+    const val CORE_PATCH_ENABLED = ModuleConfig.CORE_PATCH_ENABLED
+    const val CORE_PATCH_DOWNGRADE = ModuleConfig.CORE_PATCH_DOWNGRADE
+    const val CORE_PATCH_AUTH_CREAK = ModuleConfig.CORE_PATCH_AUTH_CREAK
+    const val CORE_PATCH_DIGEST_CREAK = ModuleConfig.CORE_PATCH_DIGEST_CREAK
+    const val CORE_PATCH_EXACT_SIG_CHECK = ModuleConfig.CORE_PATCH_EXACT_SIG_CHECK
+    const val CORE_PATCH_USE_PRE_SIG = ModuleConfig.CORE_PATCH_USE_PRE_SIG
+    const val CORE_PATCH_BYPASS_BLOCK = ModuleConfig.CORE_PATCH_BYPASS_BLOCK
+    const val CORE_PATCH_SHARED_USER = ModuleConfig.CORE_PATCH_SHARED_USER
+    const val CORE_PATCH_DISABLE_VERIFICATION_AGENT = ModuleConfig.CORE_PATCH_DISABLE_VERIFICATION_AGENT
 }
 
 data class BooleanSettingSpec(
@@ -80,6 +91,71 @@ val PackageInstallerFeatureSettings = listOf(
     ),
 )
 
+val DisableFlagSecureSetting = BooleanSettingSpec(
+    key = SettingKeys.DISABLE_FLAG_SECURE,
+    titleRes = R.string.disable_flag_secure_title,
+    descRes = R.string.disable_flag_secure_desc,
+    defaultValue = false,
+)
+
+val CorePatchMasterSetting = BooleanSettingSpec(
+    key = SettingKeys.CORE_PATCH_ENABLED,
+    titleRes = R.string.core_patch_master_title,
+    descRes = R.string.core_patch_master_desc,
+    defaultValue = false,
+)
+
+val CorePatchFeatureSettings = listOf(
+    BooleanSettingSpec(
+        SettingKeys.CORE_PATCH_DOWNGRADE,
+        R.string.core_patch_downgrade_title,
+        R.string.core_patch_downgrade_desc,
+        true,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.CORE_PATCH_AUTH_CREAK,
+        R.string.core_patch_auth_creak_title,
+        R.string.core_patch_auth_creak_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.CORE_PATCH_DIGEST_CREAK,
+        R.string.core_patch_digest_creak_title,
+        R.string.core_patch_digest_creak_desc,
+        true,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.CORE_PATCH_EXACT_SIG_CHECK,
+        R.string.core_patch_exact_sig_check_title,
+        R.string.core_patch_exact_sig_check_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.CORE_PATCH_USE_PRE_SIG,
+        R.string.core_patch_use_pre_sig_title,
+        R.string.core_patch_use_pre_sig_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.CORE_PATCH_BYPASS_BLOCK,
+        R.string.core_patch_bypass_block_title,
+        R.string.core_patch_bypass_block_desc,
+        true,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.CORE_PATCH_SHARED_USER,
+        R.string.core_patch_shared_user_title,
+        R.string.core_patch_shared_user_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.CORE_PATCH_DISABLE_VERIFICATION_AGENT,
+        R.string.core_patch_disable_verification_agent_title,
+        R.string.core_patch_disable_verification_agent_desc,
+        true,
+    ),
+)
+
 val AppInfoDetailSettings = listOf(
     BooleanSettingSpec(
         SettingKeys.APP_INFO_SHOW_PACKAGE_NAME,
@@ -120,4 +196,5 @@ val AppInfoDetailSettings = listOf(
 )
 
 val ModuleBooleanSettings =
-    listOf(HookLoggingSetting, AppInfoFeatureSetting) + AppInfoDetailSettings + PackageInstallerFeatureSettings
+    listOf(HookLoggingSetting, AppInfoFeatureSetting, DisableFlagSecureSetting, CorePatchMasterSetting) +
+        AppInfoDetailSettings + PackageInstallerFeatureSettings + CorePatchFeatureSettings

@@ -49,7 +49,8 @@
     <string name="feature_group_gamebox_item3">4D haptic</string>
     <string name="feature_group_gamebox_item4">Game assistant</string>
     <string name="feature_group_framework">Framework</string>
-    <string name="feature_group_framework_item1">Force screenshot allowed</string>
+    <string name="feature_group_framework_item1">Core Patch</string>
+    <string name="feature_group_framework_item2">Force screenshot allowed</string>
     <string name="feature_group_system">System Settings</string>
     <string name="feature_group_system_item1">App Info details</string>
     <string name="feature_group_package_installer">Package Installer</string>
@@ -116,6 +117,36 @@
     <string name="appearance_floating_nav_desc">Detached floating style for tablet navigation</string>
     <string name="appearance_liquid_glass">Liquid Glass Effect</string>
     <string name="appearance_liquid_glass_desc">Blur and glassmorphism on navigation bars</string>
+
+    <!-- App Info -->
+    <string name="system_framework_function">System Framework</string>
+    <string name="system_framework_function_desc">Core Patch and screenshot restrictions</string>
+    <string name="system_framework_settings">System Framework</string>
+    <string name="system_framework_settings_desc">Configure system_server framework hooks</string>
+    <string name="core_patch_settings">Core Patch</string>
+    <string name="core_patch_settings_desc">Configure package signature and install checks</string>
+    <string name="core_patch_function">Core Patch</string>
+    <string name="core_patch_function_desc">Android 9-16 package manager bypasses</string>
+    <string name="disable_flag_secure_title">Force Allow Screenshots</string>
+    <string name="disable_flag_secure_desc">Return secure windows as non-secure so screenshots and screen recording are allowed</string>
+    <string name="core_patch_master_title">Enable Core Patch</string>
+    <string name="core_patch_master_desc">Install Core Patch hooks in system_server; reboot or restart Android system after changing this</string>
+    <string name="core_patch_downgrade_title">Allow Downgrade Install</string>
+    <string name="core_patch_downgrade_desc">Bypass package downgrade checks during installation</string>
+    <string name="core_patch_auth_creak_title">Disable APK Signature Verification</string>
+    <string name="core_patch_auth_creak_desc">Bypass APK digest and signature verification paths</string>
+    <string name="core_patch_digest_creak_title">Bypass Signature Capability Checks</string>
+    <string name="core_patch_digest_creak_desc">Relax package signature capability and keyset checks</string>
+    <string name="core_patch_exact_sig_check_title">Bypass Exact Signature Match</string>
+    <string name="core_patch_exact_sig_check_desc">Force exact package signature comparison to pass</string>
+    <string name="core_patch_use_pre_sig_title">Use Previous Signature</string>
+    <string name="core_patch_use_pre_sig_desc">Allow previous signatures when matching package permissions</string>
+    <string name="core_patch_bypass_block_title">Bypass Vendor Install Blocklist</string>
+    <string name="core_patch_bypass_block_desc">Bypass vendor app install and start block checks where present</string>
+    <string name="core_patch_shared_user_title">Bypass sharedUserId Signature Check</string>
+    <string name="core_patch_shared_user_desc">Relax sharedUserId signature compatibility checks</string>
+    <string name="core_patch_disable_verification_agent_title">Disable Verification Agent</string>
+    <string name="core_patch_disable_verification_agent_desc">Disable package verifier agent checks during installation</string>
 
     <!-- App Info -->
     <string name="app_info_function">App Info</string>

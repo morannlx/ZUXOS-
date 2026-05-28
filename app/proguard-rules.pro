@@ -11,6 +11,8 @@
 }
 
 -keep class me.inkdye.zuxos.application.DefaultApplication { *; }
+-keep class me.inkdye.zuxos.corepatch.** { *; }
+-keep class me.inkdye.zuxos.hook.systemframework.** { *; }
 -keep class * extends android.app.Application {
     <init>();
     void attachBaseContext(android.content.Context);

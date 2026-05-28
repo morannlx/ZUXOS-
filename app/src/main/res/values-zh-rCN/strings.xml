@@ -49,7 +49,8 @@
     <string name="feature_group_gamebox_item3">4D 震感</string>
     <string name="feature_group_gamebox_item4">游戏助手</string>
     <string name="feature_group_framework">系统框架</string>
-    <string name="feature_group_framework_item1">强制允许截屏</string>
+    <string name="feature_group_framework_item1">核心破解</string>
+    <string name="feature_group_framework_item2">强制允许截屏</string>
     <string name="feature_group_system">系统设置</string>
     <string name="feature_group_system_item1">应用信息详情</string>
     <string name="feature_group_package_installer">软件包安装程序</string>
@@ -103,6 +104,36 @@
     <string name="about_module">模块</string>
     <string name="about_version_code">版本号</string>
     <string name="about_config_items">配置项</string>
+
+    <!-- 应用信息 -->
+    <string name="system_framework_function">系统框架</string>
+    <string name="system_framework_function_desc">核心破解与安全窗口截屏限制</string>
+    <string name="system_framework_settings">系统框架</string>
+    <string name="system_framework_settings_desc">配置 system_server 框架 Hook</string>
+    <string name="core_patch_settings">核心破解</string>
+    <string name="core_patch_settings_desc">配置软件包签名与安装校验</string>
+    <string name="core_patch_function">核心破解</string>
+    <string name="core_patch_function_desc">Android 9-16 软件包管理绕过</string>
+    <string name="disable_flag_secure_title">强制允许截屏</string>
+    <string name="disable_flag_secure_desc">将安全窗口判定为非安全窗口，允许截屏和录屏</string>
+    <string name="core_patch_master_title">开启核心破解</string>
+    <string name="core_patch_master_desc">在 system_server 中安装核心破解 Hook，修改后建议重启或重启 Android 系统</string>
+    <string name="core_patch_downgrade_title">允许降级安装</string>
+    <string name="core_patch_downgrade_desc">绕过安装时的软件包降级校验</string>
+    <string name="core_patch_auth_creak_title">禁用 APK 签名验证</string>
+    <string name="core_patch_auth_creak_desc">绕过 APK 摘要与签名验证流程</string>
+    <string name="core_patch_digest_creak_title">绕过签名能力检查</string>
+    <string name="core_patch_digest_creak_desc">放宽软件包签名能力和 KeySet 检查</string>
+    <string name="core_patch_exact_sig_check_title">绕过精确签名匹配</string>
+    <string name="core_patch_exact_sig_check_desc">强制通过软件包精确签名比对</string>
+    <string name="core_patch_use_pre_sig_title">使用历史签名</string>
+    <string name="core_patch_use_pre_sig_desc">匹配软件包权限时允许使用历史签名</string>
+    <string name="core_patch_bypass_block_title">绕过厂商安装黑名单</string>
+    <string name="core_patch_bypass_block_desc">绕过存在时的厂商应用安装与启动拦截</string>
+    <string name="core_patch_shared_user_title">绕过 sharedUserId 签名检查</string>
+    <string name="core_patch_shared_user_desc">放宽 sharedUserId 签名兼容性检查</string>
+    <string name="core_patch_disable_verification_agent_title">禁用安装包验证代理</string>
+    <string name="core_patch_disable_verification_agent_desc">安装应用时禁用软件包验证代理检查</string>
 
     <!-- 应用信息 -->
     <string name="app_info_function">应用信息</string>
