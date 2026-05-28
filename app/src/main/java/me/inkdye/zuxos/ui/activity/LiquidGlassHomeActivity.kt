@@ -7,13 +7,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -24,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
@@ -37,9 +43,6 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
@@ -51,13 +54,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
@@ -69,6 +80,10 @@ import com.kyant.backdrop.drawBackdrop
 import com.kyant.backdrop.effects.blur
 import com.kyant.backdrop.effects.lens
 import com.kyant.backdrop.effects.vibrancy
+import com.kyant.backdrop.highlight.Highlight
+import com.kyant.backdrop.highlight.HighlightStyle
+import com.kyant.backdrop.shadow.InnerShadow
+import com.kyant.backdrop.shadow.Shadow
 import me.inkdye.zuxos.BuildConfig
 import me.inkdye.zuxos.R
 import me.inkdye.zuxos.ui.settings.rememberAppSettings
@@ -96,7 +111,79 @@ private val AccentBlue = Color(0xFF3B82F6)
 private val AccentRed = Color(0xFFEF4444)
 
 private fun glassNavTint(isDark: Boolean) =
-    if (isDark) Color.Black.copy(alpha = 0.3f) else Color.White.copy(alpha = 0.5f)
+    if (isDark) Color.Black.copy(alpha = 0.38f) else Color.White.copy(alpha = 0.58f)
+
+private fun Modifier.liquidGlassNavSurface(
+    backdrop: Backdrop,
+    shape: Shape,
+    liquidGlass: Boolean,
+    cs: AppColorScheme,
+    navTint: Color,
+    pressedProgress: Float = 0f,
+    blurRadius: Dp = 10.dp,
+    lensRadius: Dp = 24.dp,
+    lensRefraction: Dp = 44.dp,
+): Modifier {
+    val scale = 1f + pressedProgress * 0.025f
+    return if (liquidGlass) {
+        this.graphicsLayer {
+            scaleX = scale
+            scaleY = scale
+        }.drawBackdrop(
+            backdrop = backdrop,
+            shape = { shape },
+            effects = {
+                vibrancy()
+                blur(blurRadius.toPx())
+                lens(lensRadius.toPx(), lensRefraction.toPx(), depthEffect = true)
+            },
+            highlight = {
+                Highlight(
+                    width = 1.2.dp,
+                    blurRadius = 18.dp,
+                    alpha = if (cs.isDark) 0.48f else 0.72f,
+                    style = HighlightStyle.Default(
+                        color = Color.White.copy(alpha = if (cs.isDark) 0.44f else 0.62f),
+                        angle = 38f,
+                        falloff = 1.65f
+                    )
+                )
+            },
+            shadow = {
+                Shadow(
+                    radius = 28.dp,
+                    offset = DpOffset(0.dp, 9.dp),
+                    color = Color.Black.copy(alpha = if (cs.isDark) 0.34f else 0.16f),
+                    alpha = 1f
+                )
+            },
+            innerShadow = {
+                InnerShadow(
+                    radius = 10.dp,
+                    offset = DpOffset(0.dp, 1.dp),
+                    color = Color.White.copy(alpha = if (cs.isDark) 0.08f else 0.22f),
+                    alpha = 1f
+                )
+            },
+            onDrawSurface = {
+                drawRect(navTint)
+                drawRect(Color.White.copy(alpha = if (cs.isDark) 0.04f else 0.11f))
+            }
+        )
+    } else {
+        val fallbackColor = if (cs.isDark) Color(0xFF20242C) else Color.White
+        this.shadow(
+            elevation = if (cs.isDark) 14.dp else 18.dp,
+            shape = shape,
+            clip = false,
+            ambientColor = Color.Black.copy(alpha = 0.16f),
+            spotColor = Color.Black.copy(alpha = 0.16f)
+        )
+            .clip(shape)
+            .background(fallbackColor, shape)
+            .border(1.dp, cs.glassBorder, shape)
+    }
+}
 
 /* ── Feature Groups ─────────────────────────────── */
 private data class FeatureGroup(
@@ -179,7 +266,8 @@ private fun LiquidGlassHome() {
                 Row(
                     Modifier
                         .fillMaxSize()
-                        .safeContentPadding()
+                        .safeContentPadding(),
+                    verticalAlignment = if (floatingNav) Alignment.CenterVertically else Alignment.Top
                 ) {
                     GlassNavigationRail(
                         selectedTab = selectedTab,
@@ -205,7 +293,8 @@ private fun LiquidGlassHome() {
                 Row(
                     Modifier
                         .fillMaxSize()
-                        .safeContentPadding()
+                        .safeContentPadding(),
+                    verticalAlignment = if (floatingNav) Alignment.CenterVertically else Alignment.Top
                 ) {
                     GlassNavigationRail(
                         selectedTab = selectedTab,
@@ -255,7 +344,7 @@ private fun GlassNavigationBar(
     val cornerRadius = if (compact) 20.dp else 24.dp
     val floatPadH = if (compact) 8.dp else 12.dp
     val floatPadV = if (compact) 4.dp else 8.dp
-    val iconSize = if (compact) 16.sp else 20.sp
+    val iconSize = if (compact) 18.sp else 21.sp
     val labelSize = if (compact) 10.sp else 11.sp
 
     val navShape = RoundedCornerShape(
@@ -265,47 +354,112 @@ private fun GlassNavigationBar(
     )
     val baseModifier = Modifier
         .fillMaxWidth()
-        .then(if (compact) Modifier.height(64.dp) else Modifier)
+        .height(if (compact) 62.dp else 72.dp)
         .then(if (floatingNav) Modifier.padding(horizontal = floatPadH, vertical = floatPadV) else Modifier)
 
-    val navModifier = if (liquidGlass) {
-        baseModifier.drawBackdrop(
+    Box(
+        baseModifier.liquidGlassNavSurface(
             backdrop = backdrop,
-            shape = { navShape },
-            effects = {
-                vibrancy()
-                blur(4f.dp.toPx())
-                lens(16f.dp.toPx(), 32f.dp.toPx())
-            },
-            onDrawSurface = { drawRect(navTint) }
+            shape = navShape,
+            liquidGlass = liquidGlass,
+            cs = cs,
+            navTint = navTint
         )
-    } else {
-        baseModifier
-            .clip(navShape)
-            .background(navTint, navShape)
-    }
-
-    Box(navModifier) {
-        NavigationBar(containerColor = Color.Transparent, contentColor = cs.textPrimary) {
+    ) {
+        Row(
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp, vertical = 6.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             NavPage.entries.forEachIndexed { index, page ->
-                NavigationBarItem(
+                LiquidNavItem(
+                    page = page,
                     selected = selectedTab == index,
                     onClick = { onTabSelected(index) },
-                    icon = { Text(page.icon, fontSize = iconSize) },
-                    label = {
-                        Text(
-                            stringResource(page.labelRes),
-                            fontSize = labelSize,
-                            fontWeight = if (selectedTab == index) FontWeight.SemiBold else FontWeight.Normal
-                        )
-                    },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = cs.accentGreen,
-                        selectedTextColor = cs.accentGreen,
-                        unselectedIconColor = cs.textDim,
-                        unselectedTextColor = cs.textDim,
-                        indicatorColor = cs.accentGreen.copy(alpha = 0.12f),
-                    ),
+                    cs = cs,
+                    iconSize = iconSize,
+                    labelSize = labelSize,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun LiquidNavItem(
+    page: NavPage,
+    selected: Boolean,
+    onClick: () -> Unit,
+    cs: AppColorScheme,
+    iconSize: TextUnit,
+    modifier: Modifier = Modifier,
+    labelSize: TextUnit? = null,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val pressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = when {
+            pressed -> 0.92f
+            selected -> 1.05f
+            else -> 1f
+        },
+        animationSpec = spring(stiffness = 420f, dampingRatio = 0.72f),
+        label = "navItemScale"
+    )
+    val itemShape = RoundedCornerShape(if (labelSize == null) 22.dp else 18.dp)
+    val contentColor = if (selected) cs.accentGreen else cs.textDim
+    val selectedBrush = Brush.verticalGradient(
+        listOf(
+            Color.White.copy(alpha = if (cs.isDark) 0.13f else 0.48f),
+            cs.accentGreen.copy(alpha = if (cs.isDark) 0.18f else 0.14f),
+        )
+    )
+
+    Box(
+        modifier
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
+            .clip(itemShape)
+            .then(if (selected) Modifier.background(selectedBrush, itemShape) else Modifier)
+            .then(if (selected) Modifier.border(1.dp, cs.glassBorder, itemShape) else Modifier)
+            .clickable(
+                indication = null,
+                interactionSource = interactionSource,
+                onClick = onClick
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        if (labelSize == null) {
+            Text(
+                text = page.icon,
+                fontSize = iconSize,
+                color = contentColor,
+                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
+            )
+        } else {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = page.icon,
+                    fontSize = iconSize,
+                    color = contentColor,
+                    fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = stringResource(page.labelRes),
+                    fontSize = labelSize,
+                    color = contentColor,
+                    fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
                 )
             }
         }
@@ -323,74 +477,88 @@ private fun FloatingNavPill(
     navTint: Color,
     onTabSelected: (Int) -> Unit
 ) {
-    val pillShape = RoundedCornerShape(28.dp)
-    val pillHeight = 52.dp
-    val iconSize = 22.sp
-
-    val pillModifier = if (floatingNav) {
-        val base = Modifier
-        if (liquidGlass) {
-            base.drawBackdrop(
-                backdrop = backdrop,
-                shape = { pillShape },
-                effects = {
-                    vibrancy()
-                    blur(4f.dp.toPx())
-                    lens(16f.dp.toPx(), 32f.dp.toPx())
-                },
-                onDrawSurface = { drawRect(navTint) }
-            )
-        } else {
-            base.clip(pillShape).background(navTint, pillShape)
-        }
+    val pillShape = if (floatingNav) {
+        RoundedCornerShape(30.dp)
     } else {
-        val base = Modifier
-        if (liquidGlass) {
-            base.drawBackdrop(
-                backdrop = backdrop,
-                shape = { pillShape },
-                effects = {
-                    vibrancy()
-                    blur(4f.dp.toPx())
-                    lens(16f.dp.toPx(), 32f.dp.toPx())
-                },
-                onDrawSurface = { drawRect(navTint) }
-            )
-        } else {
-            base.clip(pillShape).background(navTint, pillShape)
-        }
+        RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+    }
+    val pillHeight = if (floatingNav) 58.dp else 72.dp
+    val pillWidth = if (floatingNav) 188.dp else 232.dp
+    val iconSize = 22.sp
+    val surfaceModifier = if (floatingNav) {
+        Modifier.width(pillWidth)
+    } else {
+        Modifier.fillMaxWidth()
     }
 
-    Box(pillModifier.height(pillHeight).padding(horizontal = 8.dp)) {
+    BoxWithConstraints(
+        surfaceModifier
+            .height(pillHeight)
+            .liquidGlassNavSurface(
+                backdrop = backdrop,
+                shape = pillShape,
+                liquidGlass = liquidGlass,
+                cs = cs,
+                navTint = navTint,
+            )
+            .padding(5.dp),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        val contentPadding = 2.dp
+        val tabCount = NavPage.entries.size
+        val tabWidth = (maxWidth - contentPadding * 2f) / tabCount.toFloat()
+        val isLtr = LocalLayoutDirection.current == LayoutDirection.Ltr
+        val indicatorIndex = if (isLtr) selectedTab else tabCount - selectedTab - 1
+        val indicatorOffset by animateDpAsState(
+            targetValue = contentPadding + tabWidth * indicatorIndex.toFloat(),
+            animationSpec = spring(stiffness = 430f, dampingRatio = 0.78f),
+            label = "pillIndicatorOffset"
+        )
+        val indicatorShape = RoundedCornerShape(24.dp)
+
+        Box(
+            Modifier
+                .offset(x = indicatorOffset)
+                .width(tabWidth)
+                .fillMaxHeight()
+                .padding(3.dp)
+                .shadow(
+                    elevation = 8.dp,
+                    shape = indicatorShape,
+                    clip = false,
+                    ambientColor = cs.accentGreen.copy(alpha = 0.18f),
+                    spotColor = cs.accentGreen.copy(alpha = 0.18f)
+                )
+                .clip(indicatorShape)
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color.White.copy(alpha = if (cs.isDark) 0.15f else 0.56f),
+                            cs.accentGreen.copy(alpha = if (cs.isDark) 0.26f else 0.18f),
+                        )
+                    ),
+                    indicatorShape
+                )
+                .border(1.dp, Color.White.copy(alpha = if (cs.isDark) 0.1f else 0.42f), indicatorShape)
+        )
+
         Row(
             Modifier
-                .fillMaxHeight()
-                .padding(horizontal = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                .fillMaxSize()
+                .padding(horizontal = contentPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
             NavPage.entries.forEachIndexed { index, page ->
-                val selected = selectedTab == index
-                val itemBg = if (selected) cs.accentGreen.copy(alpha = 0.12f) else Color.Transparent
-                val itemShape = RoundedCornerShape(20.dp)
-
-                Box(
-                    Modifier
-                        .size(44.dp)
-                        .clip(itemShape)
-                        .background(itemBg, itemShape)
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        ) { onTabSelected(index) },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = page.icon,
-                        fontSize = iconSize,
-                        color = if (selected) cs.accentGreen else cs.textDim
-                    )
-                }
+                LiquidNavItem(
+                    page = page,
+                    selected = selectedTab == index,
+                    onClick = { onTabSelected(index) },
+                    cs = cs,
+                    iconSize = iconSize,
+                    modifier = Modifier
+                        .width(tabWidth)
+                        .fillMaxHeight()
+                )
             }
         }
     }
@@ -422,22 +590,16 @@ private fun GlassNavigationRail(
         Modifier.fillMaxHeight()
     }
 
-    val railModifier = if (liquidGlass) {
-        baseModifier.drawBackdrop(
-            backdrop = backdrop,
-            shape = { railShape },
-            effects = {
-                vibrancy()
-                blur(4f.dp.toPx())
-                lens(16f.dp.toPx(), 32f.dp.toPx())
-            },
-            onDrawSurface = { drawRect(navTint) }
-        )
-    } else {
-        baseModifier
-            .clip(railShape)
-            .background(navTint, railShape)
-    }
+    val railModifier = baseModifier.liquidGlassNavSurface(
+        backdrop = backdrop,
+        shape = railShape,
+        liquidGlass = liquidGlass,
+        cs = cs,
+        navTint = navTint,
+        blurRadius = if (floatingNav) 10.dp else 8.dp,
+        lensRadius = if (floatingNav) 24.dp else 18.dp,
+        lensRefraction = if (floatingNav) 46.dp else 36.dp,
+    )
 
     val iconSize = if (floatingNav) 22.sp else if (isCompactTablet) 18.sp else 22.sp
     val labelSize = if (isCompactTablet) 10.sp else 11.sp
@@ -469,27 +631,14 @@ private fun GlassNavigationRail(
                 }
 
                 NavPage.entries.forEachIndexed { index, page ->
-                    val selected = selectedTab == index
-                    val itemBg = if (selected) cs.accentGreen.copy(alpha = 0.15f) else Color.Transparent
-                    val itemShape = RoundedCornerShape(18.dp)
-
-                    Box(
-                        Modifier
-                            .size(46.dp)
-                            .clip(itemShape)
-                            .background(itemBg, itemShape)
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ) { onTabSelected(index) },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = page.icon,
-                            fontSize = iconSize,
-                            color = if (selected) cs.accentGreen else cs.textDim
-                        )
-                    }
+                    LiquidNavItem(
+                        page = page,
+                        selected = selectedTab == index,
+                        onClick = { onTabSelected(index) },
+                        cs = cs,
+                        iconSize = iconSize,
+                        modifier = Modifier.size(48.dp)
+                    )
                 }
             }
         } else {
@@ -826,8 +975,17 @@ private fun SettingsPage(cs: AppColorScheme) {
         items(settingsItems) { (icon, titleRes, descRes) ->
             SettingsCard(icon, titleRes, descRes, cs) {
                 when (titleRes) {
+                    R.string.settings_general -> {
+                        context.startActivity(Intent(context, GeneralSettingsActivity::class.java))
+                    }
                     R.string.settings_appearance -> {
                         context.startActivity(Intent(context, AppearanceSettingsActivity::class.java))
+                    }
+                    R.string.settings_export -> {
+                        context.startActivity(Intent(context, ExportImportSettingsActivity::class.java))
+                    }
+                    R.string.settings_about -> {
+                        context.startActivity(Intent(context, AboutSettingsActivity::class.java))
                     }
                 }
             }

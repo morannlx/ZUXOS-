@@ -64,14 +64,35 @@
     <string name="settings_export_desc">备份和恢复配置</string>
     <string name="settings_about">关于</string>
     <string name="settings_about_desc">版本信息和致谢</string>
+    <string name="settings_reset_defaults">恢复默认设置</string>
+    <string name="settings_reset_defaults_desc">将主题、导航和 Hook 设置恢复为默认值</string>
+    <string name="settings_reset_done">设置已恢复默认</string>
 
     <!-- 系统设置 -->
     <string name="system_settings_title">系统设置</string>
     <string name="system_settings_desc">配置系统级 Hook 功能</string>
+    <string name="general_settings_title">通用</string>
+    <string name="general_settings_desc">模块偏好设置和维护操作</string>
+    <string name="export_settings_title">导出 / 导入</string>
+    <string name="export_settings_desc">备份和恢复模块配置</string>
+    <string name="export_settings_export">导出配置</string>
+    <string name="export_settings_export_desc">将当前设置保存为 JSON 文件</string>
+    <string name="export_settings_import">导入配置</string>
+    <string name="export_settings_import_desc">从 JSON 备份文件恢复设置</string>
+    <string name="export_settings_success">配置已保存</string>
+    <string name="import_settings_success">配置已导入</string>
+    <string name="settings_operation_failed">操作失败：%1$s</string>
+    <string name="about_settings_title">关于</string>
+    <string name="about_settings_desc">版本信息和运行时详情</string>
+    <string name="about_module">模块</string>
+    <string name="about_version_code">版本号</string>
+    <string name="about_config_items">配置项</string>
 
     <!-- 应用信息 -->
     <string name="app_info_function">应用信息</string>
     <string name="app_info_function_desc">在应用详情页显示扩展信息</string>
+    <string name="app_info_feature_enabled">启用应用信息扩展</string>
+    <string name="app_info_feature_enabled_desc">在 Android 设置的应用详情页注入已配置的信息</string>
     <string name="app_info_settings_title">应用信息设置</string>
     <string name="app_info_settings_desc">配置在应用详情页中显示的内容</string>
     <string name="app_info_show_package_name">显示包名</string>

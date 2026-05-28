@@ -70,4 +70,19 @@ object ModuleConfig {
             defaultValue
         }
     }
+
+    fun contains(context: Context, key: String): Boolean {
+        return try {
+            val moduleContext = context.createPackageContext(
+                MODULE_PACKAGE, Context.CONTEXT_IGNORE_SECURITY
+            )
+            val prefs = moduleContext.getSharedPreferences(
+                PREFS_NAME, Context.MODE_WORLD_READABLE
+            )
+            prefs.contains(key)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to check config key: $key", e)
+            false
+        }
+    }
 }

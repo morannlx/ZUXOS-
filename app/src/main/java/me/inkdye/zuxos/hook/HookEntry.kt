@@ -4,6 +4,7 @@ import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import me.inkdye.zuxos.BuildConfig
+import me.inkdye.zuxos.config.ModuleConfig
 import me.inkdye.zuxos.hook.settings.AppInfoExtend
 
 @InjectYukiHookWithXposed
@@ -29,7 +30,7 @@ class HookEntry : IYukiHookXposedInit {
         }
 
         Hooks.forEach { hook ->
-            if (prefs.getBoolean(hook.prefKey, hook.defaultEnabled)) {
+            if (ModuleConfig.isEnabled(hook.prefKey, hook.defaultEnabled)) {
                 with(hook) { onHook() }
             }
         }

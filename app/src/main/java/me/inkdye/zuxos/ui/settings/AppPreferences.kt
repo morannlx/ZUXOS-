@@ -8,9 +8,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import me.inkdye.zuxos.ui.theme.ThemeMode
 
 /**
@@ -48,7 +48,7 @@ object AppPreferences {
 
     // ── Liquid Glass Effect ─────────────────────────
     fun isLiquidGlassEnabled(context: Context): Boolean =
-        prefs(context).getBoolean(KEY_LIQUID_GLASS, false)
+        prefs(context).getBoolean(KEY_LIQUID_GLASS, true)
 
     fun setLiquidGlassEnabled(context: Context, enabled: Boolean) {
         prefs(context).edit().putBoolean(KEY_LIQUID_GLASS, enabled).apply()

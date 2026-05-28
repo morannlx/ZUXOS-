@@ -13,10 +13,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -46,13 +44,13 @@ class SystemSettingsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            SystemSettingsPage()
+            SystemSettingsPage(onBack = { finish() })
         }
     }
 }
 
 @Composable
-private fun SystemSettingsPage() {
+private fun SystemSettingsPage(onBack: () -> Unit) {
     val settings = rememberAppSettings()
     val cs = colorSchemeFor(resolveIsDark(settings.themeMode.value))
     val context = LocalContext.current
@@ -79,9 +77,10 @@ private fun SystemSettingsPage() {
         ) {
             item(span = { GridItemSpan(columns) }) {
                 PageHeader(
-                    stringResource(R.string.system_settings_title),
-                    stringResource(R.string.system_settings_desc),
-                    cs,
+                    title = stringResource(R.string.system_settings_title),
+                    subtitle = stringResource(R.string.system_settings_desc),
+                    colorScheme = cs,
+                    onBack = onBack,
                 )
             }
             item {

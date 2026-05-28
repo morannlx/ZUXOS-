@@ -18,9 +18,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import me.inkdye.zuxos.R
 import me.inkdye.zuxos.ui.theme.AppColorScheme
 import me.inkdye.zuxos.ui.theme.LightColorScheme
 import me.inkdye.zuxos.ui.theme.ThemeMode
@@ -35,14 +37,14 @@ fun ThemeModeSelector(
     GlassCard(colorScheme = colorScheme, modifier = modifier) {
         Column(Modifier.padding(16.dp)) {
             Text(
-                "Theme Mode",
+                stringResource(R.string.appearance_theme_mode),
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 15.sp,
                 color = colorScheme.textPrimary,
             )
             Spacer(Modifier.height(2.dp))
             Text(
-                "Choose light, dark, or follow system",
+                stringResource(R.string.appearance_theme_mode_desc),
                 fontSize = 12.sp,
                 color = colorScheme.textDim,
             )
@@ -73,9 +75,9 @@ fun ThemeModeSelector(
                     ) {
                         Text(
                             text = when (mode) {
-                                ThemeMode.LIGHT -> "Light"
-                                ThemeMode.DARK -> "Dark"
-                                ThemeMode.SYSTEM -> "System"
+                                ThemeMode.LIGHT -> stringResource(R.string.appearance_theme_light)
+                                ThemeMode.DARK -> stringResource(R.string.appearance_theme_dark)
+                                ThemeMode.SYSTEM -> stringResource(R.string.appearance_theme_system)
                             },
                             fontSize = 13.sp,
                             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,

@@ -1,179 +1,286 @@
-# ZUXOS+ 开发指南
+# ZUXOS+ Development Guide
 
-## 项目概览
+This document is the maintainer-facing guide for ZUXOS+. It is written for
+contributors, reviewers, and AI coding agents that need to understand the
+project quickly before making changes.
 
-ZUXOS+ 是一个基于 Xposed 框架的 Android 系统增强模块，使用 Kotlin + Jetpack Compose 构建 UI，集成 Liquid Glass 液态玻璃视觉效果。
+## Project Overview
 
-## 目录结构
+ZUXOS+ is an Android Xposed module for ZUXOS-related system enhancements. The
+current module provides a Compose-based settings application and a YukiHookAPI
+hook that extends Android Settings app-info pages with configurable metadata.
 
-```
-app/src/main/java/me/inkdye/zuxos/
-├── application/          # Application 入口
-│   └── DefaultApplication.kt
-├── config/               # 模块配置（跨进程 SharedPreferences）
-│   └── ModuleConfig.kt
-├── hook/                 # Xposed Hook 逻辑
-│   ├── HookEntry.kt      # Hook 入口
-│   ├── Hook.kt           # 单个 Hook 实现
-│   ├── Hooks.kt          # Hook 注册表
-│   └── settings/         # 系统设置相关 Hook
-│       └── AppInfoExtend.kt
-├── ui/                   # UI 层
-│   ├── activity/         # Activity 页面
-│   │   ├── MainActivity.kt
-│   │   ├── LiquidGlassHomeActivity.kt   # 主页面（首页/功能/设置）
-│   │   ├── SystemSettingsActivity.kt    # 系统设置页
-│   │   └── AppInfoSettingsActivity.kt   # 应用信息设置页
-│   ├── components/       # 可复用 Compose 组件
-│   │   ├── AppBackground.kt     # 统一背景
-│   │   ├── GlassCard.kt         # 毛玻璃卡片
-│   │   ├── GlassSwitch.kt       # 开关组件
-│   │   ├── InfoRow.kt           # 信息行
-│   │   ├── PageHeader.kt        # 页面标题
-│   │   └── ThemeModeSelector.kt # 主题选择器
-│   ├── settings/         # 应用偏好设置
-│   │   └── AppPreferences.kt    # 持久化存储管理
-│   └── theme/            # 主题系统
-│       ├── AppColorScheme.kt    # 颜色方案（Light/Dark）
-│       ├── ThemeMode.kt         # 主题模式枚举
-│       └── ThemeUtils.kt        # 主题工具函数
-```
+The app UI is a Jetpack Compose experience with responsive phone/tablet
+navigation, theme preferences, import/export support, and AndroidLiquidGlass
+visual effects for selected navigation surfaces.
 
-## 核心架构
+## Tech Stack
 
-### 1. 主题系统
+- Kotlin, Java 17 target
+- Android Gradle Plugin 8.10.1
+- Gradle Wrapper 8.11.1
+- Jetpack Compose with Material 3
+- YukiHookAPI for Xposed integration
+- KSP for hook code generation
+- BetterAndroid and Hikage helper libraries
+- AndroidLiquidGlass Backdrop (`io.github.kyant0:backdrop`) for Liquid Glass
+- SharedPreferences and XSharedPreferences for module configuration
 
-```
-ThemeMode (enum)
-  ├── LIGHT    → 强制浅色
-  ├── DARK     → 强制深色
-  └── SYSTEM   → 跟随系统
-       ↓
-resolveIsDark(mode) → Boolean
-       ↓
-colorSchemeFor(isDark) → AppColorScheme
-       ↓
-所有组件通过 colorScheme 参数获取颜色
-```
+Key SDK values are defined in `gradle.properties`:
 
-**使用方式：**
-```kotlin
-@Composable
-fun MyPage() {
-    val settings = rememberAppSettings()
-    val cs = colorSchemeFor(resolveIsDark(settings.themeMode.value))
+- `compileSdk=36`
+- `targetSdk=36`
+- `minSdk=27`
+- `applicationId=me.inkdye.zuxos`
+- `versionName=1.0.0`
+- `versionCode=1`
 
-    Text("Hello", color = cs.textPrimary)
-}
-```
+## Directory Structure
 
-### 2. 设置持久化
-
-使用 `AppPreferences` 管理用户偏好，底层为 `SharedPreferences`：
-
-```kotlin
-// 读取
-AppPreferences.isFloatingNavEnabled(context)
-
-// 写入
-AppPreferences.setFloatingNavEnabled(context, true)
+```text
+.
+├── app/
+│   ├── build.gradle.kts
+│   └── src/main/
+│       ├── AndroidManifest.xml
+│       ├── java/me/inkdye/zuxos/
+│       │   ├── application/
+│       │   │   └── DefaultApplication.kt
+│       │   ├── config/
+│       │   │   └── ModuleConfig.kt
+│       │   ├── hook/
+│       │   │   ├── Hook.kt
+│       │   │   ├── HookEntry.kt
+│       │   │   ├── Hooks.kt
+│       │   │   └── settings/
+│       │   │       └── AppInfoExtend.kt
+│       │   └── ui/
+│       │       ├── activity/
+│       │       ├── components/
+│       │       ├── settings/
+│       │       └── theme/
+│       └── res/
+│           ├── values/
+│           ├── values-zh/
+│           ├── values-zh-rCN/
+│           └── xml/
+├── gradle/
+│   └── libs.versions.toml
+├── build.gradle.kts
+├── settings.gradle.kts
+└── gradle.properties
 ```
 
-在 Compose 中通过 `AppSettingsState` 响应式读写：
+Important packages:
 
-```kotlin
-val settings = rememberAppSettings()
+- `application`: app startup, dynamic colors, and default config initialization.
+- `config`: cross-process module configuration API.
+- `hook`: Xposed entry point, hook registry, and hook implementations.
+- `ui/activity`: Compose-backed screens and settings pages.
+- `ui/components`: reusable Compose UI components.
+- `ui/settings`: setting definitions, repository, state wrappers, and app prefs.
+- `ui/theme`: light/dark color schemes and theme mode helpers.
 
-// 读取（可观察）
-settings.floatingNavEnabled.value
+## Environment Requirements
 
-// 写入（自动持久化 + 触发重组）
-settings.updateFloatingNav(true)
-```
+- Android Studio compatible with AGP 8.10.x.
+- JDK 17.
+- Android SDK Platform 36 installed.
+- A device or emulator running Android 8.1+ for the app shell.
+- LSPosed or another compatible Xposed environment for hook testing.
+- Network access for Gradle dependency resolution from Google Maven, Maven
+  Central, Xposed Maven, and JitPack.
 
-### 3. Liquid Glass 效果
+## Install And Start
 
-依赖 [AndroidLiquidGlass](https://github.com/Kyant0/AndroidLiquidGlass) 库：
+1. Clone the repository.
 
-```kotlin
-val backdrop = rememberLayerBackdrop {
-    drawRect(backgroundBrush)
-    drawContent()
-}
+   ```bash
+   git clone <repo-url>
+   cd ZUXOS+
+   ```
 
-// 绑定 backdrop 到内容区域
-Modifier.layerBackdrop(backdrop)
+2. Open the project in Android Studio or build from the terminal.
 
-// 在目标组件上绘制效果
-Modifier.drawBackdrop(
-    backdrop = backdrop,
-    shape = { RoundedCornerShape(24.dp) },
-    effects = {
-        vibrancy()
-        blur(8f.dp.toPx())
-        lens(12f.dp.toPx(), 20f.dp.toPx())
-    },
-    onDrawSurface = {
-        drawRect(glassColor.copy(alpha = 0.30f))
-    }
-)
-```
+   ```bash
+   ./gradlew :app:assembleDebug
+   ```
 
-效果开关通过 `settings.liquidGlassEnabled.value` 控制，关闭时降级为半透明渐变背景。
+3. Install the debug APK.
 
-## 开发规范
+   ```bash
+   adb install -r app/build/outputs/apk/debug/app-debug.apk
+   ```
 
-### 颜色使用
+4. For Xposed behavior, enable the module in LSPosed, select the target scope
+   (`com.android.settings`), then reboot or force-stop/restart the target app.
 
-- **禁止硬编码颜色值**，统一使用 `AppColorScheme` 中的语义化颜色
-- 新增颜色时在 `AppColorScheme` 中同时定义 Light/Dark 两套值
-- 使用 `cs.textPrimary` 而非 `Color.Black`，使用 `cs.cardBackground` 而非 `Color.White`
+5. Launch `ZUXOS+` from the app launcher or from the LSPosed module settings
+   entry.
 
-### 组件复用
+## Core Features
 
-- 通用组件放入 `ui/components/` 目录
-- 组件接受 `colorScheme: AppColorScheme` 参数以支持主题
-- 避免在组件内部调用 `isSystemInDarkTheme()`，由调用方传入颜色方案
+### Compose Settings App
 
-### 状态管理
+`LiquidGlassHomeActivity` hosts the main app with three tabs:
 
-- UI 状态使用 Compose `State` / `MutableState`
-- 持久化偏好使用 `AppPreferences` + `AppSettingsState`
-- Xposed Hook 配置使用 `ModuleConfig`（跨进程）
+- Home: activation state, module info, and device info.
+- Features: entry points for supported hook feature groups.
+- Settings: general settings, appearance settings, import/export, and about.
 
-### 新增页面
+Phone layouts use a bottom navigation surface. Tablet layouts use a left rail.
+The navigation supports fixed and floating modes.
 
-1. 在 `ui/activity/` 创建 Activity
-2. 在 `AndroidManifest.xml` 注册
-3. 使用 `AppColorScheme` 统一颜色
-4. 使用公共组件（GlassCard、PageHeader 等）
+### Appearance System
 
-### 新增设置项
+Appearance preferences are stored through `AppPreferences`:
 
-1. 在 `values/strings.xml` 和 `values-zh/strings.xml` 添加字符串
-2. 在 `AppPreferences` 添加 key 和读写方法
-3. 在 `AppSettingsState` 添加响应式状态
-4. 在设置页面 `SettingsPage` 添加 UI
+- Theme mode: light, dark, or system.
+- Floating navigation.
+- Liquid Glass navigation effects.
 
-## 依赖说明
+Theme colors come from `AppColorScheme` and are resolved with
+`colorSchemeFor(resolveIsDark(...))`.
 
-| 依赖 | 用途 |
-|------|------|
-| `backdrop` (io.github.kyant0) | Liquid Glass 液态玻璃效果 |
-| `yukihookapi` | Xposed Hook 框架 |
-| `compose-bom` | Jetpack Compose BOM |
-| `material3` | Material 3 组件 |
-| `betterandroid` | Android 工具库 |
-| `hikage` | Compose 编译器插件 |
+### Module Settings Repository
 
-## 构建与运行
+Xposed-facing settings are defined in `SettingsDefinitions.kt` and persisted via
+`SettingsRepository`. UI state is wrapped by `SettingsState.kt`.
+
+Use this path for new hook settings:
+
+1. Add a key to `SettingKeys`.
+2. Add a `BooleanSettingSpec` or a new typed setting spec.
+3. Render it with a reusable component such as `BooleanSettingSwitch`.
+4. Read it from hook code via `ModuleConfig.isEnabled(...)`.
+
+### App Info Hook
+
+`AppInfoExtend` injects configured metadata into Android Settings app-info
+headers. It can show package name, SDK versions, install/update time, installer
+package, and optional long-press copy behavior.
+
+The hook is registered in `HookEntry` through `Hooks.register(...)`. Hook loading
+is gated by the same `ModuleConfig` keys that the UI writes.
+
+### Import And Export
+
+`ExportImportSettingsActivity` uses Android's document picker APIs:
+
+- Export writes a JSON snapshot.
+- Import reads JSON and restores app preferences plus module booleans.
+
+No broad storage permission is required.
+
+## Development Flow
+
+1. Inspect the existing pattern before editing. Most new UI should reuse
+   `AppBackground`, `PageHeader`, `GlassCard`, `GlassSwitch`, `ActionCard`, or
+   `BooleanSettingSwitch`.
+2. Keep user-facing strings in `res/values/strings.xml` and update Chinese
+   resources when adding new text.
+3. Keep configuration keys centralized in `SettingsDefinitions.kt`.
+4. Keep persistence logic in `SettingsRepository`, `AppPreferences`, or
+   `ModuleConfig`; avoid direct SharedPreferences calls from screens.
+5. Register new Activity classes in `AndroidManifest.xml`.
+6. Register new hooks in `HookEntry`.
+7. Build with `./gradlew :app:assembleDebug` before submitting changes.
+
+## Common Commands
 
 ```bash
-# Debug 构建
+# Build debug APK
 ./gradlew :app:assembleDebug
 
-# Release 构建
+# Build release APK
 ./gradlew :app:assembleRelease
+
+# Run unit tests
+./gradlew :app:testDebugUnitTest
+
+# Run Android instrumentation tests
+./gradlew :app:connectedDebugAndroidTest
+
+# Clean generated build output
+./gradlew clean
 ```
 
-需要在 LSPosed 管理器中激活模块并重启设备。
+## Configuration Notes
+
+There are two configuration paths:
+
+- `AppPreferences`: app-only preferences such as theme and navigation mode.
+- `ModuleConfig`: Xposed-facing configuration stored in
+  `xposed_module_config`, readable from hook processes through
+  `XSharedPreferences`.
+
+`DefaultApplication` initializes default values on app startup. If a setting must
+affect hook loading, it must be represented in `ModuleConfig` and should have a
+default in `SettingsDefinitions.kt`.
+
+## Adding A New Hook
+
+1. Create a hook object implementing `Hook`.
+
+   ```kotlin
+   object MyHook : Hook {
+       override val prefKey = "my_hook_enabled"
+       override val defaultEnabled = false
+       override val targetPackage = "target.package.name"
+
+       override fun PackageParam.onHook() {
+           loadApp(targetPackage!!) {
+               // Hook implementation
+           }
+       }
+   }
+   ```
+
+2. Add a setting definition in `SettingsDefinitions.kt`.
+3. Add UI to the relevant settings page.
+4. Register the hook in `HookEntry`.
+5. Test with LSPosed and the target app in scope.
+
+## Adding A New Settings Page
+
+1. Create an Activity in `ui/activity`.
+2. Use `enableEdgeToEdge()` and `setContent`.
+3. Wrap content in `AppBackground`.
+4. Use `PageHeader(..., onBack = { finish() })`.
+5. Read theme with `rememberAppSettings()`.
+6. Add the Activity to `AndroidManifest.xml`.
+7. Add the launcher card or route from an existing page.
+
+## UI Guidelines
+
+- Prefer semantic colors from `AppColorScheme`.
+- Avoid hard-coded user-facing text in Compose code.
+- Keep cards and switches reusable.
+- Keep page spacing consistent: horizontal padding is usually `20.dp`, top
+  content padding is usually `24.dp`, bottom padding is usually `100.dp` or more
+  when navigation overlays content.
+- Liquid Glass effects should gracefully fall back to opaque surfaces when the
+  Liquid Glass preference is disabled.
+
+## Known Warnings
+
+Debug builds currently emit warnings from generated YukiHookAPI/KSP code about
+invisible references and future Kotlin behavior. They are generated-code
+warnings and do not currently block debug builds.
+
+`ModuleConfig` uses `MODE_WORLD_READABLE` intentionally for Xposed
+cross-process preferences. Treat changes to this path carefully and test with
+LSPosed before merging.
+
+## Maintenance Recommendations
+
+- Keep `gradle/libs.versions.toml` as the single dependency version source.
+- Update AGP, Kotlin, Compose, and YukiHookAPI together only after a full debug
+  build and LSPosed smoke test.
+- Add new hook settings through `SettingsDefinitions.kt` instead of scattering
+  raw keys in UI code.
+- Keep import/export schema backward compatible. If the JSON shape changes,
+  increment `SettingsRepository.EXPORT_SCHEMA` and keep old-schema reads.
+- Prefer small hook implementations with clear `prefKey` ownership.
+- When changing Android Settings hooks, test on multiple Android versions
+  because Settings internals vary by ROM and API level.
