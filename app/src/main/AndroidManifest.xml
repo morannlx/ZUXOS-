@@ -55,6 +55,11 @@
             android:screenOrientation="behind" />
 
         <activity
+            android:name=".ui.activity.PackageInstallerSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="behind" />
+
+        <activity
             android:name=".ui.activity.AppearanceSettingsActivity"
             android:exported="false"
             android:screenOrientation="behind" />

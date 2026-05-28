@@ -25,18 +25,6 @@ class DefaultApplication : ModuleApplication() {
 
         DynamicColors.applyToActivitiesIfAvailable(this)
 
-        // Initialize module config defaults
-        val prefs = getSharedPreferences(packageName, Context.MODE_PRIVATE)
-        if (!prefs.contains("app_info_show_package_name")) {
-            prefs.edit()
-                .putBoolean("app_info_show_package_name", false)
-                .putBoolean("app_info_show_sdk_version", false)
-                .putBoolean("app_info_show_install_time", false)
-                .putBoolean("app_info_show_update_time", false)
-                .putBoolean("app_info_show_install_source", false)
-                .putBoolean("app_info_enable_long_copy", false)
-                .apply()
-        }
         ModuleBooleanSettings.forEach { spec ->
             if (!ModuleConfig.contains(this, spec.key)) {
                 ModuleConfig.saveBoolean(this, spec.key, spec.defaultValue)

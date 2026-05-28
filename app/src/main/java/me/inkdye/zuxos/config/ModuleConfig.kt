@@ -21,6 +21,13 @@ object ModuleConfig {
     private const val MODULE_PACKAGE = "me.inkdye.zuxos"
     private const val TAG = "ModuleConfig"
 
+    const val PACKAGE_INSTALLER_DISABLE_SCAN = "disable_scanAPK"
+    const val PACKAGE_INSTALLER_ALWAYS_ALLOW_PERMISSION = "Always_AllowPermission"
+    const val PACKAGE_INSTALLER_SKIP_WARN_PAGE = "Skip_WarnPage"
+    const val PACKAGE_INSTALLER_DISABLE_INSTALLER_AD = "disable_installerAD"
+    const val PACKAGE_INSTALLER_STYLE_HOOK = "packageInstallerStyle_hook"
+    const val PACKAGE_INSTALLER_DISABLE_DELETE = "package_installer_disable_delete"
+
     /**
      * 读取配置（Hook 进程调用）
      */

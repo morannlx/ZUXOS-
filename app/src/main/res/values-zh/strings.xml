@@ -49,6 +49,25 @@
     <string name="app_info_enable_long_copy">启用长按复制</string>
     <string name="app_info_enable_long_copy_desc">长按将应用信息文本复制到剪贴板</string>
 
+    <!-- 软件包安装程序 -->
+    <string name="feature_group_package_installer">软件包安装程序</string>
+    <string name="feature_group_package_installer_item1">跳过安全扫描和警告页</string>
+    <string name="feature_group_package_installer_item2">安装后保留 APK 文件</string>
+    <string name="package_installer_settings_title">软件包安装程序</string>
+    <string name="package_installer_settings_desc">配置 ZUI 软件包安装程序的行为</string>
+    <string name="package_installer_disable_scan_title">跳过安全扫描</string>
+    <string name="package_installer_disable_scan_desc">跳过 APK 安全扫描，减少安装等待时间</string>
+    <string name="package_installer_always_allow_permission_title">总是给予应用权限</string>
+    <string name="package_installer_always_allow_permission_desc">安装应用时选择总是允许应用所需权限</string>
+    <string name="package_installer_skip_warn_page_title">跳过未上架警告页</string>
+    <string name="package_installer_skip_warn_page_desc">自动跳过联想质量检测和安全审查警告页</string>
+    <string name="package_installer_disable_installer_ad_title">去广告</string>
+    <string name="package_installer_disable_installer_ad_desc">阻止安装完成页初始化推荐应用数据</string>
+    <string name="package_installer_style_title">启用原生安装器</string>
+    <string name="package_installer_style_desc">绕过 ZUI 限制并使用对话框式原生安装器流程</string>
+    <string name="package_installer_disable_delete_title">不要删除安装包</string>
+    <string name="package_installer_disable_delete_desc">取消安装完成后删除原始 APK 文件的默认选项</string>
+
     <!-- 外观设置 -->
     <string name="appearance_title">外观</string>
     <string name="appearance_desc">主题和视觉效果</string>
