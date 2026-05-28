@@ -62,8 +62,8 @@ fun ThemeModeSelector(
                             .weight(1f)
                             .clip(itemShape)
                             .background(
-                                if (isSelected) colorScheme.accentGreen.copy(alpha = 0.15f)
-                                else colorScheme.glassSurface.copy(alpha = 0.5f),
+                                if (isSelected) colorScheme.accentGreen.copy(alpha = if (colorScheme.isDark) 0.18f else 0.11f)
+                                else colorScheme.glassSurface.copy(alpha = if (colorScheme.isDark) 0.46f else 0.54f),
                                 itemShape,
                             )
                             .clickable(

@@ -55,9 +55,9 @@ fun GlassSwitch(
                 onCheckedChange = onCheckedChange,
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = colorScheme.accentGreen,
-                    checkedTrackColor = colorScheme.accentGreen.copy(alpha = 0.3f),
-                    uncheckedThumbColor = colorScheme.textDim,
-                    uncheckedTrackColor = colorScheme.glassSurface,
+                    checkedTrackColor = colorScheme.accentGreen.copy(alpha = if (colorScheme.isDark) 0.30f else 0.22f),
+                    uncheckedThumbColor = colorScheme.textSecondary,
+                    uncheckedTrackColor = colorScheme.glassSurface.copy(alpha = if (colorScheme.isDark) 0.58f else 0.64f),
                 ),
             )
         }

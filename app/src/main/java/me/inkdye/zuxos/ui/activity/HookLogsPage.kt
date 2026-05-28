@@ -32,6 +32,7 @@ import me.inkdye.zuxos.logging.HookLogLevel
 import me.inkdye.zuxos.logging.HookLogStore
 import me.inkdye.zuxos.ui.components.ActionCard
 import me.inkdye.zuxos.ui.components.GlassCard
+import me.inkdye.zuxos.ui.components.pageHorizontalPadding
 import me.inkdye.zuxos.ui.theme.AppColorScheme
 
 @Composable
@@ -39,6 +40,7 @@ fun HookLogsPage(cs: AppColorScheme) {
     val context = LocalContext.current
     var entries by remember { mutableStateOf(emptyList<HookLogEntry>()) }
     var filter by remember { mutableStateOf("") }
+    val horizontalPadding = pageHorizontalPadding()
 
     fun reload() {
         entries = HookLogStore.read(context)
@@ -56,7 +58,7 @@ fun HookLogsPage(cs: AppColorScheme) {
     }
 
     LazyColumn(
-        Modifier.fillMaxSize().padding(horizontal = 20.dp),
+        Modifier.fillMaxSize().padding(horizontal = horizontalPadding),
         contentPadding = PaddingValues(top = 24.dp, bottom = 120.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {

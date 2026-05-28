@@ -27,6 +27,7 @@ import me.inkdye.zuxos.R
 import me.inkdye.zuxos.ui.components.ActionCard
 import me.inkdye.zuxos.ui.components.AppBackground
 import me.inkdye.zuxos.ui.components.PageHeader
+import me.inkdye.zuxos.ui.components.pageHorizontalPadding
 import me.inkdye.zuxos.ui.settings.rememberAppSettings
 import me.inkdye.zuxos.ui.settings.rememberSettingsRepository
 import me.inkdye.zuxos.ui.theme.colorSchemeFor
@@ -97,10 +98,11 @@ private fun ExportImportSettingsPage(onBack: () -> Unit) {
     }
 
     AppBackground(colorScheme = cs) {
+        val horizontalPadding = pageHorizontalPadding()
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = horizontalPadding),
             contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {

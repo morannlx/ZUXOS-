@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.inkdye.zuxos.R
 import me.inkdye.zuxos.ui.components.PageHeader
+import me.inkdye.zuxos.ui.components.pageHorizontalPadding
 import me.inkdye.zuxos.ui.settings.rememberAppSettings
 import me.inkdye.zuxos.ui.theme.AppColorScheme
 import me.inkdye.zuxos.ui.theme.colorSchemeFor
@@ -65,32 +66,20 @@ private fun SystemSettingsPage(onBack: () -> Unit) {
             .background(bgBrush)
             .safeContentPadding()
     ) {
-        val isTablet = maxWidth >= 600.dp
-        val columns = if (isTablet) 3 else 2
-
+        val horizontalPadding = pageHorizontalPadding()
         LazyVerticalGrid(
-            columns = GridCells.Fixed(columns),
-            modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
+            columns = GridCells.Adaptive(minSize = 260.dp),
+            modifier = Modifier.fillMaxSize().padding(horizontal = horizontalPadding),
             contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            item(span = { GridItemSpan(columns) }) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 PageHeader(
                     title = stringResource(R.string.system_settings_title),
                     subtitle = stringResource(R.string.system_settings_desc),
                     colorScheme = cs,
                     onBack = onBack,
-                )
-            }
-            item {
-                SettingGridCard(
-                    title = stringResource(R.string.system_framework_function),
-                    desc = stringResource(R.string.system_framework_function_desc),
-                    cs = cs,
-                    onClick = {
-                        context.startActivity(Intent(context, SystemFrameworkSettingsActivity::class.java))
-                    },
                 )
             }
             item {

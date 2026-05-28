@@ -24,6 +24,7 @@ import me.inkdye.zuxos.ui.components.ActionCard
 import me.inkdye.zuxos.ui.components.AppBackground
 import me.inkdye.zuxos.ui.components.BooleanSettingSwitch
 import me.inkdye.zuxos.ui.components.PageHeader
+import me.inkdye.zuxos.ui.components.pageHorizontalPadding
 import me.inkdye.zuxos.ui.settings.HookLoggingSetting
 import me.inkdye.zuxos.ui.settings.rememberAppSettings
 import me.inkdye.zuxos.ui.settings.rememberSettingsRepository
@@ -49,10 +50,11 @@ private fun GeneralSettingsPage(onBack: () -> Unit) {
     var statusText by remember { mutableStateOf<String?>(null) }
 
     AppBackground(colorScheme = cs) {
+        val horizontalPadding = pageHorizontalPadding()
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = horizontalPadding),
             contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {

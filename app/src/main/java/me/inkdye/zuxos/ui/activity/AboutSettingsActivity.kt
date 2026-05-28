@@ -23,6 +23,7 @@ import me.inkdye.zuxos.ui.components.AppBackground
 import me.inkdye.zuxos.ui.components.GlassCard
 import me.inkdye.zuxos.ui.components.InfoRow
 import me.inkdye.zuxos.ui.components.PageHeader
+import me.inkdye.zuxos.ui.components.pageHorizontalPadding
 import me.inkdye.zuxos.ui.settings.ModuleBooleanSettings
 import me.inkdye.zuxos.ui.settings.rememberAppSettings
 import me.inkdye.zuxos.ui.theme.colorSchemeFor
@@ -44,10 +45,11 @@ private fun AboutSettingsPage(onBack: () -> Unit) {
     val cs = colorSchemeFor(resolveIsDark(settings.themeMode.value))
 
     AppBackground(colorScheme = cs) {
+        val horizontalPadding = pageHorizontalPadding()
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = horizontalPadding),
             contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {

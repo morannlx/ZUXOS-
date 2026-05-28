@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import me.inkdye.zuxos.ui.theme.AppColorScheme
@@ -27,7 +26,7 @@ fun GlassCard(
             .graphicsLayer {
                 this.shape = shape
                 this.clip = true
-                this.shadowElevation = 4.dp.toPx()
+                this.shadowElevation = 3.dp.toPx()
                 this.ambientShadowColor = colorScheme.cardShadow
                 this.spotShadowColor = colorScheme.cardShadow
             }
@@ -36,8 +35,8 @@ fun GlassCard(
                 drawRect(
                     Brush.verticalGradient(
                         listOf(
-                            Color.White.copy(alpha = if (colorScheme.isDark) 0.04f else 0.06f),
-                            Color.Transparent,
+                            colorScheme.glassHighlight.copy(alpha = if (colorScheme.isDark) 0.04f else 0.08f),
+                            colorScheme.glassHighlight.copy(alpha = 0f),
                         ),
                         startY = 0f,
                         endY = size.height * 0.3f,

@@ -17,8 +17,12 @@
     <string name="home_status_active">LSPosed Active</string>
     <string name="home_status_inactive">LSPosed Not Active</string>
     <string name="home_module_active">Module Activated</string>
+    <string name="home_module_partial">Partially Activated</string>
+    <string name="home_module_unavailable">Unavailable</string>
     <string name="home_module_inactive">Module Not Activated</string>
     <string name="home_desc_active">The module is running under LSPosed. All hook features are available.</string>
+    <string name="home_desc_partial">LSPosed is active, but Root access is not granted. Xposed hooks can run; Root-only actions are unavailable.</string>
+    <string name="home_desc_unavailable">Root access is granted, but LSPosed is not active. Hook features are unavailable until the module is activated in LSPosed.</string>
     <string name="home_desc_inactive">Please activate this module in LSPosed Manager and reboot your device.</string>
     <string name="home_module_info">Module Info</string>
     <string name="home_device_info">Device Info</string>
@@ -31,6 +35,15 @@
     <string name="info_brand">Brand</string>
     <string name="info_model">Model</string>
     <string name="info_android">Android</string>
+    <string name="root_status_title">Root Access</string>
+    <string name="root_status_checking">Checking root status...</string>
+    <string name="root_status_unknown">Unknown</string>
+    <string name="root_status_unavailable">Unavailable</string>
+    <string name="root_status_denied">Denied</string>
+    <string name="root_status_granted">Granted</string>
+    <string name="restart_scope_title">Restart %1$s</string>
+    <string name="restart_scope_desc">Apply changes only to this scope. Root access is required.</string>
+    <string name="restart_scope_action">Restart scope</string>
 
     <!-- Features Page -->
     <string name="page_features_title">Features</string>

@@ -21,6 +21,7 @@ import me.inkdye.zuxos.R
 import me.inkdye.zuxos.ui.components.GlassSwitch
 import me.inkdye.zuxos.ui.components.PageHeader
 import me.inkdye.zuxos.ui.components.ThemeModeSelector
+import me.inkdye.zuxos.ui.components.pageHorizontalPadding
 import me.inkdye.zuxos.ui.settings.rememberAppSettings
 import me.inkdye.zuxos.ui.theme.colorSchemeFor
 import me.inkdye.zuxos.ui.theme.resolveIsDark
@@ -50,8 +51,9 @@ private fun AppearanceSettingsPage(onBack: () -> Unit) {
             .background(bgBrush)
             .safeContentPadding()
     ) {
+        val horizontalPadding = pageHorizontalPadding()
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
+            modifier = Modifier.fillMaxSize().padding(horizontal = horizontalPadding),
             contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {

@@ -38,7 +38,7 @@ fun PageHeader(
                     Modifier
                         .size(36.dp)
                         .clip(CircleShape)
-                        .background(colorScheme.accentBlue.copy(alpha = if (colorScheme.isDark) 0.18f else 0.1f))
+                        .background(colorScheme.accentBlue.copy(alpha = if (colorScheme.isDark) 0.14f else 0.08f))
                         .clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() },

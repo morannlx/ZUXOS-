@@ -46,6 +46,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Composable
@@ -63,7 +64,9 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -72,6 +75,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.math.roundToInt
 import androidx.core.graphics.drawable.toBitmap
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.kyant.backdrop.Backdrop
@@ -87,6 +91,10 @@ import com.kyant.backdrop.shadow.InnerShadow
 import com.kyant.backdrop.shadow.Shadow
 import me.inkdye.zuxos.BuildConfig
 import me.inkdye.zuxos.R
+import me.inkdye.zuxos.root.RootState
+import me.inkdye.zuxos.root.RootStatus
+import me.inkdye.zuxos.ui.components.pageHorizontalPadding
+import me.inkdye.zuxos.ui.root.rememberRootUiState
 import me.inkdye.zuxos.ui.settings.HookLoggingSetting
 import me.inkdye.zuxos.ui.settings.rememberAppSettings
 import me.inkdye.zuxos.ui.settings.rememberBooleanSettingState
@@ -110,12 +118,12 @@ class LiquidGlassHomeActivity : ComponentActivity() {
 }
 
 /* ── Colors ─────────────────────────────────────── */
-private val AccentGreen = Color(0xFF22C55E)
-private val AccentBlue = Color(0xFF3B82F6)
-private val AccentRed = Color(0xFFEF4444)
+private val FeatureGreen = Color(0xFF79B69B)
+private val FeatureBlue = Color(0xFF8AA8CF)
+private val FeatureNeutral = Color(0xFF96A3AE)
 
-private fun glassNavTint(isDark: Boolean) =
-    if (isDark) Color.Black.copy(alpha = 0.38f) else Color.White.copy(alpha = 0.58f)
+private fun glassNavTint(cs: AppColorScheme) =
+    if (cs.isDark) cs.glassSurface.copy(alpha = 0.46f) else Color.White.copy(alpha = 0.42f)
 
 private fun Modifier.liquidGlassNavSurface(
     backdrop: Backdrop,
@@ -145,9 +153,9 @@ private fun Modifier.liquidGlassNavSurface(
                 Highlight(
                     width = 1.2.dp,
                     blurRadius = 18.dp,
-                    alpha = if (cs.isDark) 0.48f else 0.72f,
+                    alpha = if (cs.isDark) 0.30f else 0.46f,
                     style = HighlightStyle.Default(
-                        color = Color.White.copy(alpha = if (cs.isDark) 0.44f else 0.62f),
+                        color = cs.glassHighlight.copy(alpha = if (cs.isDark) 0.22f else 0.40f),
                         angle = 38f,
                         falloff = 1.65f
                     )
@@ -155,9 +163,9 @@ private fun Modifier.liquidGlassNavSurface(
             },
             shadow = {
                 Shadow(
-                    radius = 28.dp,
-                    offset = DpOffset(0.dp, 9.dp),
-                    color = Color.Black.copy(alpha = if (cs.isDark) 0.34f else 0.16f),
+                    radius = 24.dp,
+                    offset = DpOffset(0.dp, 7.dp),
+                    color = Color.Black.copy(alpha = if (cs.isDark) 0.22f else 0.08f),
                     alpha = 1f
                 )
             },
@@ -165,26 +173,25 @@ private fun Modifier.liquidGlassNavSurface(
                 InnerShadow(
                     radius = 10.dp,
                     offset = DpOffset(0.dp, 1.dp),
-                    color = Color.White.copy(alpha = if (cs.isDark) 0.08f else 0.22f),
+                    color = cs.glassHighlight.copy(alpha = if (cs.isDark) 0.08f else 0.18f),
                     alpha = 1f
                 )
             },
             onDrawSurface = {
                 drawRect(navTint)
-                drawRect(Color.White.copy(alpha = if (cs.isDark) 0.04f else 0.11f))
+                drawRect(cs.glassHighlight.copy(alpha = if (cs.isDark) 0.03f else 0.06f))
             }
         )
     } else {
-        val fallbackColor = if (cs.isDark) Color(0xFF20242C) else Color.White
         this.shadow(
-            elevation = if (cs.isDark) 14.dp else 18.dp,
+            elevation = if (cs.isDark) 10.dp else 14.dp,
             shape = shape,
             clip = false,
-            ambientColor = Color.Black.copy(alpha = 0.16f),
-            spotColor = Color.Black.copy(alpha = 0.16f)
+            ambientColor = cs.cardShadow,
+            spotColor = cs.cardShadow
         )
             .clip(shape)
-            .background(fallbackColor, shape)
+            .background(cs.glassSurface, shape)
             .border(1.dp, cs.glassBorder, shape)
     }
 }
@@ -195,33 +202,34 @@ private data class FeatureGroup(
     val titleRes: Int,
     val items: List<Int>,
     val targetPackage: String? = null,
-    val accentColor: Color = Color(0xFF3B82F6)
+    val accentColor: Color = FeatureBlue
 )
 
 private val featureGroups = listOf(
     FeatureGroup("▦", R.string.feature_group_framework, listOf(
         R.string.feature_group_framework_item1,
         R.string.feature_group_framework_item2
-    ), "android", Color(0xFF22C55E)),
+    ), "android", FeatureGreen),
     FeatureGroup("⚙", R.string.feature_group_system, listOf(
         R.string.feature_group_system_item1
-    ), "com.android.settings", Color(0xFF94A3B8)),
+    ), "com.android.settings", FeatureNeutral),
     FeatureGroup("▣", R.string.feature_group_package_installer, listOf(
         R.string.feature_group_package_installer_item1,
         R.string.feature_group_package_installer_item2
-    ), "com.android.packageinstaller", Color(0xFF3B82F6))
+    ), "com.android.packageinstaller", FeatureBlue)
 )
 
 /* ── Navigation ─────────────────────────────────── */
-private enum class NavPage(val labelRes: Int, val icon: String) {
+private enum class NavPage(val labelRes: Int, val icon: String, val iconRes: Int? = null) {
     Home(R.string.nav_home, "⌂"),
     Features(R.string.nav_features, "≡"),
-    Logs(R.string.nav_logs, "☰"),
+    Logs(R.string.nav_logs, "", R.drawable.ic_nav_logs),
     Settings(R.string.nav_settings, "⚙"),
 }
 
 private const val TABLET_WIDTH_DP = 600
 private const val MEDIUM_WIDTH_DP = 840
+private val FEATURE_CARD_MIN_WIDTH = 200.dp
 
 /* ── Main Composable ────────────────────────────── */
 @Composable
@@ -240,7 +248,7 @@ private fun LiquidGlassHome() {
     val floatingNav = settings.floatingNavEnabled.value
     val liquidGlass = settings.liquidGlassEnabled.value
     val cs = colorSchemeFor(resolveIsDark(settings.themeMode.value))
-    val navTint = glassNavTint(cs.isDark)
+    val navTint = glassNavTint(cs)
 
     BoxWithConstraints(
         Modifier
@@ -442,8 +450,8 @@ private fun LiquidNavItem(
     val contentColor = if (selected) cs.accentGreen else cs.textDim
     val selectedBrush = Brush.verticalGradient(
         listOf(
-            Color.White.copy(alpha = if (cs.isDark) 0.13f else 0.48f),
-            cs.accentGreen.copy(alpha = if (cs.isDark) 0.18f else 0.14f),
+            cs.glassHighlight.copy(alpha = if (cs.isDark) 0.08f else 0.32f),
+            cs.accentGreen.copy(alpha = if (cs.isDark) 0.13f else 0.10f),
         )
     )
 
@@ -464,23 +472,13 @@ private fun LiquidNavItem(
         contentAlignment = Alignment.Center
     ) {
         if (labelSize == null) {
-            Text(
-                text = page.icon,
-                fontSize = iconSize,
-                color = contentColor,
-                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
-            )
+            NavPageIcon(page = page, color = contentColor, textSize = iconSize)
         } else {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = page.icon,
-                    fontSize = iconSize,
-                    color = contentColor,
-                    fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
-                )
+                NavPageIcon(page = page, color = contentColor, textSize = iconSize)
                 Spacer(Modifier.height(2.dp))
                 Text(
                     text = stringResource(page.labelRes),
@@ -490,6 +488,26 @@ private fun LiquidNavItem(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun NavPageIcon(page: NavPage, color: Color, textSize: TextUnit) {
+    val iconRes = page.iconRes
+    if (iconRes != null) {
+        Icon(
+            painter = painterResource(iconRes),
+            contentDescription = null,
+            tint = color,
+            modifier = Modifier.size(22.dp)
+        )
+    } else {
+        Text(
+            text = page.icon,
+            fontSize = textSize,
+            color = color,
+            fontWeight = FontWeight.Normal
+        )
     }
 }
 
@@ -511,7 +529,7 @@ private fun FloatingNavPill(
         RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
     }
     val pillHeight = if (floatingNav) 58.dp else 72.dp
-    val pillWidth = if (floatingNav) 188.dp else 232.dp
+    val pillWidth = if (floatingNav) maxOf(188.dp, 64.dp * navPages.size) else 232.dp
     val iconSize = 22.sp
     val surfaceModifier = if (floatingNav) {
         Modifier.width(pillWidth)
@@ -554,20 +572,20 @@ private fun FloatingNavPill(
                     elevation = 8.dp,
                     shape = indicatorShape,
                     clip = false,
-                    ambientColor = cs.accentGreen.copy(alpha = 0.18f),
-                    spotColor = cs.accentGreen.copy(alpha = 0.18f)
+                    ambientColor = cs.accentGreen.copy(alpha = if (cs.isDark) 0.14f else 0.08f),
+                    spotColor = cs.accentGreen.copy(alpha = if (cs.isDark) 0.14f else 0.08f)
                 )
                 .clip(indicatorShape)
                 .background(
                     Brush.verticalGradient(
                         listOf(
-                            Color.White.copy(alpha = if (cs.isDark) 0.15f else 0.56f),
-                            cs.accentGreen.copy(alpha = if (cs.isDark) 0.26f else 0.18f),
+                            cs.glassHighlight.copy(alpha = if (cs.isDark) 0.10f else 0.36f),
+                            cs.accentGreen.copy(alpha = if (cs.isDark) 0.18f else 0.12f),
                         )
                     ),
                     indicatorShape
                 )
-                .border(1.dp, Color.White.copy(alpha = if (cs.isDark) 0.1f else 0.42f), indicatorShape)
+                .border(1.dp, cs.glassBorder.copy(alpha = if (cs.isDark) 0.10f else 0.34f), indicatorShape)
         )
 
         Row(
@@ -634,6 +652,12 @@ private fun GlassNavigationRail(
     val labelSize = if (isCompactTablet) 10.sp else 11.sp
     val headerSize = if (isCompactTablet) 36.dp else 44.dp
     val headerFontSize = if (isCompactTablet) 15.sp else 18.sp
+    val brandBrush = Brush.linearGradient(
+        listOf(
+            cs.accentGreen.copy(alpha = 0.95f),
+            cs.accentBlue.copy(alpha = 0.92f),
+        )
+    )
 
     Box(railModifier) {
         if (floatingNav) {
@@ -646,7 +670,7 @@ private fun GlassNavigationRail(
                     Modifier
                         .size(headerSize)
                         .background(
-                            Brush.linearGradient(listOf(AccentGreen, AccentBlue)),
+                            brandBrush,
                             CircleShape
                         ),
                     contentAlignment = Alignment.Center
@@ -679,7 +703,7 @@ private fun GlassNavigationRail(
                         Modifier
                             .size(headerSize)
                             .background(
-                                Brush.linearGradient(listOf(AccentGreen, AccentBlue)),
+                                brandBrush,
                                 CircleShape
                             ),
                         contentAlignment = Alignment.Center
@@ -697,7 +721,13 @@ private fun GlassNavigationRail(
                     NavigationRailItem(
                         selected = selectedTab == index,
                         onClick = { onTabSelected(index) },
-                        icon = { Text(page.icon, fontSize = iconSize) },
+                        icon = {
+                            NavPageIcon(
+                                page = page,
+                                color = if (selectedTab == index) cs.accentGreen else cs.textDim,
+                                textSize = iconSize,
+                            )
+                        },
                         label = {
                             Text(
                                 stringResource(page.labelRes),
@@ -741,10 +771,12 @@ private fun GlassCard(
 @Composable
 private fun HomePage(cs: AppColorScheme) {
     val context = LocalContext.current
+    val rootState = rememberRootUiState()
     val isXposedActive = YukiHookAPI.Status.isXposedModuleActive || (context as? LiquidGlassHomeActivity)?.isModuleActivated() == true
+    val horizontalPadding = pageHorizontalPadding()
 
     LazyColumn(
-        Modifier.fillMaxSize().padding(horizontal = 20.dp),
+        Modifier.fillMaxSize().padding(horizontal = horizontalPadding),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 24.dp, bottom = 120.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
@@ -755,19 +787,35 @@ private fun HomePage(cs: AppColorScheme) {
             Spacer(Modifier.height(8.dp))
         }
 
-        item { ActivationStatusCard(isXposedActive, cs) }
+        item {
+            ActivationStatusCard(
+                isActive = isXposedActive,
+                rootState = rootState.state.value,
+                rootBusy = rootState.busy.value,
+                cs = cs,
+            )
+        }
         item { ModuleInfoCard(isXposedActive, cs) }
         item { DeviceInfoCard(context, cs) }
     }
 }
 
 @Composable
-private fun ActivationStatusCard(isActive: Boolean, cs: AppColorScheme) {
-    val statusColor = if (isActive) cs.accentGreen else cs.accentRed
+private fun ActivationStatusCard(
+    isActive: Boolean,
+    rootState: RootState,
+    rootBusy: Boolean,
+    cs: AppColorScheme,
+) {
+    val rootGranted = rootState.status == RootStatus.GRANTED
+    val displayState = activationDisplayState(isActive, rootGranted)
+    val statusColor = displayState.color(cs)
+    val xposedColor = if (isActive) cs.accentGreen else cs.accentRed
+    val rootColor = if (rootGranted) cs.accentGreen else cs.accentRed
     val shape = RoundedCornerShape(20.dp)
     val cardBg = Brush.verticalGradient(
         listOf(
-            statusColor.copy(alpha = 0.12f),
+            statusColor.copy(alpha = if (cs.isDark) 0.14f else 0.09f),
             statusColor.copy(alpha = 0.04f),
         )
     )
@@ -780,25 +828,20 @@ private fun ActivationStatusCard(isActive: Boolean, cs: AppColorScheme) {
             .padding(24.dp)
     ) {
         Column {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    Modifier
-                        .size(12.dp)
-                        .background(statusColor, CircleShape)
-                )
-                Spacer(Modifier.width(10.dp))
-                Text(
-                    stringResource(if (isActive) R.string.home_status_active else R.string.home_status_inactive),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = statusColor
-                )
-            }
+            StatusLine(
+                label = stringResource(if (isActive) R.string.home_status_active else R.string.home_status_inactive),
+                color = xposedColor,
+            )
+            Spacer(Modifier.height(8.dp))
+            StatusLine(
+                label = "${stringResource(R.string.root_status_title)} · ${rootStatusText(rootState.status, rootBusy)}",
+                color = rootColor,
+            )
 
             Spacer(Modifier.height(16.dp))
 
             Text(
-                stringResource(if (isActive) R.string.home_module_active else R.string.home_module_inactive),
+                stringResource(displayState.titleRes),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = cs.textPrimary
@@ -807,12 +850,67 @@ private fun ActivationStatusCard(isActive: Boolean, cs: AppColorScheme) {
             Spacer(Modifier.height(8.dp))
 
             Text(
-                stringResource(if (isActive) R.string.home_desc_active else R.string.home_desc_inactive),
+                stringResource(displayState.descRes),
                 fontSize = 14.sp,
                 color = cs.textSecondary,
                 lineHeight = 22.sp
             )
+
+            rootState.message?.takeIf { rootState.status != RootStatus.GRANTED }?.let {
+                Spacer(Modifier.height(8.dp))
+                Text(it, fontSize = 12.sp, color = cs.textDim)
+            }
         }
+    }
+}
+
+private enum class ActivationDisplayState(val titleRes: Int, val descRes: Int) {
+    Active(R.string.home_module_active, R.string.home_desc_active),
+    Partial(R.string.home_module_partial, R.string.home_desc_partial),
+    Unavailable(R.string.home_module_unavailable, R.string.home_desc_unavailable),
+    Inactive(R.string.home_module_inactive, R.string.home_desc_inactive);
+
+    fun color(cs: AppColorScheme): Color = when (this) {
+        Active -> cs.accentGreen
+        Partial -> cs.accentBlue
+        Unavailable, Inactive -> cs.accentRed
+    }
+}
+
+private fun activationDisplayState(lspActive: Boolean, rootActive: Boolean): ActivationDisplayState =
+    when {
+        lspActive && rootActive -> ActivationDisplayState.Active
+        lspActive && !rootActive -> ActivationDisplayState.Partial
+        !lspActive && rootActive -> ActivationDisplayState.Unavailable
+        else -> ActivationDisplayState.Inactive
+    }
+
+@Composable
+private fun StatusLine(label: String, color: Color) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            Modifier
+                .size(12.dp)
+                .background(color, CircleShape)
+        )
+        Spacer(Modifier.width(10.dp))
+        Text(
+            text = label,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = color,
+        )
+    }
+}
+
+@Composable
+private fun rootStatusText(status: RootStatus, busy: Boolean): String {
+    if (busy) return stringResource(R.string.root_status_checking)
+    return when (status) {
+        RootStatus.UNKNOWN -> stringResource(R.string.root_status_unknown)
+        RootStatus.UNAVAILABLE -> stringResource(R.string.root_status_unavailable)
+        RootStatus.DENIED -> stringResource(R.string.root_status_denied)
+        RootStatus.GRANTED -> stringResource(R.string.root_status_granted)
     }
 }
 
@@ -868,17 +966,18 @@ private fun InfoRow(label: String, value: String, cs: AppColorScheme) {
 @Composable
 private fun FeaturesPage(cs: AppColorScheme) {
     val context = LocalContext.current
+    val horizontalPadding = pageHorizontalPadding()
 
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+        columns = GridCells.Adaptive(minSize = FEATURE_CARD_MIN_WIDTH),
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = horizontalPadding),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 24.dp, bottom = 120.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        item(span = { GridItemSpan(2) }) {
+        item(span = { GridItemSpan(maxLineSpan) }) {
             Column {
                 Text(stringResource(R.string.page_features_title), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = cs.textPrimary)
                 Spacer(Modifier.height(4.dp))
@@ -888,7 +987,7 @@ private fun FeaturesPage(cs: AppColorScheme) {
         }
 
         if (featureGroups.isEmpty()) {
-            item(span = { GridItemSpan(2) }) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 Box(Modifier.fillMaxWidth().padding(top = 40.dp), contentAlignment = Alignment.Center) {
                     Text(stringResource(R.string.no_features_available), color = cs.textDim, fontSize = 14.sp)
                 }
@@ -912,7 +1011,10 @@ private fun FeaturesPage(cs: AppColorScheme) {
 
 @Composable
 private fun FeatureGroupCard(context: Context, group: FeatureGroup, cs: AppColorScheme, onClick: () -> Unit = {}) {
-    val appIcon = remember(group.targetPackage) {
+    val density = LocalDensity.current
+    val iconSize = 42.dp
+    val iconBitmapSize = with(density) { iconSize.toPx().roundToInt().coerceAtLeast(1) }
+    val appIcon = remember(group.targetPackage, iconBitmapSize) {
         group.targetPackage?.let { pkg ->
             try {
                 if (pkg == "android") null // 系统框架通常不显示图标
@@ -939,16 +1041,16 @@ private fun FeatureGroupCard(context: Context, group: FeatureGroup, cs: AppColor
             ) {
                 if (appIcon != null) {
                     Image(
-                        bitmap = appIcon.toBitmap(96, 96).asImageBitmap(),
+                        bitmap = appIcon.toBitmap(iconBitmapSize, iconBitmapSize).asImageBitmap(),
                         contentDescription = null,
                         modifier = Modifier
-                            .size(42.dp)
+                            .size(iconSize)
                             .clip(RoundedCornerShape(12.dp))
                     )
                 } else {
                     Box(
                         Modifier
-                            .size(42.dp)
+                            .size(iconSize)
                             .clip(RoundedCornerShape(12.dp))
                             .background(group.accentColor),
                         contentAlignment = Alignment.Center
@@ -959,9 +1061,11 @@ private fun FeatureGroupCard(context: Context, group: FeatureGroup, cs: AppColor
                 Spacer(Modifier.width(12.dp))
                 Text(
                     stringResource(group.titleRes),
+                    modifier = Modifier.weight(1f),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
-                    color = cs.accentBlue
+                    color = cs.accentBlue,
+                    lineHeight = 20.sp,
                 )
             }
 
@@ -973,6 +1077,7 @@ private fun FeatureGroupCard(context: Context, group: FeatureGroup, cs: AppColor
                         Text("•", fontSize = 14.sp, color = cs.textSecondary, modifier = Modifier.padding(end = 8.dp))
                         Text(
                             stringResource(itemRes),
+                            modifier = Modifier.weight(1f),
                             fontSize = 13.sp,
                             color = cs.textSecondary,
                             lineHeight = 18.sp
@@ -988,6 +1093,7 @@ private fun FeatureGroupCard(context: Context, group: FeatureGroup, cs: AppColor
 @Composable
 private fun SettingsPage(cs: AppColorScheme) {
     val context = LocalContext.current
+    val horizontalPadding = pageHorizontalPadding()
     val settingsItems = listOf(
         Triple("⚙", R.string.settings_general, R.string.settings_general_desc),
         Triple("🎨", R.string.settings_appearance, R.string.settings_appearance_desc),
@@ -995,7 +1101,7 @@ private fun SettingsPage(cs: AppColorScheme) {
         Triple("ℹ", R.string.settings_about, R.string.settings_about_desc),
     )
     LazyColumn(
-        Modifier.fillMaxSize().padding(horizontal = 20.dp),
+        Modifier.fillMaxSize().padding(horizontal = horizontalPadding),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 24.dp, bottom = 120.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
@@ -1043,7 +1149,7 @@ private fun SettingsCard(icon: String, titleRes: Int, descRes: Int, cs: AppColor
             Box(
                 Modifier
                     .size(36.dp)
-                    .background(cs.accentBlue.copy(alpha = if (cs.isDark) 0.18f else 0.1f), CircleShape),
+                    .background(cs.accentBlue.copy(alpha = if (cs.isDark) 0.14f else 0.08f), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(icon, fontSize = 16.sp)

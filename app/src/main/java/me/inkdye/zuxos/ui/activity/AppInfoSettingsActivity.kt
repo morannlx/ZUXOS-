@@ -14,16 +14,27 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.highcapable.betterandroid.ui.component.activity.AppViewsActivity
 import me.inkdye.zuxos.R
+import me.inkdye.zuxos.root.RestartScope
 import me.inkdye.zuxos.ui.components.BooleanSettingSwitch
 import me.inkdye.zuxos.ui.components.GlassSwitch
 import me.inkdye.zuxos.ui.components.PageHeader
+import me.inkdye.zuxos.ui.components.RestartScopeCard
+import me.inkdye.zuxos.ui.components.pageHorizontalPadding
+import me.inkdye.zuxos.ui.root.rememberRootUiState
 import me.inkdye.zuxos.ui.settings.AppInfoDetailSettings
 import me.inkdye.zuxos.ui.settings.AppInfoFeatureSetting
 import me.inkdye.zuxos.ui.settings.rememberAppSettings
@@ -48,7 +59,11 @@ private fun AppInfoSettingsPage(onBack: () -> Unit) {
     val settings = rememberAppSettings()
     val repository = rememberSettingsRepository()
     val featureState = rememberBooleanSettingState(repository, AppInfoFeatureSetting)
+    val coroutineScope = rememberCoroutineScope()
+    val rootState = rememberRootUiState()
     val cs = colorSchemeFor(resolveIsDark(settings.themeMode.value))
+    var restartMessage by remember { mutableStateOf<String?>(null) }
+    var restartFailed by remember { mutableStateOf(false) }
 
     val bgBrush = Brush.verticalGradient(
         listOf(cs.bgGradientTop, cs.bgGradientMid, cs.bgGradientBottom)
@@ -60,17 +75,15 @@ private fun AppInfoSettingsPage(onBack: () -> Unit) {
             .background(bgBrush)
             .safeContentPadding()
     ) {
-        val isTablet = maxWidth >= 600.dp
-        val columns = if (isTablet) 3 else 2
-
+        val horizontalPadding = pageHorizontalPadding()
         LazyVerticalGrid(
-            columns = GridCells.Fixed(columns),
-            modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
+            columns = GridCells.Adaptive(minSize = 260.dp),
+            modifier = Modifier.fillMaxSize().padding(horizontal = horizontalPadding),
             contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            item(span = { GridItemSpan(columns) }) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 PageHeader(
                     title = stringResource(R.string.app_info_settings_title),
                     subtitle = stringResource(R.string.app_info_settings_desc),
@@ -79,7 +92,7 @@ private fun AppInfoSettingsPage(onBack: () -> Unit) {
                 )
             }
 
-            item(span = { GridItemSpan(columns) }) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 GlassSwitch(
                     title = stringResource(AppInfoFeatureSetting.titleRes),
                     description = stringResource(AppInfoFeatureSetting.descRes),
@@ -95,6 +108,27 @@ private fun AppInfoSettingsPage(onBack: () -> Unit) {
                         spec = spec,
                         repository = repository,
                         colorScheme = cs,
+                    )
+                }
+            }
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                RestartScopeCard(
+                    scope = RestartScope.SETTINGS,
+                    colorScheme = cs,
+                    onRestart = {
+                        rootState.restart(coroutineScope, RestartScope.SETTINGS) { result ->
+                            restartMessage = result.message
+                            restartFailed = !result.success
+                        }
+                    },
+                )
+            }
+            restartMessage?.let { message ->
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Text(
+                        text = message,
+                        fontSize = 13.sp,
+                        color = if (restartFailed) cs.accentRed else cs.accentGreen,
                     )
                 }
             }
