@@ -16,5 +16,6 @@
 /local.properties
 /.claude/CLAUDE.md
 /.claude
-/docs
+/docs/*
+/docs/DEVELOPMENT.md
 /.idea
