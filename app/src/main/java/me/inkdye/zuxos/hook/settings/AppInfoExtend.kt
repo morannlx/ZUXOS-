@@ -26,8 +26,8 @@ import java.util.Locale
  */
 object AppInfoExtend : Hook {
     
-    override val prefKey = "app_info_extend_enabled"
-    override val defaultEnabled get() = true
+    override val prefKey = "app_info_extend"
+    override val alwaysRegister get() = true
     override val targetPackage = "com.android.settings"
     
     private const val DEDUP_TAG = "app_info_extend_divider"

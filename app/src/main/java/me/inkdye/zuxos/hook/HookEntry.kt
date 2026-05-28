@@ -69,12 +69,16 @@ class HookEntry : IYukiHookXposedInit {
                 message = "Hook registered: key=${hook.prefKey}, target=${hook.targetPackage ?: packageName}",
             )
 
-            val enabled = ModuleConfig.isEnabled(hook.prefKey, hook.defaultEnabled)
+            val enabled = hook.alwaysRegister || ModuleConfig.isEnabled(hook.prefKey, hook.defaultEnabled)
             HookLogger.log(
                 param = this,
                 hook = hook,
                 stage = if (enabled) HookLogStage.ENABLED else HookLogStage.DISABLED,
-                message = "Hook ${if (enabled) "enabled" else "disabled"} by preference ${hook.prefKey}",
+                message = if (hook.alwaysRegister) {
+                    "Hook enabled without master preference: key=${hook.prefKey}"
+                } else {
+                    "Hook ${if (enabled) "enabled" else "disabled"} by preference ${hook.prefKey}"
+                },
                 level = if (enabled) HookLogLevel.INFO else HookLogLevel.WARN,
             )
             if (!enabled) return@forEach

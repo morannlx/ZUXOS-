@@ -154,8 +154,6 @@
     <!-- 应用信息 -->
     <string name="app_info_function">应用信息</string>
     <string name="app_info_function_desc">在应用详情页显示扩展信息</string>
-    <string name="app_info_feature_enabled">启用应用信息扩展</string>
-    <string name="app_info_feature_enabled_desc">在 Android 设置的应用详情页注入已配置的信息</string>
     <string name="app_info_settings_title">应用信息设置</string>
     <string name="app_info_settings_desc">配置在应用详情页中显示的内容</string>
     <string name="app_info_show_package_name">显示包名</string>

@@ -30,15 +30,12 @@ import com.highcapable.betterandroid.ui.component.activity.AppViewsActivity
 import me.inkdye.zuxos.R
 import me.inkdye.zuxos.root.RestartScope
 import me.inkdye.zuxos.ui.components.BooleanSettingSwitch
-import me.inkdye.zuxos.ui.components.GlassSwitch
 import me.inkdye.zuxos.ui.components.PageHeader
 import me.inkdye.zuxos.ui.components.RestartScopeCard
 import me.inkdye.zuxos.ui.components.pageHorizontalPadding
 import me.inkdye.zuxos.ui.root.rememberRootUiState
 import me.inkdye.zuxos.ui.settings.AppInfoDetailSettings
-import me.inkdye.zuxos.ui.settings.AppInfoFeatureSetting
 import me.inkdye.zuxos.ui.settings.rememberAppSettings
-import me.inkdye.zuxos.ui.settings.rememberBooleanSettingState
 import me.inkdye.zuxos.ui.settings.rememberSettingsRepository
 import me.inkdye.zuxos.ui.theme.colorSchemeFor
 import me.inkdye.zuxos.ui.theme.resolveIsDark
@@ -58,7 +55,6 @@ class AppInfoSettingsActivity : AppViewsActivity() {
 private fun AppInfoSettingsPage(onBack: () -> Unit) {
     val settings = rememberAppSettings()
     val repository = rememberSettingsRepository()
-    val featureState = rememberBooleanSettingState(repository, AppInfoFeatureSetting)
     val coroutineScope = rememberCoroutineScope()
     val rootState = rememberRootUiState()
     val cs = colorSchemeFor(resolveIsDark(settings.themeMode.value))
@@ -92,25 +88,14 @@ private fun AppInfoSettingsPage(onBack: () -> Unit) {
                 )
             }
 
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                GlassSwitch(
-                    title = stringResource(AppInfoFeatureSetting.titleRes),
-                    description = stringResource(AppInfoFeatureSetting.descRes),
-                    checked = featureState.checked.value,
-                    onCheckedChange = { featureState.update(it) },
+            items(AppInfoDetailSettings) { spec ->
+                BooleanSettingSwitch(
+                    spec = spec,
+                    repository = repository,
                     colorScheme = cs,
                 )
             }
 
-            if (featureState.checked.value) {
-                items(AppInfoDetailSettings) { spec ->
-                    BooleanSettingSwitch(
-                        spec = spec,
-                        repository = repository,
-                        colorScheme = cs,
-                    )
-                }
-            }
             item(span = { GridItemSpan(maxLineSpan) }) {
                 RestartScopeCard(
                     scope = RestartScope.SETTINGS,

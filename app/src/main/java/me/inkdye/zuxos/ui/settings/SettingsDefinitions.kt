@@ -5,7 +5,6 @@ import me.inkdye.zuxos.R
 import me.inkdye.zuxos.config.ModuleConfig
 
 object SettingKeys {
-    const val APP_INFO_EXTEND_ENABLED = "app_info_extend_enabled"
     const val APP_INFO_SHOW_PACKAGE_NAME = "app_info_show_package_name"
     const val APP_INFO_SHOW_SDK_VERSION = "app_info_show_sdk_version"
     const val APP_INFO_SHOW_INSTALL_TIME = "app_info_show_install_time"
@@ -40,13 +39,6 @@ data class BooleanSettingSpec(
     @param:StringRes val titleRes: Int,
     @param:StringRes val descRes: Int,
     val defaultValue: Boolean,
-)
-
-val AppInfoFeatureSetting = BooleanSettingSpec(
-    key = SettingKeys.APP_INFO_EXTEND_ENABLED,
-    titleRes = R.string.app_info_feature_enabled,
-    descRes = R.string.app_info_feature_enabled_desc,
-    defaultValue = true,
 )
 
 val HookLoggingSetting = BooleanSettingSpec(
@@ -221,7 +213,6 @@ val AppInfoDetailSettings = listOf(
 val ModuleBooleanSettings =
     listOf(
         HookLoggingSetting,
-        AppInfoFeatureSetting,
         DisableFlagSecureSetting,
         CorePatchMasterSetting,
     ) +

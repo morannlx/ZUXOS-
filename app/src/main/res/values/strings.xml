@@ -167,8 +167,6 @@
     <!-- App Info -->
     <string name="app_info_function">App Info</string>
     <string name="app_info_function_desc">View extended app details in App Info page</string>
-    <string name="app_info_feature_enabled">Enable App Info Extension</string>
-    <string name="app_info_feature_enabled_desc">Inject configured details into Android Settings app info pages</string>
     <string name="app_info_settings_title">App Info Settings</string>
     <string name="app_info_settings_desc">Configure what to display in App Info page</string>
     <string name="app_info_show_package_name">Show Package Name</string>
