@@ -27,6 +27,7 @@ object ModuleConfig {
     const val PACKAGE_INSTALLER_DISABLE_INSTALLER_AD = "disable_installerAD"
     const val PACKAGE_INSTALLER_STYLE_HOOK = "packageInstallerStyle_hook"
     const val PACKAGE_INSTALLER_DISABLE_DELETE = "package_installer_disable_delete"
+    const val HOOK_LOGGING_ENABLED = "hook_logging_enabled"
 
     /**
      * 读取配置（Hook 进程调用）

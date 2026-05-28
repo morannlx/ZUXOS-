@@ -19,13 +19,17 @@ private val packageInstallerPackages = arrayOf(
     "com.google.android.packageinstaller",
 )
 
+private interface PackageInstallerHook : Hook {
+    override val targetPackage: String get() = "com.android.packageinstaller"
+    override val targetPackages: Set<String> get() = packageInstallerPackages.toSet()
+}
+
 private fun PackageParam.loadInstallerHooks(block: PackageParam.() -> Unit) {
     packageInstallerPackages.forEach { loadApp(it) { block() } }
 }
 
-object PackageInstallerDisableScanHook : Hook {
+object PackageInstallerDisableScanHook : PackageInstallerHook {
     override val prefKey = ModuleConfig.PACKAGE_INSTALLER_DISABLE_SCAN
-    override val targetPackage = "com.android.packageinstaller"
 
     override fun PackageParam.onHook() = loadInstallerHooks {
         "com.android.packageinstaller.PackageInstallerActivityExtra".toClass().method {
@@ -74,9 +78,8 @@ object PackageInstallerDisableScanHook : Hook {
     }
 }
 
-object PackageInstallerAllowPermissionHook : Hook {
+object PackageInstallerAllowPermissionHook : PackageInstallerHook {
     override val prefKey = ModuleConfig.PACKAGE_INSTALLER_ALWAYS_ALLOW_PERMISSION
-    override val targetPackage = "com.android.packageinstaller"
 
     override fun PackageParam.onHook() = loadInstallerHooks {
         "com.android.packageinstaller.PackageInstallerActivityExtra".toClass().method {
@@ -148,9 +151,8 @@ object PackageInstallerAllowPermissionHook : Hook {
     }
 }
 
-object PackageInstallerSkipWarnPageHook : Hook {
+object PackageInstallerSkipWarnPageHook : PackageInstallerHook {
     override val prefKey = ModuleConfig.PACKAGE_INSTALLER_SKIP_WARN_PAGE
-    override val targetPackage = "com.android.packageinstaller"
 
     override fun PackageParam.onHook() = loadInstallerHooks {
         "com.android.packageinstaller.PackageInstallerActivityExtra".toClass().method {
@@ -168,9 +170,8 @@ object PackageInstallerSkipWarnPageHook : Hook {
     }
 }
 
-object PackageInstallerDisableInstallerAdHook : Hook {
+object PackageInstallerDisableInstallerAdHook : PackageInstallerHook {
     override val prefKey = ModuleConfig.PACKAGE_INSTALLER_DISABLE_INSTALLER_AD
-    override val targetPackage = "com.android.packageinstaller"
 
     override fun PackageParam.onHook() = loadInstallerHooks {
         "com.android.packageinstaller.InstallSuccessExtra".toClass().method {
@@ -183,9 +184,8 @@ object PackageInstallerDisableInstallerAdHook : Hook {
     }
 }
 
-object PackageInstallerStyleHook : Hook {
+object PackageInstallerStyleHook : PackageInstallerHook {
     override val prefKey = ModuleConfig.PACKAGE_INSTALLER_STYLE_HOOK
-    override val targetPackage = "com.android.packageinstaller"
 
     override fun PackageParam.onHook() = loadInstallerHooks {
         "com.android.packageinstaller.extra.Utils".toClass().method {
@@ -231,9 +231,8 @@ object PackageInstallerStyleHook : Hook {
     }
 }
 
-object PackageInstallerDisableDeleteHook : Hook {
+object PackageInstallerDisableDeleteHook : PackageInstallerHook {
     override val prefKey = ModuleConfig.PACKAGE_INSTALLER_DISABLE_DELETE
-    override val targetPackage = "com.android.packageinstaller"
 
     override fun PackageParam.onHook() = loadInstallerHooks {
         "com.android.packageinstaller.InstallSuccessExtra".toClass().method {

@@ -17,6 +17,7 @@ object SettingKeys {
     const val PACKAGE_INSTALLER_DISABLE_INSTALLER_AD = "disable_installerAD"
     const val PACKAGE_INSTALLER_STYLE_HOOK = "packageInstallerStyle_hook"
     const val PACKAGE_INSTALLER_DISABLE_DELETE = "package_installer_disable_delete"
+    const val HOOK_LOGGING_ENABLED = "hook_logging_enabled"
 }
 
 data class BooleanSettingSpec(
@@ -31,6 +32,13 @@ val AppInfoFeatureSetting = BooleanSettingSpec(
     titleRes = R.string.app_info_feature_enabled,
     descRes = R.string.app_info_feature_enabled_desc,
     defaultValue = true,
+)
+
+val HookLoggingSetting = BooleanSettingSpec(
+    key = SettingKeys.HOOK_LOGGING_ENABLED,
+    titleRes = R.string.hook_logging_enabled,
+    descRes = R.string.hook_logging_enabled_desc,
+    defaultValue = false,
 )
 
 val PackageInstallerFeatureSettings = listOf(
@@ -111,4 +119,5 @@ val AppInfoDetailSettings = listOf(
     ),
 )
 
-val ModuleBooleanSettings = listOf(AppInfoFeatureSetting) + AppInfoDetailSettings + PackageInstallerFeatureSettings
+val ModuleBooleanSettings =
+    listOf(HookLoggingSetting, AppInfoFeatureSetting) + AppInfoDetailSettings + PackageInstallerFeatureSettings

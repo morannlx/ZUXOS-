@@ -47,6 +47,7 @@ import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -86,7 +87,10 @@ import com.kyant.backdrop.shadow.InnerShadow
 import com.kyant.backdrop.shadow.Shadow
 import me.inkdye.zuxos.BuildConfig
 import me.inkdye.zuxos.R
+import me.inkdye.zuxos.ui.settings.HookLoggingSetting
 import me.inkdye.zuxos.ui.settings.rememberAppSettings
+import me.inkdye.zuxos.ui.settings.rememberBooleanSettingState
+import me.inkdye.zuxos.ui.settings.rememberSettingsRepository
 import me.inkdye.zuxos.ui.theme.AppColorScheme
 import me.inkdye.zuxos.ui.theme.colorSchemeFor
 import me.inkdye.zuxos.ui.theme.resolveIsDark
@@ -208,6 +212,7 @@ private val featureGroups = listOf(
 private enum class NavPage(val labelRes: Int, val icon: String) {
     Home(R.string.nav_home, "⌂"),
     Features(R.string.nav_features, "≡"),
+    Logs(R.string.nav_logs, "☰"),
     Settings(R.string.nav_settings, "⚙"),
 }
 
@@ -219,6 +224,15 @@ private const val MEDIUM_WIDTH_DP = 840
 private fun LiquidGlassHome() {
     var selectedTab by remember { mutableIntStateOf(0) }
     val settings = rememberAppSettings()
+    val repository = rememberSettingsRepository()
+    val loggingState = rememberBooleanSettingState(repository, HookLoggingSetting)
+    val logsEnabled = loggingState.checked.value
+    val navPages = remember(logsEnabled) {
+        if (logsEnabled) NavPage.entries else NavPage.entries.filterNot { it == NavPage.Logs }
+    }
+    LaunchedEffect(navPages.size) {
+        if (selectedTab >= navPages.size) selectedTab = 0
+    }
     val floatingNav = settings.floatingNavEnabled.value
     val liquidGlass = settings.liquidGlassEnabled.value
     val cs = colorSchemeFor(resolveIsDark(settings.themeMode.value))
@@ -246,7 +260,7 @@ private fun LiquidGlassHome() {
                         modifier = Modifier
                             .fillMaxSize()
                             .layerBackdrop(backdrop)
-                    ) { page -> PageContent(page, cs) }
+                    ) { page -> PageContent(navPages.getOrElse(page) { NavPage.Home }, cs) }
 
                     Box(
                         Modifier
@@ -261,6 +275,7 @@ private fun LiquidGlassHome() {
                             liquidGlass = liquidGlass,
                             cs = cs,
                             navTint = navTint,
+                            navPages = navPages,
                             onTabSelected = { selectedTab = it }
                         )
                     }
@@ -281,6 +296,7 @@ private fun LiquidGlassHome() {
                         isCompactTablet = true,
                         cs = cs,
                         navTint = navTint,
+                        navPages = navPages,
                         onTabSelected = { selectedTab = it }
                     )
                     AnimatedContent(
@@ -290,7 +306,7 @@ private fun LiquidGlassHome() {
                             .weight(1f)
                             .fillMaxHeight()
                             .layerBackdrop(backdrop)
-                    ) { page -> PageContent(page, cs) }
+                    ) { page -> PageContent(navPages.getOrElse(page) { NavPage.Home }, cs) }
                 }
             }
             else -> {
@@ -308,6 +324,7 @@ private fun LiquidGlassHome() {
                         isCompactTablet = false,
                         cs = cs,
                         navTint = navTint,
+                        navPages = navPages,
                         onTabSelected = { selectedTab = it }
                     )
                     AnimatedContent(
@@ -317,7 +334,7 @@ private fun LiquidGlassHome() {
                             .weight(1f)
                             .fillMaxHeight()
                             .layerBackdrop(backdrop)
-                    ) { page -> PageContent(page, cs) }
+                    ) { page -> PageContent(navPages.getOrElse(page) { NavPage.Home }, cs) }
                 }
             }
         }
@@ -325,11 +342,12 @@ private fun LiquidGlassHome() {
 }
 
 @Composable
-private fun PageContent(page: Int, cs: AppColorScheme) {
+private fun PageContent(page: NavPage, cs: AppColorScheme) {
     when (page) {
-        0 -> HomePage(cs)
-        1 -> FeaturesPage(cs)
-        2 -> SettingsPage(cs)
+        NavPage.Home -> HomePage(cs)
+        NavPage.Features -> FeaturesPage(cs)
+        NavPage.Logs -> HookLogsPage(cs)
+        NavPage.Settings -> SettingsPage(cs)
     }
 }
 
@@ -343,6 +361,7 @@ private fun GlassNavigationBar(
     compact: Boolean,
     cs: AppColorScheme,
     navTint: Color,
+    navPages: List<NavPage>,
     onTabSelected: (Int) -> Unit
 ) {
     val cornerRadius = if (compact) 20.dp else 24.dp
@@ -377,7 +396,7 @@ private fun GlassNavigationBar(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            NavPage.entries.forEachIndexed { index, page ->
+            navPages.forEachIndexed { index, page ->
                 LiquidNavItem(
                     page = page,
                     selected = selectedTab == index,
@@ -479,6 +498,7 @@ private fun FloatingNavPill(
     liquidGlass: Boolean,
     cs: AppColorScheme,
     navTint: Color,
+    navPages: List<NavPage>,
     onTabSelected: (Int) -> Unit
 ) {
     val pillShape = if (floatingNav) {
@@ -509,7 +529,7 @@ private fun FloatingNavPill(
         contentAlignment = Alignment.CenterStart
     ) {
         val contentPadding = 2.dp
-        val tabCount = NavPage.entries.size
+        val tabCount = navPages.size
         val tabWidth = (maxWidth - contentPadding * 2f) / tabCount.toFloat()
         val isLtr = LocalLayoutDirection.current == LayoutDirection.Ltr
         val indicatorIndex = if (isLtr) selectedTab else tabCount - selectedTab - 1
@@ -552,7 +572,7 @@ private fun FloatingNavPill(
                 .padding(horizontal = contentPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            NavPage.entries.forEachIndexed { index, page ->
+            navPages.forEachIndexed { index, page ->
                 LiquidNavItem(
                     page = page,
                     selected = selectedTab == index,
@@ -578,6 +598,7 @@ private fun GlassNavigationRail(
     isCompactTablet: Boolean,
     cs: AppColorScheme,
     navTint: Color,
+    navPages: List<NavPage>,
     onTabSelected: (Int) -> Unit
 ) {
     val railShape = RoundedCornerShape(
@@ -634,7 +655,7 @@ private fun GlassNavigationRail(
                     )
                 }
 
-                NavPage.entries.forEachIndexed { index, page ->
+                navPages.forEachIndexed { index, page ->
                     LiquidNavItem(
                         page = page,
                         selected = selectedTab == index,
@@ -668,7 +689,7 @@ private fun GlassNavigationRail(
                     }
                 },
             ) {
-                NavPage.entries.forEachIndexed { index, page ->
+                navPages.forEachIndexed { index, page ->
                     NavigationRailItem(
                         selected = selectedTab == index,
                         onClick = { onTabSelected(index) },

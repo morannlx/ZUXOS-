@@ -15,6 +15,6 @@ object Hooks : Iterable<Hook> {
     override fun iterator(): Iterator<Hook> = _all.iterator()
 
     fun register(vararg hooks: Hook) {
-        _all.addAll(hooks)
+        hooks.forEach { hook -> _all.add(hook) }
     }
 }

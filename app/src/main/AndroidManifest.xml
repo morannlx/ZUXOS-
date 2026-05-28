@@ -89,6 +89,11 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <provider
+            android:name=".logging.HookLogProvider"
+            android:authorities="${applicationId}.hooklogs"
+            android:exported="true" />
+
         <activity-alias
             android:name=".Home"
             android:exported="true"

@@ -12,10 +12,14 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
  * 可选：
  * - [defaultEnabled]：默认是否启用（默认为 false）
  * - [targetPackage]：Hook 作用的目标应用包名，用于 UI 重启
+ * - [targetPackages]：Hook 实际匹配的目标包集合，用于注册和日志过滤
  */
 interface Hook {
     val prefKey: String
+    val name: String get() = prefKey
+    val moduleName: String get() = targetPackage ?: "module"
     val defaultEnabled: Boolean get() = false
     val targetPackage: String? get() = null
+    val targetPackages: Set<String> get() = targetPackage?.let { setOf(it) }.orEmpty()
     fun PackageParam.onHook()
 }

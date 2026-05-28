@@ -8,6 +8,7 @@
     <!-- Navigation -->
     <string name="nav_home">Home</string>
     <string name="nav_features">Features</string>
+    <string name="nav_logs">Logs</string>
     <string name="nav_settings">Settings</string>
 
     <!-- Home Page -->
@@ -70,6 +71,18 @@
     <string name="settings_reset_defaults">Reset to Defaults</string>
     <string name="settings_reset_defaults_desc">Restore theme, navigation, and hook settings to defaults</string>
     <string name="settings_reset_done">Settings have been reset</string>
+    <string name="hook_logging_enabled">Enable Hook Logs</string>
+    <string name="hook_logging_enabled_desc">Record hook registration, enablement, execution, failures, and stack traces; shows the Logs tab when enabled</string>
+
+    <!-- Logs Page -->
+    <string name="page_logs_title">Hook Logs</string>
+    <string name="page_logs_subtitle">Inspect hook registration and execution events</string>
+    <string name="logs_filter_hint">Filter by Hook name, module, or package</string>
+    <string name="logs_refresh">Refresh</string>
+    <string name="logs_refresh_desc">Reload current hook logs</string>
+    <string name="logs_clear">Clear</string>
+    <string name="logs_clear_desc">Delete stored hook logs</string>
+    <string name="logs_empty">No hook logs matched</string>
 
     <!-- System Settings -->
     <string name="system_settings_title">System Settings</string>

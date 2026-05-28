@@ -22,7 +22,9 @@ import androidx.compose.ui.unit.sp
 import me.inkdye.zuxos.R
 import me.inkdye.zuxos.ui.components.ActionCard
 import me.inkdye.zuxos.ui.components.AppBackground
+import me.inkdye.zuxos.ui.components.BooleanSettingSwitch
 import me.inkdye.zuxos.ui.components.PageHeader
+import me.inkdye.zuxos.ui.settings.HookLoggingSetting
 import me.inkdye.zuxos.ui.settings.rememberAppSettings
 import me.inkdye.zuxos.ui.settings.rememberSettingsRepository
 import me.inkdye.zuxos.ui.theme.colorSchemeFor
@@ -60,6 +62,14 @@ private fun GeneralSettingsPage(onBack: () -> Unit) {
                     subtitle = stringResource(R.string.general_settings_desc),
                     colorScheme = cs,
                     onBack = onBack,
+                )
+            }
+
+            item {
+                BooleanSettingSwitch(
+                    spec = HookLoggingSetting,
+                    repository = repository,
+                    colorScheme = cs,
                 )
             }
 
