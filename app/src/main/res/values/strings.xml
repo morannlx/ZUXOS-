@@ -240,8 +240,8 @@
     <string name="lenovo_game_assistant_settings_desc">Configure direct Hook gates for Game Assistant and game settings</string>
     <string name="lenovo_game_assistant_force_direct_features_title">Force Direct Feature Gates</string>
     <string name="lenovo_game_assistant_force_direct_features_desc">Return enabled for voice assistant, barrage, highlight, island, anti-misoperation, notification DND, intelligent pre-download, intelligent bypass charging, and network acceleration entries</string>
-    <string name="lenovo_game_assistant_spoof_elden_title">Spoof Elden Model</string>
-    <string name="lenovo_game_assistant_spoof_elden_desc">Report the Game Assistant runtime as Elden instead of Topaz and prefer Elden ROM feature tables</string>
+    <string name="lenovo_game_assistant_spoof_elden_title">Use Legion Series Game Assistant</string>
+    <string name="lenovo_game_assistant_spoof_elden_desc">Use Elden/Legion Game Assistant feature gates and fix CPU frequency and temperature display</string>
     <string name="lenovo_game_assistant_force_voice_assistant_title">Voice Assistant / Voice Changer</string>
     <string name="lenovo_game_assistant_force_voice_assistant_desc">Force FEATURE_VOICE_ASSISTANT isEnable(Context) to return enabled</string>
     <string name="lenovo_game_assistant_force_barrage_title">Barrage</string>

@@ -4,6 +4,7 @@ import android.content.Context
 import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import java.io.File
 import me.inkdye.zuxos.config.ModuleConfig
 import me.inkdye.zuxos.hook.Hook
 
@@ -83,6 +84,15 @@ object LenovoGameAssistantFeatureUnlockHook : Hook {
         "isTopaz",
     )
 
+    private val TEMPERATURE_FILE_PATHS = listOf(
+        "/sys/class/thermal/thermal_zone9/temp",
+        "/sys/class/thermal/thermal_zone0/temp",
+        "/sys/class/thermal/thermal_zone1/temp",
+        "/sys/class/thermal/thermal_zone2/temp",
+        "/sys/devices/virtual/thermal/thermal_zone9/temp",
+        "/sys/class/hwmon/hwmon0/temp1_input",
+    )
+
     override fun PackageParam.onHook() {
         hookFeatureIsEnable()
         hookRomFeatureOpenGate()
@@ -91,6 +101,7 @@ object LenovoGameAssistantFeatureUnlockHook : Hook {
         hookSettingsModelGates()
         hookSystemProperties()
         hookRomFeatures()
+        hookHardwareDisplayFixes()
     }
 
     private fun PackageParam.hookFeatureIsEnable() {
@@ -204,6 +215,39 @@ object LenovoGameAssistantFeatureUnlockHook : Hook {
         }.onFailure { YLog.error("$moduleName: hook FeaturesBaseOnRomKt.getRomFeatures failed", it) }
     }
 
+    private fun PackageParam.hookHardwareDisplayFixes() {
+        if (packageName != PACKAGE_GAME_SERVICE) return
+        runCatching {
+            "com.zui.game.service.util.HWDataInterface".toClass().apply {
+                hookIntGetter(this, "getCpuCurFreq") { getLastCpuCoreCurrentFreq() }
+                hookIntGetter(this, "getCpuCurFreq", Int::class.javaPrimitiveType!!) { getLastCpuCoreCurrentFreq() }
+                hookIntGetter(this, "getCpuMaxFreq") { getLastCpuCoreMaxFreq() }
+                hookIntGetter(this, "getTemp") { readTemperatureFromFile() }
+                hookIntGetter(this, "getThermalTemp", Int::class.javaPrimitiveType!!) { readTemperatureFromFile() }
+            }
+        }.onFailure { YLog.error("$moduleName: hook HWDataInterface display fixes failed", it) }
+    }
+
+    private fun PackageParam.hookIntGetter(
+        targetClass: Class<*>,
+        methodName: String,
+        vararg parameterTypes: Class<*>,
+        valueProvider: () -> Int,
+    ) {
+        runCatching {
+            targetClass.method {
+                name = methodName
+                if (parameterTypes.isEmpty()) emptyParam() else param(*parameterTypes)
+            }.hook {
+                before {
+                    if (!isEnabled(ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN)) return@before
+                    val value = valueProvider()
+                    if (value > 0 || methodName.startsWith("getCpu")) result = value
+                }
+            }
+        }
+    }
+
     private fun PackageParam.hookBooleanGetter(
         targetClass: Class<*>,
         methodName: String,
@@ -233,6 +277,50 @@ object LenovoGameAssistantFeatureUnlockHook : Hook {
 
     private fun anyDirectFeatureEnabled(): Boolean {
         return FEATURE_GATES.any { isEnabled(it.prefKey) }
+    }
+
+    private fun getLastCpuCoreCurrentFreq(): Int {
+        val lastCoreIndex = getLastCpuCoreIndex()
+        if (lastCoreIndex >= 0) {
+            readIntFile("/sys/devices/system/cpu/cpu$lastCoreIndex/cpufreq/scaling_cur_freq")?.let { return it }
+        }
+        return readIntFile("/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq")
+            ?: readIntFile("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq")
+            ?: 0
+    }
+
+    private fun getLastCpuCoreMaxFreq(): Int {
+        val lastCoreIndex = getLastCpuCoreIndex()
+        if (lastCoreIndex >= 0) {
+            readIntFile("/sys/devices/system/cpu/cpu$lastCoreIndex/cpufreq/scaling_max_freq")?.let { return it }
+        }
+        return readIntFile("/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq")
+            ?: readIntFile("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq")
+            ?: 0
+    }
+
+    private fun getLastCpuCoreIndex(): Int {
+        return runCatching {
+            File("/sys/devices/system/cpu/")
+                .listFiles { file -> file.name.matches(Regex("cpu\\d+")) }
+                ?.mapNotNull { file -> file.name.removePrefix("cpu").toIntOrNull() }
+                ?.maxOrNull()
+                ?: -1
+        }.getOrDefault(-1)
+    }
+
+    private fun readTemperatureFromFile(): Int {
+        return TEMPERATURE_FILE_PATHS.firstNotNullOfOrNull { path ->
+            readIntFile(path)?.takeIf { it > 0 }
+        } ?: -1
+    }
+
+    private fun readIntFile(path: String): Int? {
+        return runCatching {
+            val file = File(path)
+            if (!file.exists() || !file.canRead()) return null
+            file.readLines().firstOrNull()?.trim()?.takeIf { it.isNotEmpty() }?.toIntOrNull()
+        }.getOrNull()
     }
 
     private fun PackageParam.isFeatureForcedOpen(key: String): Boolean {
