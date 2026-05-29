@@ -14,6 +14,7 @@ import me.inkdye.zuxos.corepatch.CorePatchForT
 import me.inkdye.zuxos.corepatch.CorePatchForU
 import me.inkdye.zuxos.corepatch.CorePatchForV
 import me.inkdye.zuxos.hook.settings.AppInfoExtend
+import me.inkdye.zuxos.hook.lenovo.LenovoGameAssistantFeatureUnlockHook
 import me.inkdye.zuxos.hook.lenovo.LenovoSystemUpdateLocalInstallHook
 import me.inkdye.zuxos.hook.lenovo.LenovoSystemUpdateReminderHook
 import me.inkdye.zuxos.hook.packageinstaller.PackageInstallerAllowPermissionHook
@@ -39,6 +40,7 @@ class HookEntry : IYukiHookXposedInit {
             PackageInstallerDisableInstallerAdHook,
             PackageInstallerStyleHook,
             PackageInstallerDisableDeleteHook,
+            LenovoGameAssistantFeatureUnlockHook,
             LenovoSystemUpdateReminderHook,
             LenovoSystemUpdateLocalInstallHook,
             DisableFlagSecure,

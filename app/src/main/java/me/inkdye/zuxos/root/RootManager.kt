@@ -22,6 +22,10 @@ enum class RestartScope(val label: String, internal val command: String) {
         "Lenovo System Update",
         "am force-stop com.lenovo.ota; am force-stop com.android.settings; am force-stop com.zui.launcher",
     ),
+    LENOVO_GAME_ASSISTANT(
+        "Lenovo Game Assistant",
+        "am force-stop com.zui.game.service; am force-stop com.android.settings",
+    ),
     ANDROID_SYSTEM("Android System", "kill $(pidof system_server)"),
 }
 

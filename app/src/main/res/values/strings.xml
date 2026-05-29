@@ -69,6 +69,9 @@
     <string name="feature_group_lenovo_system_update">Lenovo System Update</string>
     <string name="feature_group_lenovo_system_update_item1">New-version reminder suppression</string>
     <string name="feature_group_lenovo_system_update_item2">Local update package entry</string>
+    <string name="feature_group_lenovo_game_assistant">Lenovo Game Assistant</string>
+    <string name="feature_group_lenovo_game_assistant_item1">Voice assistant and direct feature gates</string>
+    <string name="feature_group_lenovo_game_assistant_item2">Game setting entry unlocks</string>
     <string name="feature_group_package_installer">Package Installer</string>
     <string name="feature_group_package_installer_item1">Skip safety scan and warning page</string>
     <string name="feature_group_package_installer_item2">Keep APK files after installation</string>
@@ -191,6 +194,36 @@
     <string name="lenovo_system_update_hide_new_version_reminder_desc">Keep system update new-version badges, About page labels, and new-version notifications hidden while preserving the update entry itself</string>
     <string name="lenovo_system_update_force_local_install_title">Force Local Install Entry</string>
     <string name="lenovo_system_update_force_local_install_desc">Always show the local update package menu item and keep the original System Update tap flow</string>
+
+    <!-- Lenovo Game Assistant -->
+    <string name="lenovo_game_assistant_function">Lenovo Game Assistant</string>
+    <string name="lenovo_game_assistant_function_desc">Force selected direct feature gates in Game Assistant</string>
+    <string name="lenovo_game_assistant_settings_title">Lenovo Game Assistant</string>
+    <string name="lenovo_game_assistant_settings_desc">Configure direct Hook gates for Game Assistant and game settings</string>
+    <string name="lenovo_game_assistant_force_direct_features_title">Force Direct Feature Gates</string>
+    <string name="lenovo_game_assistant_force_direct_features_desc">Return enabled for voice assistant, barrage, highlight, island, anti-misoperation, notification DND, intelligent pre-download, intelligent bypass charging, and network acceleration entries</string>
+    <string name="lenovo_game_assistant_spoof_elden_title">Spoof Elden Model</string>
+    <string name="lenovo_game_assistant_spoof_elden_desc">Report the Game Assistant runtime as Elden instead of Topaz and prefer Elden ROM feature tables</string>
+    <string name="lenovo_game_assistant_force_voice_assistant_title">Voice Assistant / Voice Changer</string>
+    <string name="lenovo_game_assistant_force_voice_assistant_desc">Force FEATURE_VOICE_ASSISTANT isEnable(Context) to return enabled</string>
+    <string name="lenovo_game_assistant_force_barrage_title">Barrage</string>
+    <string name="lenovo_game_assistant_force_barrage_desc">Force FEATURE_BARRAGE isEnable(Context) to return enabled</string>
+    <string name="lenovo_game_assistant_force_highlight_title">Highlight</string>
+    <string name="lenovo_game_assistant_force_highlight_desc">Force FEATURE_HILIGHT isEnable(Context) to return enabled</string>
+    <string name="lenovo_game_assistant_force_island_title">Island</string>
+    <string name="lenovo_game_assistant_force_island_desc">Force FEATURE_ISLAND isEnable(Context) to return enabled</string>
+    <string name="lenovo_game_assistant_force_prevent_misoperation_title">Anti-Misoperation</string>
+    <string name="lenovo_game_assistant_force_prevent_misop_desc">Force FEATURE_PREVENT_MISOPERATION isEnable(Context) to return enabled</string>
+    <string name="lenovo_game_assistant_force_notification_dnd_title">Notification DND</string>
+    <string name="lenovo_game_assistant_force_notification_dnd_desc">Force FEATURE_NOTIFICATION_UNDISTURB isEnable(Context) to return enabled</string>
+    <string name="lenovo_game_assistant_force_intelligent_pre_download_title">Intelligent Pre-Download</string>
+    <string name="lenovo_game_assistant_force_intelligent_pre_download_desc">Force FEATURE_INTELLIGENT_PRE_DOWNLOAD isEnable(Context) to return enabled</string>
+    <string name="lenovo_game_assistant_force_intelligent_bypass_charging_title">Intelligent Bypass Charging</string>
+    <string name="lenovo_game_assistant_force_intelligent_bypass_charging_desc">Force FEATURE_INTELLIGENT_BYPASS_CHARGING isEnable(Context) to return enabled</string>
+    <string name="lenovo_game_assistant_force_mobile_network_accelerate_title">Mobile Network Acceleration</string>
+    <string name="lenovo_game_assistant_force_mobile_network_accelerate_desc">Force FEATURE_MOBILE_NETWORK_ACCELERATE isEnable(Context) to return enabled</string>
+    <string name="lenovo_game_assistant_force_main_sim_accelerate_title">Main SIM Acceleration</string>
+    <string name="lenovo_game_assistant_force_main_sim_accelerate_desc">Force FEATURE_MAIN_SIM_ACCELERATE isEnable(Context) to return enabled</string>
 
     <!-- Package Installer -->
     <string name="package_installer_settings_title">Package Installer</string>

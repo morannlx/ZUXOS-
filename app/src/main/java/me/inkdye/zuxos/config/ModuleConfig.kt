@@ -29,6 +29,24 @@ object ModuleConfig {
     const val PACKAGE_INSTALLER_DISABLE_DELETE = "package_installer_disable_delete"
     const val LENOVO_SYSTEM_UPDATE_HIDE_NEW_VERSION_REMINDER = "lenovo_system_update_hide_new_version_reminder"
     const val LENOVO_SYSTEM_UPDATE_FORCE_LOCAL_INSTALL = "lenovo_system_update_force_local_install"
+    const val LENOVO_GAME_ASSISTANT_FORCE_DIRECT_FEATURES = "lenovo_game_assistant_force_direct_features"
+    const val LENOVO_GAME_ASSISTANT_SPOOF_ELDEN = "lenovo_game_assistant_spoof_elden"
+    const val LENOVO_GAME_ASSISTANT_FORCE_VOICE_ASSISTANT = "lenovo_game_assistant_force_voice_assistant"
+    const val LENOVO_GAME_ASSISTANT_FORCE_BARRAGE = "lenovo_game_assistant_force_barrage"
+    const val LENOVO_GAME_ASSISTANT_FORCE_HIGHLIGHT = "lenovo_game_assistant_force_highlight"
+    const val LENOVO_GAME_ASSISTANT_FORCE_ISLAND = "lenovo_game_assistant_force_island"
+    const val LENOVO_GAME_ASSISTANT_FORCE_PREVENT_MISOPERATION =
+        "lenovo_game_assistant_force_prevent_misoperation"
+    const val LENOVO_GAME_ASSISTANT_FORCE_NOTIFICATION_DND =
+        "lenovo_game_assistant_force_notification_dnd"
+    const val LENOVO_GAME_ASSISTANT_FORCE_INTELLIGENT_PRE_DOWNLOAD =
+        "lenovo_game_assistant_force_intelligent_pre_download"
+    const val LENOVO_GAME_ASSISTANT_FORCE_INTELLIGENT_BYPASS_CHARGING =
+        "lenovo_game_assistant_force_intelligent_bypass_charging"
+    const val LENOVO_GAME_ASSISTANT_FORCE_MOBILE_NETWORK_ACCELERATE =
+        "lenovo_game_assistant_force_mobile_network_accelerate"
+    const val LENOVO_GAME_ASSISTANT_FORCE_MAIN_SIM_ACCELERATE =
+        "lenovo_game_assistant_force_main_sim_accelerate"
     const val HOOK_LOGGING_ENABLED = "hook_logging_enabled"
     const val DISABLE_FLAG_SECURE = "disable_flag_secure"
     const val CORE_PATCH_ENABLED = "core_patch_enabled"

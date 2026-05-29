@@ -7,5 +7,6 @@
         <item>com.lenovo.ota</item>
         <item>com.android.packageinstaller</item>
         <item>com.google.android.packageinstaller</item>
+        <item>com.zui.game.service</item>
     </string-array>
 </resources>

@@ -69,6 +69,9 @@
     <string name="feature_group_lenovo_system_update">联想系统更新</string>
     <string name="feature_group_lenovo_system_update_item1">新版本提醒屏蔽</string>
     <string name="feature_group_lenovo_system_update_item2">本地更新包入口</string>
+    <string name="feature_group_lenovo_game_assistant">联想游戏助手</string>
+    <string name="feature_group_lenovo_game_assistant_item1">语音助手与直接功能门禁</string>
+    <string name="feature_group_lenovo_game_assistant_item2">游戏设置入口解锁</string>
     <string name="feature_group_package_installer">软件包安装程序</string>
     <string name="feature_group_package_installer_item1">跳过安全扫描和警告页</string>
     <string name="feature_group_package_installer_item2">安装后保留 APK 文件</string>
@@ -178,6 +181,36 @@
     <string name="lenovo_system_update_hide_new_version_reminder_desc">隐藏系统更新新版本角标、关于页标签和新版本通知，同时保留系统更新入口</string>
     <string name="lenovo_system_update_force_local_install_title">强制显示本地安装入口</string>
     <string name="lenovo_system_update_force_local_install_desc">始终显示本地更新包菜单项，并保留系统更新原生点击流程</string>
+
+    <!-- 联想游戏助手 -->
+    <string name="lenovo_game_assistant_function">联想游戏助手</string>
+    <string name="lenovo_game_assistant_function_desc">强制放行游戏助手中的直接功能门禁</string>
+    <string name="lenovo_game_assistant_settings_title">联想游戏助手</string>
+    <string name="lenovo_game_assistant_settings_desc">配置游戏助手和游戏设置中的直接 Hook 门禁</string>
+    <string name="lenovo_game_assistant_force_direct_features_title">强制开启直接功能门禁</string>
+    <string name="lenovo_game_assistant_force_direct_features_desc">对语音助手、弹幕、高光、灵动岛、防误触、通知免打扰、智能预下载、智能旁路充电和网络加速入口返回启用</string>
+    <string name="lenovo_game_assistant_spoof_elden_title">伪装 Elden 机型</string>
+    <string name="lenovo_game_assistant_spoof_elden_desc">在游戏助手运行时将机型判定从 Topaz 改为 Elden，并优先使用 Elden ROM 功能表</string>
+    <string name="lenovo_game_assistant_force_voice_assistant_title">语音助手 / 变声器</string>
+    <string name="lenovo_game_assistant_force_voice_assistant_desc">强制 FEATURE_VOICE_ASSISTANT 的 isEnable(Context) 返回启用</string>
+    <string name="lenovo_game_assistant_force_barrage_title">弹幕</string>
+    <string name="lenovo_game_assistant_force_barrage_desc">强制 FEATURE_BARRAGE 的 isEnable(Context) 返回启用</string>
+    <string name="lenovo_game_assistant_force_highlight_title">高光</string>
+    <string name="lenovo_game_assistant_force_highlight_desc">强制 FEATURE_HILIGHT 的 isEnable(Context) 返回启用</string>
+    <string name="lenovo_game_assistant_force_island_title">灵动岛</string>
+    <string name="lenovo_game_assistant_force_island_desc">强制 FEATURE_ISLAND 的 isEnable(Context) 返回启用</string>
+    <string name="lenovo_game_assistant_force_prevent_misoperation_title">防误触</string>
+    <string name="lenovo_game_assistant_force_prevent_misop_desc">强制 FEATURE_PREVENT_MISOPERATION 的 isEnable(Context) 返回启用</string>
+    <string name="lenovo_game_assistant_force_notification_dnd_title">通知免打扰</string>
+    <string name="lenovo_game_assistant_force_notification_dnd_desc">强制 FEATURE_NOTIFICATION_UNDISTURB 的 isEnable(Context) 返回启用</string>
+    <string name="lenovo_game_assistant_force_intelligent_pre_download_title">智能预下载</string>
+    <string name="lenovo_game_assistant_force_intelligent_pre_download_desc">强制 FEATURE_INTELLIGENT_PRE_DOWNLOAD 的 isEnable(Context) 返回启用</string>
+    <string name="lenovo_game_assistant_force_intelligent_bypass_charging_title">智能旁路充电</string>
+    <string name="lenovo_game_assistant_force_intelligent_bypass_charging_desc">强制 FEATURE_INTELLIGENT_BYPASS_CHARGING 的 isEnable(Context) 返回启用</string>
+    <string name="lenovo_game_assistant_force_mobile_network_accelerate_title">移动网络加速</string>
+    <string name="lenovo_game_assistant_force_mobile_network_accelerate_desc">强制 FEATURE_MOBILE_NETWORK_ACCELERATE 的 isEnable(Context) 返回启用</string>
+    <string name="lenovo_game_assistant_force_main_sim_accelerate_title">主卡加速</string>
+    <string name="lenovo_game_assistant_force_main_sim_accelerate_desc">强制 FEATURE_MAIN_SIM_ACCELERATE 的 isEnable(Context) 返回启用</string>
 
     <!-- 软件包安装程序 -->
     <string name="package_installer_settings_title">软件包安装程序</string>

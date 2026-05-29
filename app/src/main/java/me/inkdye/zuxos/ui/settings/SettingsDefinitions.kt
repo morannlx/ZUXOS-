@@ -21,6 +21,30 @@ object SettingKeys {
         ModuleConfig.LENOVO_SYSTEM_UPDATE_HIDE_NEW_VERSION_REMINDER
     const val LENOVO_SYSTEM_UPDATE_FORCE_LOCAL_INSTALL =
         ModuleConfig.LENOVO_SYSTEM_UPDATE_FORCE_LOCAL_INSTALL
+    const val LENOVO_GAME_ASSISTANT_FORCE_DIRECT_FEATURES =
+        ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_DIRECT_FEATURES
+    const val LENOVO_GAME_ASSISTANT_SPOOF_ELDEN =
+        ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN
+    const val LENOVO_GAME_ASSISTANT_FORCE_VOICE_ASSISTANT =
+        ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_VOICE_ASSISTANT
+    const val LENOVO_GAME_ASSISTANT_FORCE_BARRAGE =
+        ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_BARRAGE
+    const val LENOVO_GAME_ASSISTANT_FORCE_HIGHLIGHT =
+        ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_HIGHLIGHT
+    const val LENOVO_GAME_ASSISTANT_FORCE_ISLAND =
+        ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_ISLAND
+    const val LENOVO_GAME_ASSISTANT_FORCE_PREVENT_MISOPERATION =
+        ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_PREVENT_MISOPERATION
+    const val LENOVO_GAME_ASSISTANT_FORCE_NOTIFICATION_DND =
+        ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_NOTIFICATION_DND
+    const val LENOVO_GAME_ASSISTANT_FORCE_INTELLIGENT_PRE_DOWNLOAD =
+        ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_INTELLIGENT_PRE_DOWNLOAD
+    const val LENOVO_GAME_ASSISTANT_FORCE_INTELLIGENT_BYPASS_CHARGING =
+        ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_INTELLIGENT_BYPASS_CHARGING
+    const val LENOVO_GAME_ASSISTANT_FORCE_MOBILE_NETWORK_ACCELERATE =
+        ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_MOBILE_NETWORK_ACCELERATE
+    const val LENOVO_GAME_ASSISTANT_FORCE_MAIN_SIM_ACCELERATE =
+        ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_MAIN_SIM_ACCELERATE
     const val HOOK_LOGGING_ENABLED = "hook_logging_enabled"
     const val DISABLE_FLAG_SECURE = ModuleConfig.DISABLE_FLAG_SECURE
     const val CORE_PATCH_ENABLED = ModuleConfig.CORE_PATCH_ENABLED
@@ -104,6 +128,75 @@ val LenovoSystemUpdateLocalInstallSetting = BooleanSettingSpec(
 val LenovoSystemUpdateFeatureSettings = listOf(
     LenovoSystemUpdateReminderSetting,
     LenovoSystemUpdateLocalInstallSetting,
+)
+
+val LenovoGameAssistantFeatureSettings = listOf(
+    BooleanSettingSpec(
+        SettingKeys.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN,
+        R.string.lenovo_game_assistant_spoof_elden_title,
+        R.string.lenovo_game_assistant_spoof_elden_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.LENOVO_GAME_ASSISTANT_FORCE_VOICE_ASSISTANT,
+        R.string.lenovo_game_assistant_force_voice_assistant_title,
+        R.string.lenovo_game_assistant_force_voice_assistant_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.LENOVO_GAME_ASSISTANT_FORCE_BARRAGE,
+        R.string.lenovo_game_assistant_force_barrage_title,
+        R.string.lenovo_game_assistant_force_barrage_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.LENOVO_GAME_ASSISTANT_FORCE_HIGHLIGHT,
+        R.string.lenovo_game_assistant_force_highlight_title,
+        R.string.lenovo_game_assistant_force_highlight_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.LENOVO_GAME_ASSISTANT_FORCE_ISLAND,
+        R.string.lenovo_game_assistant_force_island_title,
+        R.string.lenovo_game_assistant_force_island_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.LENOVO_GAME_ASSISTANT_FORCE_PREVENT_MISOPERATION,
+        R.string.lenovo_game_assistant_force_prevent_misoperation_title,
+        R.string.lenovo_game_assistant_force_prevent_misop_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.LENOVO_GAME_ASSISTANT_FORCE_NOTIFICATION_DND,
+        R.string.lenovo_game_assistant_force_notification_dnd_title,
+        R.string.lenovo_game_assistant_force_notification_dnd_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.LENOVO_GAME_ASSISTANT_FORCE_INTELLIGENT_PRE_DOWNLOAD,
+        R.string.lenovo_game_assistant_force_intelligent_pre_download_title,
+        R.string.lenovo_game_assistant_force_intelligent_pre_download_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.LENOVO_GAME_ASSISTANT_FORCE_INTELLIGENT_BYPASS_CHARGING,
+        R.string.lenovo_game_assistant_force_intelligent_bypass_charging_title,
+        R.string.lenovo_game_assistant_force_intelligent_bypass_charging_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.LENOVO_GAME_ASSISTANT_FORCE_MOBILE_NETWORK_ACCELERATE,
+        R.string.lenovo_game_assistant_force_mobile_network_accelerate_title,
+        R.string.lenovo_game_assistant_force_mobile_network_accelerate_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.LENOVO_GAME_ASSISTANT_FORCE_MAIN_SIM_ACCELERATE,
+        R.string.lenovo_game_assistant_force_main_sim_accelerate_title,
+        R.string.lenovo_game_assistant_force_main_sim_accelerate_desc,
+        false,
+    ),
 )
 
 val DisableFlagSecureSetting = BooleanSettingSpec(
@@ -217,4 +310,5 @@ val ModuleBooleanSettings =
         CorePatchMasterSetting,
     ) +
         AppInfoDetailSettings + PackageInstallerFeatureSettings +
-        LenovoSystemUpdateFeatureSettings + CorePatchFeatureSettings
+        LenovoSystemUpdateFeatureSettings + LenovoGameAssistantFeatureSettings +
+        CorePatchFeatureSettings
