@@ -92,6 +92,16 @@ private fun SystemSettingsPage(onBack: () -> Unit) {
                     },
                 )
             }
+            item {
+                SettingGridCard(
+                    title = stringResource(R.string.lenovo_about_device_function),
+                    desc = stringResource(R.string.lenovo_about_device_function_desc),
+                    cs = cs,
+                    onClick = {
+                        context.startActivity(Intent(context, LenovoAboutDeviceSettingsActivity::class.java))
+                    },
+                )
+            }
         }
     }
 }

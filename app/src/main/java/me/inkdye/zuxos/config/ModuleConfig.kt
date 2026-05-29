@@ -29,6 +29,16 @@ object ModuleConfig {
     const val PACKAGE_INSTALLER_DISABLE_DELETE = "package_installer_disable_delete"
     const val LENOVO_SYSTEM_UPDATE_HIDE_NEW_VERSION_REMINDER = "lenovo_system_update_hide_new_version_reminder"
     const val LENOVO_SYSTEM_UPDATE_FORCE_LOCAL_INSTALL = "lenovo_system_update_force_local_install"
+    const val LENOVO_ABOUT_DEVICE_INFO_ENABLED = "lenovo_about_device_info_enabled"
+    const val LENOVO_ABOUT_DEVICE_IMAGE_ENABLED = "lenovo_about_device_image_enabled"
+    const val LENOVO_ABOUT_DEVICE_IMAGE_PATH = "lenovo_about_device_image_path"
+    const val LENOVO_ABOUT_DEVICE_NAME = "lenovo_about_device_name"
+    const val LENOVO_ABOUT_DEVICE_MODEL = "lenovo_about_device_model"
+    const val LENOVO_ABOUT_DEVICE_PROCESSOR = "lenovo_about_device_processor"
+    const val LENOVO_ABOUT_DEVICE_ROM = "lenovo_about_device_rom"
+    const val LENOVO_ABOUT_DEVICE_RAM = "lenovo_about_device_ram"
+    const val LENOVO_ABOUT_DEVICE_SOFTWARE_VERSION = "lenovo_about_device_software_version"
+    const val LENOVO_ABOUT_DEVICE_ANDROID_VERSION = "lenovo_about_device_android_version"
     const val LENOVO_GAME_ASSISTANT_FORCE_DIRECT_FEATURES = "lenovo_game_assistant_force_direct_features"
     const val LENOVO_GAME_ASSISTANT_SPOOF_ELDEN = "lenovo_game_assistant_spoof_elden"
     const val LENOVO_GAME_ASSISTANT_FORCE_VOICE_ASSISTANT = "lenovo_game_assistant_force_voice_assistant"
@@ -109,6 +119,17 @@ object ModuleConfig {
         }
     }
 
+    fun readString(key: String, defaultValue: String = ""): String {
+        return try {
+            val prefs = XSharedPreferences(MODULE_PACKAGE, PREFS_NAME)
+            prefs.reload()
+            prefs.getString(key, defaultValue) ?: defaultValue
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to read string config for key: $key", e)
+            defaultValue
+        }
+    }
+
     /**
      * 写入配置（App 进程调用）
      */
@@ -157,6 +178,21 @@ object ModuleConfig {
         }
     }
 
+    @SuppressLint("WorldReadableFiles")
+    fun saveString(context: Context, key: String, value: String) {
+        try {
+            val moduleContext = context.createPackageContext(
+                MODULE_PACKAGE, Context.CONTEXT_IGNORE_SECURITY
+            )
+            val prefs = moduleContext.getSharedPreferences(
+                PREFS_NAME, Context.MODE_WORLD_READABLE
+            )
+            prefs.edit().putString(key, value).commit()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to save string config: $key=$value", e)
+        }
+    }
+
     /**
      * 读取配置（App 进程调用，用于 UI 初始化）
      */
@@ -201,6 +237,21 @@ object ModuleConfig {
             prefs.getFloat(key, defaultValue)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to load float config for key: $key", e)
+            defaultValue
+        }
+    }
+
+    fun loadString(context: Context, key: String, defaultValue: String = ""): String {
+        return try {
+            val moduleContext = context.createPackageContext(
+                MODULE_PACKAGE, Context.CONTEXT_IGNORE_SECURITY
+            )
+            val prefs = moduleContext.getSharedPreferences(
+                PREFS_NAME, Context.MODE_WORLD_READABLE
+            )
+            prefs.getString(key, defaultValue) ?: defaultValue
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to load string config for key: $key", e)
             defaultValue
         }
     }

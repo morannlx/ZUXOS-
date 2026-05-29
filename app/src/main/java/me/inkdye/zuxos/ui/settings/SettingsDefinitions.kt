@@ -21,6 +21,26 @@ object SettingKeys {
         ModuleConfig.LENOVO_SYSTEM_UPDATE_HIDE_NEW_VERSION_REMINDER
     const val LENOVO_SYSTEM_UPDATE_FORCE_LOCAL_INSTALL =
         ModuleConfig.LENOVO_SYSTEM_UPDATE_FORCE_LOCAL_INSTALL
+    const val LENOVO_ABOUT_DEVICE_INFO_ENABLED =
+        ModuleConfig.LENOVO_ABOUT_DEVICE_INFO_ENABLED
+    const val LENOVO_ABOUT_DEVICE_IMAGE_ENABLED =
+        ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_ENABLED
+    const val LENOVO_ABOUT_DEVICE_IMAGE_PATH =
+        ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_PATH
+    const val LENOVO_ABOUT_DEVICE_NAME =
+        ModuleConfig.LENOVO_ABOUT_DEVICE_NAME
+    const val LENOVO_ABOUT_DEVICE_MODEL =
+        ModuleConfig.LENOVO_ABOUT_DEVICE_MODEL
+    const val LENOVO_ABOUT_DEVICE_PROCESSOR =
+        ModuleConfig.LENOVO_ABOUT_DEVICE_PROCESSOR
+    const val LENOVO_ABOUT_DEVICE_ROM =
+        ModuleConfig.LENOVO_ABOUT_DEVICE_ROM
+    const val LENOVO_ABOUT_DEVICE_RAM =
+        ModuleConfig.LENOVO_ABOUT_DEVICE_RAM
+    const val LENOVO_ABOUT_DEVICE_SOFTWARE_VERSION =
+        ModuleConfig.LENOVO_ABOUT_DEVICE_SOFTWARE_VERSION
+    const val LENOVO_ABOUT_DEVICE_ANDROID_VERSION =
+        ModuleConfig.LENOVO_ABOUT_DEVICE_ANDROID_VERSION
     const val LENOVO_GAME_ASSISTANT_FORCE_DIRECT_FEATURES =
         ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_DIRECT_FEATURES
     const val LENOVO_GAME_ASSISTANT_SPOOF_ELDEN =
@@ -95,6 +115,13 @@ data class ColorSettingSpec(
     val defaultValue: Int,
 )
 
+data class TextSettingSpec(
+    val key: String,
+    @param:StringRes val titleRes: Int,
+    @param:StringRes val descRes: Int,
+    val defaultValue: String,
+)
+
 val HookLoggingSetting = BooleanSettingSpec(
     key = SettingKeys.HOOK_LOGGING_ENABLED,
     titleRes = R.string.hook_logging_enabled,
@@ -158,6 +185,65 @@ val LenovoSystemUpdateLocalInstallSetting = BooleanSettingSpec(
 val LenovoSystemUpdateFeatureSettings = listOf(
     LenovoSystemUpdateReminderSetting,
     LenovoSystemUpdateLocalInstallSetting,
+)
+
+val LenovoAboutDeviceMasterSetting = BooleanSettingSpec(
+    key = SettingKeys.LENOVO_ABOUT_DEVICE_INFO_ENABLED,
+    titleRes = R.string.lenovo_about_device_enabled_title,
+    descRes = R.string.lenovo_about_device_enabled_desc,
+    defaultValue = false,
+)
+
+val LenovoAboutDeviceImageSetting = BooleanSettingSpec(
+    key = SettingKeys.LENOVO_ABOUT_DEVICE_IMAGE_ENABLED,
+    titleRes = R.string.lenovo_about_device_image_enabled_title,
+    descRes = R.string.lenovo_about_device_image_enabled_desc,
+    defaultValue = false,
+)
+
+val LenovoAboutDeviceTextSettings = listOf(
+    TextSettingSpec(
+        SettingKeys.LENOVO_ABOUT_DEVICE_NAME,
+        R.string.lenovo_about_device_name_title,
+        R.string.lenovo_about_device_name_desc,
+        "Lenovo Xiaoxin Pad Pro",
+    ),
+    TextSettingSpec(
+        SettingKeys.LENOVO_ABOUT_DEVICE_MODEL,
+        R.string.lenovo_about_device_model_title,
+        R.string.lenovo_about_device_model_desc,
+        "TB372FC",
+    ),
+    TextSettingSpec(
+        SettingKeys.LENOVO_ABOUT_DEVICE_PROCESSOR,
+        R.string.lenovo_about_device_processor_title,
+        R.string.lenovo_about_device_processor_desc,
+        "Snapdragon 8+ Gen 1",
+    ),
+    TextSettingSpec(
+        SettingKeys.LENOVO_ABOUT_DEVICE_ROM,
+        R.string.lenovo_about_device_rom_title,
+        R.string.lenovo_about_device_rom_desc,
+        "256 GB / 512 GB",
+    ),
+    TextSettingSpec(
+        SettingKeys.LENOVO_ABOUT_DEVICE_RAM,
+        R.string.lenovo_about_device_ram_title,
+        R.string.lenovo_about_device_ram_desc,
+        "12 GB",
+    ),
+    TextSettingSpec(
+        SettingKeys.LENOVO_ABOUT_DEVICE_SOFTWARE_VERSION,
+        R.string.lenovo_about_device_software_version_title,
+        R.string.lenovo_about_device_software_version_desc,
+        "ZUXOS 16.0.0",
+    ),
+    TextSettingSpec(
+        SettingKeys.LENOVO_ABOUT_DEVICE_ANDROID_VERSION,
+        R.string.lenovo_about_device_android_version_title,
+        R.string.lenovo_about_device_android_version_desc,
+        "15",
+    ),
 )
 
 val LenovoGameAssistantFeatureSettings = listOf(
@@ -395,6 +481,8 @@ val ModuleBooleanSettings =
         HookLoggingSetting,
         DisableFlagSecureSetting,
         CorePatchMasterSetting,
+        LenovoAboutDeviceMasterSetting,
+        LenovoAboutDeviceImageSetting,
         LenovoSystemUIControlCenterMasterSetting,
     ) +
         AppInfoDetailSettings + PackageInstallerFeatureSettings +
@@ -404,3 +492,5 @@ val ModuleBooleanSettings =
 val ModuleFloatSettings = LenovoSystemUIControlCenterFloatSettings
 
 val ModuleColorSettings = LenovoSystemUIControlCenterColorSettings
+
+val ModuleTextSettings = LenovoAboutDeviceTextSettings

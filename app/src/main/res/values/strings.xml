@@ -188,6 +188,41 @@
     <string name="app_info_enable_long_copy">Enable Long Press Copy</string>
     <string name="app_info_enable_long_copy_desc">Long press to copy all app info text to clipboard</string>
 
+    <!-- Lenovo About Device -->
+    <string name="lenovo_about_device_function">About Device</string>
+    <string name="lenovo_about_device_function_desc">Customize Lenovo About tablet page fields and top device image</string>
+    <string name="lenovo_about_device_settings_title">About Device</string>
+    <string name="lenovo_about_device_settings_desc">Override selected Lenovo Settings About tablet display items</string>
+    <string name="lenovo_about_device_enabled_title">Enable About Device Customization</string>
+    <string name="lenovo_about_device_enabled_desc">Install hooks in Settings for device name, model, CPU, storage, RAM, software version, Android version, and image</string>
+    <string name="lenovo_about_device_image_enabled_title">Replace Device Image</string>
+    <string name="lenovo_about_device_image_enabled_desc">Use the selected image for the top About tablet device graphic</string>
+    <string name="lenovo_about_device_image_title">Device Image</string>
+    <string name="lenovo_about_device_image_empty">No image</string>
+    <string name="lenovo_about_device_image_path_empty">No custom image selected</string>
+    <string name="lenovo_about_device_select_image">Select Image</string>
+    <string name="lenovo_about_device_clear_image">Clear</string>
+    <string name="lenovo_about_device_image_saved">Device image saved</string>
+    <string name="lenovo_about_device_image_save_failed">Failed to save image: %1$s</string>
+    <string name="lenovo_about_device_keep_original">Keep original</string>
+    <string name="lenovo_about_device_name_title">Device Name</string>
+    <string name="lenovo_about_device_name_desc">Top About tablet title only; the editable Device name item is kept original</string>
+    <string name="lenovo_about_device_model_title">Device Model</string>
+    <string name="lenovo_about_device_model_desc">Model and hardware field</string>
+    <string name="lenovo_about_device_processor_title">Processor</string>
+    <string name="lenovo_about_device_processor_desc">CPU field</string>
+    <string name="lenovo_about_device_rom_title">Storage</string>
+    <string name="lenovo_about_device_rom_desc">Internal storage field</string>
+    <string name="lenovo_about_device_ram_title">RAM</string>
+    <string name="lenovo_about_device_ram_desc">Memory field</string>
+    <string name="lenovo_about_device_software_version_title">Software Version</string>
+    <string name="lenovo_about_device_software_version_desc">ZUI/ZUXOS software version field</string>
+    <string name="lenovo_about_device_android_version_title">Android Version</string>
+    <string name="lenovo_about_device_android_version_desc">Android version field</string>
+    <string name="save">Save</string>
+    <string name="clear">Clear</string>
+    <string name="cancel">Cancel</string>
+
     <!-- Lenovo System Update -->
     <string name="lenovo_system_update_function">Lenovo System Update</string>
     <string name="lenovo_system_update_function_desc">Suppress OTA new-version badges and notifications</string>

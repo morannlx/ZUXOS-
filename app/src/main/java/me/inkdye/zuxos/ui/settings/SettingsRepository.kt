@@ -29,6 +29,20 @@ class SettingsRepository(context: Context) {
         ModuleConfig.saveInt(appContext, spec.key, value)
     }
 
+    fun getText(spec: TextSettingSpec): String =
+        ModuleConfig.loadString(appContext, spec.key, "")
+
+    fun setText(spec: TextSettingSpec, value: String) {
+        ModuleConfig.saveString(appContext, spec.key, value)
+    }
+
+    fun getString(key: String, defaultValue: String = ""): String =
+        ModuleConfig.loadString(appContext, key, defaultValue)
+
+    fun setString(key: String, value: String) {
+        ModuleConfig.saveString(appContext, key, value)
+    }
+
     fun snapshot(): SettingsSnapshot {
         return SettingsSnapshot(
             themeMode = AppPreferences.getThemeMode(appContext),
@@ -43,6 +57,9 @@ class SettingsRepository(context: Context) {
             moduleColors = ModuleColorSettings.associate { spec ->
                 spec.key to getColor(spec)
             },
+            moduleTexts = ModuleTextSettings.associate { spec ->
+                spec.key to getText(spec)
+            } + (ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_PATH to getString(ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_PATH)),
         )
     }
 
@@ -59,6 +76,12 @@ class SettingsRepository(context: Context) {
         ModuleColorSettings.forEach { spec ->
             setColor(spec, snapshot.moduleColors[spec.key] ?: spec.defaultValue)
         }
+        ModuleTextSettings.forEach { spec ->
+            setText(spec, snapshot.moduleTexts[spec.key] ?: "")
+        }
+        snapshot.moduleTexts[ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_PATH]?.let { path ->
+            setString(ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_PATH, path)
+        }
     }
 
     fun resetToDefaults() {
@@ -74,6 +97,10 @@ class SettingsRepository(context: Context) {
         ModuleColorSettings.forEach { spec ->
             setColor(spec, spec.defaultValue)
         }
+        ModuleTextSettings.forEach { spec ->
+            setText(spec, "")
+        }
+        setString(ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_PATH, "")
     }
 
     fun exportToJson(): String {
@@ -99,6 +126,11 @@ class SettingsRepository(context: Context) {
             colors.put(key, value)
         }
         root.put("moduleColors", colors)
+        val texts = JSONObject()
+        snapshot.moduleTexts.forEach { (key, value) ->
+            texts.put(key, value)
+        }
+        root.put("moduleTexts", texts)
         return root.toString(2)
     }
 
@@ -107,6 +139,7 @@ class SettingsRepository(context: Context) {
         val module = root.optJSONObject("moduleBooleans") ?: JSONObject()
         val floats = root.optJSONObject("moduleFloats") ?: JSONObject()
         val colors = root.optJSONObject("moduleColors") ?: JSONObject()
+        val texts = root.optJSONObject("moduleTexts") ?: JSONObject()
         val importedModuleBooleans = ModuleBooleanSettings.associate { spec ->
             spec.key to module.optBoolean(spec.key, spec.defaultValue)
         }
@@ -116,6 +149,9 @@ class SettingsRepository(context: Context) {
         val importedModuleColors = ModuleColorSettings.associate { spec ->
             spec.key to colors.optInt(spec.key, spec.defaultValue)
         }
+        val importedModuleTexts = ModuleTextSettings.associate { spec ->
+            spec.key to texts.optString(spec.key, "")
+        } + (ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_PATH to texts.optString(ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_PATH, ""))
 
         val snapshot = SettingsSnapshot(
             themeMode = runCatching {
@@ -126,6 +162,7 @@ class SettingsRepository(context: Context) {
             moduleBooleans = importedModuleBooleans,
             moduleFloats = importedModuleFloats,
             moduleColors = importedModuleColors,
+            moduleTexts = importedModuleTexts,
         )
         restore(snapshot)
         return snapshot
@@ -143,4 +180,5 @@ data class SettingsSnapshot(
     val moduleBooleans: Map<String, Boolean>,
     val moduleFloats: Map<String, Float>,
     val moduleColors: Map<String, Int>,
+    val moduleTexts: Map<String, String>,
 )

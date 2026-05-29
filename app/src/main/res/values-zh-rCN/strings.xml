@@ -175,6 +175,41 @@
     <string name="app_info_enable_long_copy">启用长按复制</string>
     <string name="app_info_enable_long_copy_desc">长按将应用信息文本复制到剪贴板</string>
 
+    <!-- 联想关于设备 -->
+    <string name="lenovo_about_device_function">关于设备</string>
+    <string name="lenovo_about_device_function_desc">自定义联想“关于平板电脑”页面字段和顶部设备图片</string>
+    <string name="lenovo_about_device_settings_title">关于设备</string>
+    <string name="lenovo_about_device_settings_desc">覆盖联想设置“关于平板电脑”中的指定展示项</string>
+    <string name="lenovo_about_device_enabled_title">启用关于设备自定义</string>
+    <string name="lenovo_about_device_enabled_desc">在设置应用中安装设备名称、型号、处理器、存储、内存、软件版本、Android 版本和图片 Hook</string>
+    <string name="lenovo_about_device_image_enabled_title">替换设备图片</string>
+    <string name="lenovo_about_device_image_enabled_desc">使用选择的图片替换“关于平板电脑”顶部设备图</string>
+    <string name="lenovo_about_device_image_title">设备图片</string>
+    <string name="lenovo_about_device_image_empty">未选择图片</string>
+    <string name="lenovo_about_device_image_path_empty">尚未选择自定义图片</string>
+    <string name="lenovo_about_device_select_image">选择图片</string>
+    <string name="lenovo_about_device_clear_image">清除</string>
+    <string name="lenovo_about_device_image_saved">设备图片已保存</string>
+    <string name="lenovo_about_device_image_save_failed">保存图片失败：%1$s</string>
+    <string name="lenovo_about_device_keep_original">保持原始显示</string>
+    <string name="lenovo_about_device_name_title">设备名称</string>
+    <string name="lenovo_about_device_name_desc">仅修改顶部名称；可编辑的“本机名称”条目保持原始逻辑</string>
+    <string name="lenovo_about_device_model_title">设备型号</string>
+    <string name="lenovo_about_device_model_desc">型号和硬件字段</string>
+    <string name="lenovo_about_device_processor_title">处理器</string>
+    <string name="lenovo_about_device_processor_desc">处理器字段</string>
+    <string name="lenovo_about_device_rom_title">机身存储</string>
+    <string name="lenovo_about_device_rom_desc">机身存储字段</string>
+    <string name="lenovo_about_device_ram_title">运行内存</string>
+    <string name="lenovo_about_device_ram_desc">运行内存字段</string>
+    <string name="lenovo_about_device_software_version_title">软件版本</string>
+    <string name="lenovo_about_device_software_version_desc">ZUI/ZUXOS 软件版本字段</string>
+    <string name="lenovo_about_device_android_version_title">Android 版本</string>
+    <string name="lenovo_about_device_android_version_desc">Android 版本字段</string>
+    <string name="save">保存</string>
+    <string name="clear">清除</string>
+    <string name="cancel">取消</string>
+
     <!-- 联想系统更新 -->
     <string name="lenovo_system_update_function">联想系统更新</string>
     <string name="lenovo_system_update_function_desc">隐藏 OTA 新版本角标和通知</string>

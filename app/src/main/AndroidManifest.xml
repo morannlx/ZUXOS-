@@ -65,6 +65,11 @@
             android:screenOrientation="behind" />
 
         <activity
+            android:name=".ui.activity.LenovoAboutDeviceSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="behind" />
+
+        <activity
             android:name=".ui.activity.LenovoSystemUpdateSettingsActivity"
             android:exported="false"
             android:screenOrientation="behind" />
@@ -123,6 +128,12 @@
             android:name=".logging.HookLogProvider"
             android:authorities="${applicationId}.hooklogs"
             android:exported="true" />
+
+        <provider
+            android:name=".provider.AboutDeviceImageProvider"
+            android:authorities="${applicationId}.aboutdeviceimage"
+            android:exported="true"
+            android:grantUriPermissions="true" />
 
         <activity-alias
             android:name=".Home"
