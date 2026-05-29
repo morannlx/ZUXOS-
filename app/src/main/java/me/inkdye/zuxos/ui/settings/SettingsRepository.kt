@@ -15,6 +15,20 @@ class SettingsRepository(context: Context) {
         ModuleConfig.saveBoolean(appContext, spec.key, value)
     }
 
+    fun getFloat(spec: FloatSettingSpec): Float =
+        ModuleConfig.loadFloat(appContext, spec.key, spec.defaultValue)
+
+    fun setFloat(spec: FloatSettingSpec, value: Float) {
+        ModuleConfig.saveFloat(appContext, spec.key, value.coerceIn(spec.valueRange))
+    }
+
+    fun getColor(spec: ColorSettingSpec): Int =
+        ModuleConfig.loadInt(appContext, spec.key, spec.defaultValue)
+
+    fun setColor(spec: ColorSettingSpec, value: Int) {
+        ModuleConfig.saveInt(appContext, spec.key, value)
+    }
+
     fun snapshot(): SettingsSnapshot {
         return SettingsSnapshot(
             themeMode = AppPreferences.getThemeMode(appContext),
@@ -22,6 +36,12 @@ class SettingsRepository(context: Context) {
             liquidGlassEnabled = AppPreferences.isLiquidGlassEnabled(appContext),
             moduleBooleans = ModuleBooleanSettings.associate { spec ->
                 spec.key to getBoolean(spec)
+            },
+            moduleFloats = ModuleFloatSettings.associate { spec ->
+                spec.key to getFloat(spec)
+            },
+            moduleColors = ModuleColorSettings.associate { spec ->
+                spec.key to getColor(spec)
             },
         )
     }
@@ -33,6 +53,12 @@ class SettingsRepository(context: Context) {
         ModuleBooleanSettings.forEach { spec ->
             setBoolean(spec, snapshot.moduleBooleans[spec.key] ?: spec.defaultValue)
         }
+        ModuleFloatSettings.forEach { spec ->
+            setFloat(spec, snapshot.moduleFloats[spec.key] ?: spec.defaultValue)
+        }
+        ModuleColorSettings.forEach { spec ->
+            setColor(spec, snapshot.moduleColors[spec.key] ?: spec.defaultValue)
+        }
     }
 
     fun resetToDefaults() {
@@ -41,6 +67,12 @@ class SettingsRepository(context: Context) {
         AppPreferences.setLiquidGlassEnabled(appContext, true)
         ModuleBooleanSettings.forEach { spec ->
             setBoolean(spec, spec.defaultValue)
+        }
+        ModuleFloatSettings.forEach { spec ->
+            setFloat(spec, spec.defaultValue)
+        }
+        ModuleColorSettings.forEach { spec ->
+            setColor(spec, spec.defaultValue)
         }
     }
 
@@ -57,14 +89,32 @@ class SettingsRepository(context: Context) {
             module.put(key, value)
         }
         root.put("moduleBooleans", module)
+        val floats = JSONObject()
+        snapshot.moduleFloats.forEach { (key, value) ->
+            floats.put(key, value.toDouble())
+        }
+        root.put("moduleFloats", floats)
+        val colors = JSONObject()
+        snapshot.moduleColors.forEach { (key, value) ->
+            colors.put(key, value)
+        }
+        root.put("moduleColors", colors)
         return root.toString(2)
     }
 
     fun importFromJson(json: String): SettingsSnapshot {
         val root = JSONObject(json)
         val module = root.optJSONObject("moduleBooleans") ?: JSONObject()
+        val floats = root.optJSONObject("moduleFloats") ?: JSONObject()
+        val colors = root.optJSONObject("moduleColors") ?: JSONObject()
         val importedModuleBooleans = ModuleBooleanSettings.associate { spec ->
             spec.key to module.optBoolean(spec.key, spec.defaultValue)
+        }
+        val importedModuleFloats = ModuleFloatSettings.associate { spec ->
+            spec.key to floats.optDouble(spec.key, spec.defaultValue.toDouble()).toFloat()
+        }
+        val importedModuleColors = ModuleColorSettings.associate { spec ->
+            spec.key to colors.optInt(spec.key, spec.defaultValue)
         }
 
         val snapshot = SettingsSnapshot(
@@ -74,6 +124,8 @@ class SettingsRepository(context: Context) {
             floatingNavEnabled = root.optBoolean("floatingNavEnabled", false),
             liquidGlassEnabled = root.optBoolean("liquidGlassEnabled", true),
             moduleBooleans = importedModuleBooleans,
+            moduleFloats = importedModuleFloats,
+            moduleColors = importedModuleColors,
         )
         restore(snapshot)
         return snapshot
@@ -89,4 +141,6 @@ data class SettingsSnapshot(
     val floatingNavEnabled: Boolean,
     val liquidGlassEnabled: Boolean,
     val moduleBooleans: Map<String, Boolean>,
+    val moduleFloats: Map<String, Float>,
+    val moduleColors: Map<String, Int>,
 )

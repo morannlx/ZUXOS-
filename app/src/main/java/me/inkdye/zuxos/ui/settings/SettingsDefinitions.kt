@@ -45,6 +45,20 @@ object SettingKeys {
         ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_MOBILE_NETWORK_ACCELERATE
     const val LENOVO_GAME_ASSISTANT_FORCE_MAIN_SIM_ACCELERATE =
         ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_MAIN_SIM_ACCELERATE
+    const val LENOVO_SYSTEMUI_CONTROL_CENTER_ENABLED =
+        ModuleConfig.LENOVO_SYSTEMUI_CONTROL_CENTER_ENABLED
+    const val LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_INACTIVE_COLOR =
+        ModuleConfig.LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_INACTIVE_COLOR
+    const val LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_ACTIVE_COLOR =
+        ModuleConfig.LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_ACTIVE_COLOR
+    const val LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_INACTIVE_ALPHA =
+        ModuleConfig.LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_INACTIVE_ALPHA
+    const val LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_ACTIVE_ALPHA =
+        ModuleConfig.LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_ACTIVE_ALPHA
+    const val LENOVO_SYSTEMUI_CONTROL_CENTER_PANEL_ALPHA =
+        ModuleConfig.LENOVO_SYSTEMUI_CONTROL_CENTER_PANEL_ALPHA
+    const val LENOVO_SYSTEMUI_CONTROL_CENTER_PULL_DOWN_BLUR_RADIUS =
+        ModuleConfig.LENOVO_SYSTEMUI_CONTROL_CENTER_PULL_DOWN_BLUR_RADIUS
     const val HOOK_LOGGING_ENABLED = "hook_logging_enabled"
     const val DISABLE_FLAG_SECURE = ModuleConfig.DISABLE_FLAG_SECURE
     const val CORE_PATCH_ENABLED = ModuleConfig.CORE_PATCH_ENABLED
@@ -63,6 +77,22 @@ data class BooleanSettingSpec(
     @param:StringRes val titleRes: Int,
     @param:StringRes val descRes: Int,
     val defaultValue: Boolean,
+)
+
+data class FloatSettingSpec(
+    val key: String,
+    @param:StringRes val titleRes: Int,
+    @param:StringRes val descRes: Int,
+    val defaultValue: Float,
+    val valueRange: ClosedFloatingPointRange<Float>,
+    val steps: Int = 0,
+)
+
+data class ColorSettingSpec(
+    val key: String,
+    @param:StringRes val titleRes: Int,
+    @param:StringRes val descRes: Int,
+    val defaultValue: Int,
 )
 
 val HookLoggingSetting = BooleanSettingSpec(
@@ -199,6 +229,63 @@ val LenovoGameAssistantFeatureSettings = listOf(
     ),
 )
 
+val LenovoSystemUIControlCenterMasterSetting = BooleanSettingSpec(
+    key = SettingKeys.LENOVO_SYSTEMUI_CONTROL_CENTER_ENABLED,
+    titleRes = R.string.lenovo_systemui_control_center_enabled_title,
+    descRes = R.string.lenovo_systemui_control_center_enabled_desc,
+    defaultValue = false,
+)
+
+val LenovoSystemUIControlCenterColorSettings = listOf(
+    ColorSettingSpec(
+        SettingKeys.LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_INACTIVE_COLOR,
+        R.string.lenovo_systemui_control_center_tile_inactive_color_title,
+        R.string.lenovo_systemui_control_center_tile_inactive_color_desc,
+        0xFFFFFFFF.toInt(),
+    ),
+    ColorSettingSpec(
+        SettingKeys.LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_ACTIVE_COLOR,
+        R.string.lenovo_systemui_control_center_tile_active_color_title,
+        R.string.lenovo_systemui_control_center_tile_active_color_desc,
+        0xFF5FAE8B.toInt(),
+    ),
+)
+
+val LenovoSystemUIControlCenterFloatSettings = listOf(
+    FloatSettingSpec(
+        SettingKeys.LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_INACTIVE_ALPHA,
+        R.string.lenovo_systemui_control_center_tile_inactive_alpha_title,
+        R.string.lenovo_systemui_control_center_tile_inactive_alpha_desc,
+        0.35f,
+        0f..1f,
+        19,
+    ),
+    FloatSettingSpec(
+        SettingKeys.LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_ACTIVE_ALPHA,
+        R.string.lenovo_systemui_control_center_tile_active_alpha_title,
+        R.string.lenovo_systemui_control_center_tile_active_alpha_desc,
+        0.92f,
+        0f..1f,
+        19,
+    ),
+    FloatSettingSpec(
+        SettingKeys.LENOVO_SYSTEMUI_CONTROL_CENTER_PANEL_ALPHA,
+        R.string.lenovo_systemui_control_center_panel_alpha_title,
+        R.string.lenovo_systemui_control_center_panel_alpha_desc,
+        0.9f,
+        0f..1f,
+        19,
+    ),
+    FloatSettingSpec(
+        SettingKeys.LENOVO_SYSTEMUI_CONTROL_CENTER_PULL_DOWN_BLUR_RADIUS,
+        R.string.lenovo_systemui_control_center_pull_down_blur_radius_title,
+        R.string.lenovo_systemui_control_center_pull_down_blur_radius_desc,
+        18f,
+        0f..200f,
+        39,
+    ),
+)
+
 val DisableFlagSecureSetting = BooleanSettingSpec(
     key = SettingKeys.DISABLE_FLAG_SECURE,
     titleRes = R.string.disable_flag_secure_title,
@@ -308,7 +395,12 @@ val ModuleBooleanSettings =
         HookLoggingSetting,
         DisableFlagSecureSetting,
         CorePatchMasterSetting,
+        LenovoSystemUIControlCenterMasterSetting,
     ) +
         AppInfoDetailSettings + PackageInstallerFeatureSettings +
         LenovoSystemUpdateFeatureSettings + LenovoGameAssistantFeatureSettings +
         CorePatchFeatureSettings
+
+val ModuleFloatSettings = LenovoSystemUIControlCenterFloatSettings
+
+val ModuleColorSettings = LenovoSystemUIControlCenterColorSettings

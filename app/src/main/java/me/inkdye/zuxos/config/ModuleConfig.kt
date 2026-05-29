@@ -47,6 +47,20 @@ object ModuleConfig {
         "lenovo_game_assistant_force_mobile_network_accelerate"
     const val LENOVO_GAME_ASSISTANT_FORCE_MAIN_SIM_ACCELERATE =
         "lenovo_game_assistant_force_main_sim_accelerate"
+    const val LENOVO_SYSTEMUI_CONTROL_CENTER_ENABLED =
+        "lenovo_systemui_control_center_enabled"
+    const val LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_INACTIVE_COLOR =
+        "lenovo_systemui_control_center_tile_inactive_color"
+    const val LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_ACTIVE_COLOR =
+        "lenovo_systemui_control_center_tile_active_color"
+    const val LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_INACTIVE_ALPHA =
+        "lenovo_systemui_control_center_tile_inactive_alpha"
+    const val LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_ACTIVE_ALPHA =
+        "lenovo_systemui_control_center_tile_active_alpha"
+    const val LENOVO_SYSTEMUI_CONTROL_CENTER_PANEL_ALPHA =
+        "lenovo_systemui_control_center_panel_alpha"
+    const val LENOVO_SYSTEMUI_CONTROL_CENTER_PULL_DOWN_BLUR_RADIUS =
+        "lenovo_systemui_control_center_pull_down_blur_radius"
     const val HOOK_LOGGING_ENABLED = "hook_logging_enabled"
     const val DISABLE_FLAG_SECURE = "disable_flag_secure"
     const val CORE_PATCH_ENABLED = "core_patch_enabled"
@@ -73,6 +87,28 @@ object ModuleConfig {
         }
     }
 
+    fun readInt(key: String, defaultValue: Int): Int {
+        return try {
+            val prefs = XSharedPreferences(MODULE_PACKAGE, PREFS_NAME)
+            prefs.reload()
+            prefs.getInt(key, defaultValue)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to read int config for key: $key", e)
+            defaultValue
+        }
+    }
+
+    fun readFloat(key: String, defaultValue: Float): Float {
+        return try {
+            val prefs = XSharedPreferences(MODULE_PACKAGE, PREFS_NAME)
+            prefs.reload()
+            prefs.getFloat(key, defaultValue)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to read float config for key: $key", e)
+            defaultValue
+        }
+    }
+
     /**
      * 写入配置（App 进程调用）
      */
@@ -91,6 +127,36 @@ object ModuleConfig {
         }
     }
 
+    @SuppressLint("WorldReadableFiles")
+    fun saveInt(context: Context, key: String, value: Int) {
+        try {
+            val moduleContext = context.createPackageContext(
+                MODULE_PACKAGE, Context.CONTEXT_IGNORE_SECURITY
+            )
+            val prefs = moduleContext.getSharedPreferences(
+                PREFS_NAME, Context.MODE_WORLD_READABLE
+            )
+            prefs.edit().putInt(key, value).commit()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to save int config: $key=$value", e)
+        }
+    }
+
+    @SuppressLint("WorldReadableFiles")
+    fun saveFloat(context: Context, key: String, value: Float) {
+        try {
+            val moduleContext = context.createPackageContext(
+                MODULE_PACKAGE, Context.CONTEXT_IGNORE_SECURITY
+            )
+            val prefs = moduleContext.getSharedPreferences(
+                PREFS_NAME, Context.MODE_WORLD_READABLE
+            )
+            prefs.edit().putFloat(key, value).commit()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to save float config: $key=$value", e)
+        }
+    }
+
     /**
      * 读取配置（App 进程调用，用于 UI 初始化）
      */
@@ -105,6 +171,36 @@ object ModuleConfig {
             prefs.getBoolean(key, defaultValue)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to load config for key: $key", e)
+            defaultValue
+        }
+    }
+
+    fun loadInt(context: Context, key: String, defaultValue: Int): Int {
+        return try {
+            val moduleContext = context.createPackageContext(
+                MODULE_PACKAGE, Context.CONTEXT_IGNORE_SECURITY
+            )
+            val prefs = moduleContext.getSharedPreferences(
+                PREFS_NAME, Context.MODE_WORLD_READABLE
+            )
+            prefs.getInt(key, defaultValue)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to load int config for key: $key", e)
+            defaultValue
+        }
+    }
+
+    fun loadFloat(context: Context, key: String, defaultValue: Float): Float {
+        return try {
+            val moduleContext = context.createPackageContext(
+                MODULE_PACKAGE, Context.CONTEXT_IGNORE_SECURITY
+            )
+            val prefs = moduleContext.getSharedPreferences(
+                PREFS_NAME, Context.MODE_WORLD_READABLE
+            )
+            prefs.getFloat(key, defaultValue)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to load float config for key: $key", e)
             defaultValue
         }
     }

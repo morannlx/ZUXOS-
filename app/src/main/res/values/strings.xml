@@ -72,6 +72,9 @@
     <string name="feature_group_lenovo_game_assistant">Lenovo Game Assistant</string>
     <string name="feature_group_lenovo_game_assistant_item1">Voice assistant and direct feature gates</string>
     <string name="feature_group_lenovo_game_assistant_item2">Game setting entry unlocks</string>
+    <string name="feature_group_lenovo_systemui">System UI</string>
+    <string name="feature_group_lenovo_systemui_item1">Control center customization</string>
+    <string name="feature_group_lenovo_systemui_item2">SystemUI visual effects</string>
     <string name="feature_group_package_installer">Package Installer</string>
     <string name="feature_group_package_installer_item1">Skip safety scan and warning page</string>
     <string name="feature_group_package_installer_item2">Keep APK files after installation</string>
@@ -224,6 +227,31 @@
     <string name="lenovo_game_assistant_force_mobile_network_accelerate_desc">Force FEATURE_MOBILE_NETWORK_ACCELERATE isEnable(Context) to return enabled</string>
     <string name="lenovo_game_assistant_force_main_sim_accelerate_title">Main SIM Acceleration</string>
     <string name="lenovo_game_assistant_force_main_sim_accelerate_desc">Force FEATURE_MAIN_SIM_ACCELERATE isEnable(Context) to return enabled</string>
+
+    <!-- Lenovo SystemUI Control Center -->
+    <string name="lenovo_systemui_settings_title">System UI</string>
+    <string name="lenovo_systemui_settings_desc">Configure Lenovo SystemUI visual modules</string>
+    <string name="lenovo_systemui_control_center_menu_title">Control Center</string>
+    <string name="lenovo_systemui_control_center_menu_desc">Customize QS tile colors, transparency, and background blur</string>
+    <string name="lenovo_systemui_control_center_settings_title">Control Center</string>
+    <string name="lenovo_systemui_control_center_settings_desc">Customize ZUI SystemUI QS tile colors, transparency, and background blur</string>
+    <string name="lenovo_systemui_control_center_enabled_title">Enable Control Center prototype</string>
+    <string name="lenovo_systemui_control_center_enabled_desc">Install hooks in com.android.systemui; restart SystemUI after changing this switch</string>
+    <string name="lenovo_systemui_control_center_tile_inactive_color_title">Inactive tile color</string>
+    <string name="lenovo_systemui_control_center_tile_inactive_color_desc">ARGB color returned for QSTile state 1</string>
+    <string name="lenovo_systemui_control_center_tile_active_color_title">Active tile color</string>
+    <string name="lenovo_systemui_control_center_tile_active_color_desc">ARGB color returned for QSTile state 2</string>
+    <string name="lenovo_systemui_control_center_tile_inactive_alpha_title">Inactive tile alpha</string>
+    <string name="lenovo_systemui_control_center_tile_inactive_alpha_desc">Transparency applied to normal inactive tile background color</string>
+    <string name="lenovo_systemui_control_center_tile_active_alpha_title">Active tile alpha</string>
+    <string name="lenovo_systemui_control_center_tile_active_alpha_desc">Transparency applied to active tile background color</string>
+    <string name="lenovo_systemui_control_center_panel_alpha_title">Control center alpha</string>
+    <string name="lenovo_systemui_control_center_panel_alpha_desc">Alpha applied to QS root, scroll containers, header, and footer views</string>
+    <string name="lenovo_systemui_control_center_single_inactive_tile_bg_alpha_title">Custom inactive tile alpha</string>
+    <string name="lenovo_systemui_control_center_single_inactive_tile_bg_alpha_desc">Separate inactive background transparency for CustomQSTileViewImpl tiles</string>
+    <string name="lenovo_systemui_control_center_pull_down_blur_radius_title">Background blur radius</string>
+    <string name="lenovo_systemui_control_center_pull_down_blur_radius_desc">Cross-window blur radius applied behind the notification shade while pulling down SystemUI</string>
+    <string name="lenovo_systemui_control_center_color_format_hint">Use #AARRGGBB or #RRGGBB</string>
 
     <!-- Package Installer -->
     <string name="package_installer_settings_title">Package Installer</string>

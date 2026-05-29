@@ -221,6 +221,10 @@ private val featureGroups = listOf(
         R.string.feature_group_lenovo_game_assistant_item1,
         R.string.feature_group_lenovo_game_assistant_item2
     ), "com.zui.game.service", FeatureBlue),
+    FeatureGroup("◫", R.string.feature_group_lenovo_systemui, listOf(
+        R.string.feature_group_lenovo_systemui_item1,
+        R.string.feature_group_lenovo_systemui_item2
+    ), "com.android.systemui", FeatureNeutral),
     FeatureGroup("▣", R.string.feature_group_package_installer, listOf(
         R.string.feature_group_package_installer_item1,
         R.string.feature_group_package_installer_item2
@@ -1012,6 +1016,8 @@ private fun FeaturesPage(cs: AppColorScheme) {
                         context.startActivity(Intent(context, LenovoSystemUpdateSettingsActivity::class.java))
                     } else if (group.targetPackage == "com.zui.game.service") {
                         context.startActivity(Intent(context, LenovoGameAssistantSettingsActivity::class.java))
+                    } else if (group.targetPackage == "com.android.systemui") {
+                        context.startActivity(Intent(context, LenovoSystemUISettingsActivity::class.java))
                     } else if (group.targetPackage == "com.android.packageinstaller") {
                         context.startActivity(Intent(context, PackageInstallerSettingsActivity::class.java))
                     }

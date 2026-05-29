@@ -4,6 +4,7 @@
         <item>me.inkdye.zuxos</item>
         <item>android</item>
         <item>com.android.settings</item>
+        <item>com.android.systemui</item>
         <item>com.lenovo.ota</item>
         <item>com.android.packageinstaller</item>
         <item>com.google.android.packageinstaller</item>
