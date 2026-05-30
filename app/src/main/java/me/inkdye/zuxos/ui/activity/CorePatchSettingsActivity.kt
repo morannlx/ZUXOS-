@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import me.inkdye.zuxos.R
 import me.inkdye.zuxos.root.RestartScope
 import me.inkdye.zuxos.ui.components.GlassSwitch
+import me.inkdye.zuxos.ui.components.LiquidGlassCardBackdropProvider
 import me.inkdye.zuxos.ui.components.PageHeader
 import me.inkdye.zuxos.ui.components.RestartScopeCard
 import me.inkdye.zuxos.ui.components.pageHorizontalPadding
@@ -55,76 +56,86 @@ class CorePatchSettingsActivity : ComponentActivity() {
 private fun CorePatchSettingsPage(onBack: () -> Unit) {
     val settings = rememberAppSettings()
     val repository = rememberSettingsRepository()
-    val cs = colorSchemeFor(resolveIsDark(settings.themeMode.value))
+    val cs = colorSchemeFor(
+        resolveIsDark(settings.themeMode.value),
+        titleTextContrast = settings.titleTextContrast.value,
+        descriptionTextContrast = settings.descriptionTextContrast.value,
+    )
     val coroutineScope = rememberCoroutineScope()
     val rootState = rememberRootUiState()
     val masterState = rememberBooleanSettingState(repository, CorePatchMasterSetting)
     var restartMessage by remember { mutableStateOf<String?>(null) }
     var restartFailed by remember { mutableStateOf(false) }
+    val bgBrush = Brush.verticalGradient(listOf(cs.bgGradientTop, cs.bgGradientMid, cs.bgGradientBottom))
 
     BoxWithConstraints(
         Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(cs.bgGradientTop, cs.bgGradientMid, cs.bgGradientBottom)))
-            .safeContentPadding()
+            .background(bgBrush)
     ) {
-        val horizontalPadding = pageHorizontalPadding()
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 260.dp),
-            modifier = Modifier.fillMaxSize().padding(horizontal = horizontalPadding),
-            contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+        LiquidGlassCardBackdropProvider(
+            backdropBrush = bgBrush,
+            enabled = settings.liquidGlassEnabled.value,
+            colorScheme = cs,
         ) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                PageHeader(
-                    title = stringResource(R.string.core_patch_settings),
-                    subtitle = stringResource(R.string.core_patch_settings_desc),
-                    colorScheme = cs,
-                    onBack = onBack,
-                )
-            }
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                GlassSwitch(
-                    title = stringResource(CorePatchMasterSetting.titleRes),
-                    description = stringResource(CorePatchMasterSetting.descRes),
-                    checked = masterState.checked.value,
-                    onCheckedChange = { masterState.update(it) },
-                    colorScheme = cs,
-                )
-            }
-
-            CorePatchFeatureSettings.forEach { spec ->
-                item {
-                    val state = rememberBooleanSettingState(repository, spec)
+            val horizontalPadding = pageHorizontalPadding()
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 260.dp),
+                modifier = Modifier.fillMaxSize().safeContentPadding().padding(horizontal = horizontalPadding),
+                contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    PageHeader(
+                        title = stringResource(R.string.core_patch_settings),
+                        subtitle = stringResource(R.string.core_patch_settings_desc),
+                        colorScheme = cs,
+                        onBack = onBack,
+                    )
+                }
+                item(span = { GridItemSpan(maxLineSpan) }) {
                     GlassSwitch(
-                        title = stringResource(spec.titleRes),
-                        description = stringResource(spec.descRes),
-                        checked = state.checked.value,
-                        onCheckedChange = { state.update(it) },
+                        title = stringResource(CorePatchMasterSetting.titleRes),
+                        description = stringResource(CorePatchMasterSetting.descRes),
+                        checked = masterState.checked.value,
+                        onCheckedChange = { masterState.update(it) },
                         colorScheme = cs,
                     )
                 }
-            }
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                RestartScopeCard(
-                    scope = RestartScope.ANDROID_SYSTEM,
-                    colorScheme = cs,
-                    onRestart = {
-                        rootState.restart(coroutineScope, RestartScope.ANDROID_SYSTEM) { result ->
-                            restartMessage = result.message
-                            restartFailed = !result.success
-                        }
-                    },
-                )
-            }
-            restartMessage?.let { message ->
+
+                CorePatchFeatureSettings.forEach { spec ->
+                    item {
+                        val state = rememberBooleanSettingState(repository, spec)
+                        GlassSwitch(
+                            title = stringResource(spec.titleRes),
+                            description = stringResource(spec.descRes),
+                            checked = state.checked.value,
+                            onCheckedChange = { state.update(it) },
+                            colorScheme = cs,
+                        )
+                    }
+                }
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        text = message,
-                        fontSize = 13.sp,
-                        color = if (restartFailed) cs.accentRed else cs.accentGreen,
+                    RestartScopeCard(
+                        scope = RestartScope.ANDROID_SYSTEM,
+                        colorScheme = cs,
+                        onRestart = {
+                            rootState.restart(coroutineScope, RestartScope.ANDROID_SYSTEM) { result ->
+                                restartMessage = result.message
+                                restartFailed = !result.success
+                            }
+                        },
                     )
+                }
+                restartMessage?.let { message ->
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            text = message,
+                            fontSize = 13.sp,
+                            color = if (restartFailed) cs.accentRed else cs.accentGreen,
+                        )
+                    }
                 }
             }
         }

@@ -45,7 +45,11 @@ class GeneralSettingsActivity : ComponentActivity() {
 private fun GeneralSettingsPage(onBack: () -> Unit) {
     val appSettings = rememberAppSettings()
     val repository = rememberSettingsRepository()
-    val cs = colorSchemeFor(resolveIsDark(appSettings.themeMode.value))
+    val cs = colorSchemeFor(
+        resolveIsDark(appSettings.themeMode.value),
+        titleTextContrast = appSettings.titleTextContrast.value,
+        descriptionTextContrast = appSettings.descriptionTextContrast.value,
+    )
     val resetDone = stringResource(R.string.settings_reset_done)
     var statusText by remember { mutableStateOf<String?>(null) }
 

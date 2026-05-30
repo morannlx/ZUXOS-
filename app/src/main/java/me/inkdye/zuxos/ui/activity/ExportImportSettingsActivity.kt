@@ -48,7 +48,11 @@ private fun ExportImportSettingsPage(onBack: () -> Unit) {
     val context = LocalContext.current
     val appSettings = rememberAppSettings()
     val repository = rememberSettingsRepository()
-    val cs = colorSchemeFor(resolveIsDark(appSettings.themeMode.value))
+    val cs = colorSchemeFor(
+        resolveIsDark(appSettings.themeMode.value),
+        titleTextContrast = appSettings.titleTextContrast.value,
+        descriptionTextContrast = appSettings.descriptionTextContrast.value,
+    )
     var statusText by remember { mutableStateOf<String?>(null) }
     var isError by remember { mutableStateOf(false) }
 

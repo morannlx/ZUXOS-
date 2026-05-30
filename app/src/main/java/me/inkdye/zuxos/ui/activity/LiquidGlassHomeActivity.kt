@@ -48,6 +48,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -94,10 +95,15 @@ import me.inkdye.zuxos.BuildConfig
 import me.inkdye.zuxos.R
 import me.inkdye.zuxos.root.RootState
 import me.inkdye.zuxos.root.RootStatus
-import me.inkdye.zuxos.ui.components.liquidGlassProgressiveBlur
+import me.inkdye.zuxos.ui.components.CustomizableAppBackgroundSurface
+import me.inkdye.zuxos.ui.components.LocalGlassCardOpacity
+import me.inkdye.zuxos.ui.components.LocalLiquidGlassBackdrop
+import me.inkdye.zuxos.ui.components.LocalLiquidGlassEnabled
 import me.inkdye.zuxos.ui.components.liquidGlassSurface
 import me.inkdye.zuxos.ui.components.pageHorizontalPadding
+import me.inkdye.zuxos.ui.components.rememberCustomBackgroundBitmap
 import me.inkdye.zuxos.ui.root.rememberRootUiState
+import me.inkdye.zuxos.ui.settings.AppPreferences
 import me.inkdye.zuxos.ui.settings.HookLoggingSetting
 import me.inkdye.zuxos.ui.settings.rememberAppSettings
 import me.inkdye.zuxos.ui.settings.rememberBooleanSettingState
@@ -191,117 +197,125 @@ private fun LiquidGlassHome() {
     }
     val floatingNav = settings.floatingNavEnabled.value
     val liquidGlass = settings.liquidGlassEnabled.value
-    val cs = colorSchemeFor(resolveIsDark(settings.themeMode.value))
+    val cs = colorSchemeFor(
+        resolveIsDark(settings.themeMode.value),
+        titleTextContrast = settings.titleTextContrast.value,
+        descriptionTextContrast = settings.descriptionTextContrast.value,
+    )
     val navTint = glassNavTint(cs)
+    val bgGradient = Brush.verticalGradient(listOf(cs.bgGradientTop, cs.bgGradientMid, cs.bgGradientBottom))
+    val customBackground = rememberCustomBackgroundBitmap(settings)
 
     BoxWithConstraints(
-        Modifier
-            .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(cs.bgGradientTop, cs.bgGradientMid, cs.bgGradientBottom)))
+        Modifier.fillMaxSize()
     ) {
         val isPhone = maxWidth < TABLET_WIDTH_DP.dp
         val isCompactTablet = maxWidth >= TABLET_WIDTH_DP.dp && maxWidth < MEDIUM_WIDTH_DP.dp
 
-        val backdrop = rememberLayerBackdrop {
-            drawRect(Brush.verticalGradient(listOf(cs.bgGradientTop, cs.bgGradientMid, cs.bgGradientBottom)))
-            drawContent()
+        val backdrop = rememberLayerBackdrop()
+        val cardBackdrop = rememberLayerBackdrop()
+
+        Box(
+            Modifier
+                .fillMaxSize()
+                .layerBackdrop(backdrop)
+                .layerBackdrop(cardBackdrop)
+        ) {
+            CustomizableAppBackgroundSurface(
+                bitmap = customBackground,
+                bgGradient = bgGradient,
+                colorScheme = cs,
+                modifier = Modifier.fillMaxSize(),
+            )
         }
 
-        when {
-            isPhone -> {
-                Box(Modifier.fillMaxSize().safeContentPadding()) {
-                    AnimatedContent(
-                        targetState = selectedTab,
-                        transitionSpec = { fadeIn() togetherWith fadeOut() },
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .layerBackdrop(backdrop)
-                    ) { page -> PageContent(navPages.getOrElse(page) { NavPage.Home }, cs) }
+        CompositionLocalProvider(
+            LocalLiquidGlassBackdrop provides cardBackdrop,
+            LocalLiquidGlassEnabled provides liquidGlass,
+            LocalGlassCardOpacity provides settings.glassCardOpacity.value,
+        ) {
+            when {
+                isPhone -> {
+                    Box(Modifier.fillMaxSize().safeContentPadding()) {
+                        AnimatedContent(
+                            targetState = selectedTab,
+                            transitionSpec = { fadeIn() togetherWith fadeOut() },
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) { page -> PageContent(navPages.getOrElse(page) { NavPage.Home }, cs) }
 
-                    Box(
-                        Modifier
-                            .fillMaxSize()
-                            .padding(bottom = if (floatingNav) 28.dp else 0.dp),
-                        contentAlignment = Alignment.BottomCenter
-                    ) {
                         Box(
                             Modifier
-                                .align(Alignment.BottomCenter)
-                                .fillMaxWidth()
-                                .height(if (floatingNav) 128.dp else 104.dp)
-                                .liquidGlassProgressiveBlur(
-                                    backdrop = backdrop,
-                                    colorScheme = cs,
-                                    enabled = liquidGlass,
-                                )
-                        )
-                        FloatingNavPill(
+                                .fillMaxSize()
+                                .padding(bottom = if (floatingNav) 28.dp else 0.dp),
+                            contentAlignment = Alignment.BottomCenter
+                        ) {
+                            FloatingNavPill(
+                                selectedTab = selectedTab,
+                                backdrop = backdrop,
+                                floatingNav = floatingNav,
+                                liquidGlass = liquidGlass,
+                                cs = cs,
+                                navTint = navTint,
+                                navPages = navPages,
+                                onTabSelected = { selectedTab = it }
+                            )
+                        }
+                    }
+                }
+                isCompactTablet -> {
+                    Row(
+                        Modifier
+                            .fillMaxSize()
+                            .safeContentPadding(),
+                        verticalAlignment = if (floatingNav) Alignment.CenterVertically else Alignment.Top
+                    ) {
+                        GlassNavigationRail(
                             selectedTab = selectedTab,
                             backdrop = backdrop,
                             floatingNav = floatingNav,
                             liquidGlass = liquidGlass,
+                            isCompactTablet = true,
                             cs = cs,
                             navTint = navTint,
                             navPages = navPages,
                             onTabSelected = { selectedTab = it }
                         )
+                        AnimatedContent(
+                            targetState = selectedTab,
+                            transitionSpec = { fadeIn() togetherWith fadeOut() },
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                        ) { page -> PageContent(navPages.getOrElse(page) { NavPage.Home }, cs) }
                     }
                 }
-            }
-            isCompactTablet -> {
-                Row(
-                    Modifier
-                        .fillMaxSize()
-                        .safeContentPadding(),
-                    verticalAlignment = if (floatingNav) Alignment.CenterVertically else Alignment.Top
-                ) {
-                    GlassNavigationRail(
-                        selectedTab = selectedTab,
-                        backdrop = backdrop,
-                        floatingNav = floatingNav,
-                        liquidGlass = liquidGlass,
-                        isCompactTablet = true,
-                        cs = cs,
-                        navTint = navTint,
-                        navPages = navPages,
-                        onTabSelected = { selectedTab = it }
-                    )
-                    AnimatedContent(
-                        targetState = selectedTab,
-                        transitionSpec = { fadeIn() togetherWith fadeOut() },
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                            .layerBackdrop(backdrop)
-                    ) { page -> PageContent(navPages.getOrElse(page) { NavPage.Home }, cs) }
-                }
-            }
-            else -> {
-                Row(
-                    Modifier
-                        .fillMaxSize()
-                        .safeContentPadding(),
-                    verticalAlignment = if (floatingNav) Alignment.CenterVertically else Alignment.Top
-                ) {
-                    GlassNavigationRail(
-                        selectedTab = selectedTab,
-                        backdrop = backdrop,
-                        floatingNav = floatingNav,
-                        liquidGlass = liquidGlass,
-                        isCompactTablet = false,
-                        cs = cs,
-                        navTint = navTint,
-                        navPages = navPages,
-                        onTabSelected = { selectedTab = it }
-                    )
-                    AnimatedContent(
-                        targetState = selectedTab,
-                        transitionSpec = { fadeIn() togetherWith fadeOut() },
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                            .layerBackdrop(backdrop)
-                    ) { page -> PageContent(navPages.getOrElse(page) { NavPage.Home }, cs) }
+                else -> {
+                    Row(
+                        Modifier
+                            .fillMaxSize()
+                            .safeContentPadding(),
+                        verticalAlignment = if (floatingNav) Alignment.CenterVertically else Alignment.Top
+                    ) {
+                        GlassNavigationRail(
+                            selectedTab = selectedTab,
+                            backdrop = backdrop,
+                            floatingNav = floatingNav,
+                            liquidGlass = liquidGlass,
+                            isCompactTablet = false,
+                            cs = cs,
+                            navTint = navTint,
+                            navPages = navPages,
+                            onTabSelected = { selectedTab = it }
+                        )
+                        AnimatedContent(
+                            targetState = selectedTab,
+                            transitionSpec = { fadeIn() togetherWith fadeOut() },
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                        ) { page -> PageContent(navPages.getOrElse(page) { NavPage.Home }, cs) }
+                    }
                 }
             }
         }
@@ -1007,11 +1021,60 @@ private fun GlassCard(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
-    Box(
+    val cardBackdrop = LocalLiquidGlassBackdrop.current
+    val liquidGlass = LocalLiquidGlassEnabled.current
+    val cardOpacity = LocalGlassCardOpacity.current.coerceIn(
+        AppPreferences.MIN_GLASS_CARD_OPACITY,
+        AppPreferences.MAX_GLASS_CARD_OPACITY,
+    )
+    val cardModifier = if (liquidGlass && cardBackdrop != null) {
+        modifier
+            .fillMaxWidth()
+            .drawBackdrop(
+                backdrop = cardBackdrop,
+                shape = { shape },
+                effects = {
+                    vibrancy()
+                    blur(9.dp.toPx())
+                    lens(18.dp.toPx(), 22.dp.toPx(), depthEffect = true)
+                },
+                highlight = { Highlight.Default.copy(alpha = if (cs.isDark) 0.34f else 0.46f) },
+                shadow = {
+                    Shadow(
+                        radius = 16.dp,
+                        color = Color.Black.copy(alpha = if (cs.isDark) 0.20f else 0.08f),
+                    )
+                },
+                innerShadow = {
+                    InnerShadow(
+                        radius = 8.dp,
+                        alpha = 0.64f,
+                        color = cs.glassHighlight.copy(alpha = if (cs.isDark) 0.08f else 0.18f),
+                    )
+                },
+                onDrawSurface = {
+                    drawRect(cs.cardBackground.copy(alpha = cardOpacity))
+                    drawRect(
+                        Brush.verticalGradient(
+                            listOf(
+                                cs.glassHighlight.copy(alpha = if (cs.isDark) 0.05f else 0.10f),
+                                cs.glassHighlight.copy(alpha = 0f),
+                            ),
+                            startY = 0f,
+                            endY = size.height * 0.36f,
+                        )
+                    )
+                }
+            )
+    } else {
         modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(cs.cardBackground, shape)
+            .background(cs.cardBackground.copy(alpha = cardOpacity), shape)
+    }
+
+    Box(
+        cardModifier
     ) {
         content()
     }
@@ -1063,52 +1126,55 @@ private fun ActivationStatusCard(
     val xposedColor = if (isActive) cs.accentGreen else cs.accentRed
     val rootColor = if (rootGranted) cs.accentGreen else cs.accentRed
     val shape = RoundedCornerShape(20.dp)
-    val cardBg = Brush.verticalGradient(
-        listOf(
-            statusColor.copy(alpha = if (cs.isDark) 0.14f else 0.09f),
-            statusColor.copy(alpha = 0.04f),
-        )
-    )
 
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .clip(shape)
-            .background(cardBg, shape)
-            .padding(24.dp)
-    ) {
-        Column {
-            StatusLine(
-                label = stringResource(if (isActive) R.string.home_status_active else R.string.home_status_inactive),
-                color = xposedColor,
-            )
-            Spacer(Modifier.height(8.dp))
-            StatusLine(
-                label = "${stringResource(R.string.root_status_title)} · ${rootStatusText(rootState.status, rootBusy)}",
-                color = rootColor,
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            Text(
-                stringResource(displayState.titleRes),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = cs.textPrimary
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            Text(
-                stringResource(displayState.descRes),
-                fontSize = 14.sp,
-                color = cs.textSecondary,
-                lineHeight = 22.sp
-            )
-
-            rootState.message?.takeIf { rootState.status != RootStatus.GRANTED }?.let {
+    GlassCard(cs = cs, shape = shape) {
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            statusColor.copy(alpha = if (cs.isDark) 0.16f else 0.12f),
+                            statusColor.copy(alpha = if (cs.isDark) 0.07f else 0.05f),
+                        )
+                    ),
+                    shape,
+                )
+                .padding(24.dp)
+        ) {
+            Column {
+                StatusLine(
+                    label = stringResource(if (isActive) R.string.home_status_active else R.string.home_status_inactive),
+                    color = xposedColor,
+                )
                 Spacer(Modifier.height(8.dp))
-                Text(it, fontSize = 12.sp, color = cs.textDim)
+                StatusLine(
+                    label = "${stringResource(R.string.root_status_title)} · ${rootStatusText(rootState.status, rootBusy)}",
+                    color = rootColor,
+                )
+
+                Spacer(Modifier.height(16.dp))
+
+                Text(
+                    stringResource(displayState.titleRes),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = cs.textPrimary
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                Text(
+                    stringResource(displayState.descRes),
+                    fontSize = 14.sp,
+                    color = cs.textSecondary,
+                    lineHeight = 22.sp
+                )
+
+                rootState.message?.takeIf { rootState.status != RootStatus.GRANTED }?.let {
+                    Spacer(Modifier.height(8.dp))
+                    Text(it, fontSize = 12.sp, color = cs.textDim)
+                }
             }
         }
     }

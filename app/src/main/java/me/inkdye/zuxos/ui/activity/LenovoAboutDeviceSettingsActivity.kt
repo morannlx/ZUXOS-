@@ -60,6 +60,7 @@ import me.inkdye.zuxos.root.RestartScope
 import me.inkdye.zuxos.ui.components.BooleanSettingSwitch
 import me.inkdye.zuxos.ui.components.GlassCard
 import me.inkdye.zuxos.ui.components.GlassSwitch
+import me.inkdye.zuxos.ui.components.LiquidGlassCardBackdropProvider
 import me.inkdye.zuxos.ui.components.PageHeader
 import me.inkdye.zuxos.ui.components.RestartScopeCard
 import me.inkdye.zuxos.ui.components.pageHorizontalPadding
@@ -92,7 +93,11 @@ private fun LenovoAboutDeviceSettingsPage(onBack: () -> Unit) {
     val settings = rememberAppSettings()
     val repository = rememberSettingsRepository()
     val context = LocalContext.current
-    val cs = colorSchemeFor(resolveIsDark(settings.themeMode.value))
+    val cs = colorSchemeFor(
+        resolveIsDark(settings.themeMode.value),
+        titleTextContrast = settings.titleTextContrast.value,
+        descriptionTextContrast = settings.descriptionTextContrast.value,
+    )
     val coroutineScope = rememberCoroutineScope()
     val rootState = rememberRootUiState()
     var imageVersion by remember { mutableIntStateOf(0) }
@@ -133,90 +138,95 @@ private fun LenovoAboutDeviceSettingsPage(onBack: () -> Unit) {
         Modifier
             .fillMaxSize()
             .background(bgBrush)
-            .safeContentPadding()
     ) {
-        val horizontalPadding = pageHorizontalPadding()
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 280.dp),
-            modifier = Modifier.fillMaxSize().padding(horizontal = horizontalPadding),
-            contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+        LiquidGlassCardBackdropProvider(
+            backdropBrush = bgBrush,
+            enabled = settings.liquidGlassEnabled.value,
+            colorScheme = cs,
         ) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                PageHeader(
-                    title = stringResource(R.string.lenovo_about_device_settings_title),
-                    subtitle = stringResource(R.string.lenovo_about_device_settings_desc),
-                    colorScheme = cs,
-                    onBack = onBack,
-                )
-            }
-
-            item {
-                BooleanSettingSwitch(
-                    spec = LenovoAboutDeviceMasterSetting,
-                    repository = repository,
-                    colorScheme = cs,
-                )
-            }
-
-            item {
-                GlassSwitch(
-                    title = stringResource(LenovoAboutDeviceImageSetting.titleRes),
-                    description = stringResource(LenovoAboutDeviceImageSetting.descRes),
-                    checked = imageReplacementEnabled,
-                    onCheckedChange = { enabled ->
-                        imageReplacementEnabled = enabled
-                        repository.setBoolean(LenovoAboutDeviceImageSetting, enabled)
-                    },
-                    colorScheme = cs,
-                )
-            }
-
-            if (imageReplacementEnabled) {
+            val horizontalPadding = pageHorizontalPadding()
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 280.dp),
+                modifier = Modifier.fillMaxSize().safeContentPadding().padding(horizontal = horizontalPadding),
+                contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    DeviceImageCard(
+                    PageHeader(
+                        title = stringResource(R.string.lenovo_about_device_settings_title),
+                        subtitle = stringResource(R.string.lenovo_about_device_settings_desc),
+                        colorScheme = cs,
+                        onBack = onBack,
+                    )
+                }
+
+                item {
+                    BooleanSettingSwitch(
+                        spec = LenovoAboutDeviceMasterSetting,
                         repository = repository,
                         colorScheme = cs,
-                        imageVersion = imageVersion,
-                        onSelectImage = { imagePicker.launch("image/*") },
-                        onClearImage = {
-                            repository.setString(ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_PATH, "")
-                            File(context.filesDir, AboutDeviceImageProvider.FILE_NAME).delete()
-                            imageVersion++
+                    )
+                }
+
+                item {
+                    GlassSwitch(
+                        title = stringResource(LenovoAboutDeviceImageSetting.titleRes),
+                        description = stringResource(LenovoAboutDeviceImageSetting.descRes),
+                        checked = imageReplacementEnabled,
+                        onCheckedChange = { enabled ->
+                            imageReplacementEnabled = enabled
+                            repository.setBoolean(LenovoAboutDeviceImageSetting, enabled)
+                        },
+                        colorScheme = cs,
+                    )
+                }
+
+                if (imageReplacementEnabled) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        DeviceImageCard(
+                            repository = repository,
+                            colorScheme = cs,
+                            imageVersion = imageVersion,
+                            onSelectImage = { imagePicker.launch("image/*") },
+                            onClearImage = {
+                                repository.setString(ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_PATH, "")
+                                File(context.filesDir, AboutDeviceImageProvider.FILE_NAME).delete()
+                                imageVersion++
+                            },
+                        )
+                    }
+                }
+
+                items(LenovoAboutDeviceTextSettings) { spec ->
+                    DeviceInfoTextCard(
+                        spec = spec,
+                        repository = repository,
+                        colorScheme = cs,
+                    )
+                }
+
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    RestartScopeCard(
+                        scope = RestartScope.SETTINGS,
+                        colorScheme = cs,
+                        onRestart = {
+                            rootState.restart(coroutineScope, RestartScope.SETTINGS) { result ->
+                                statusMessage = result.message
+                                statusFailed = !result.success
+                            }
                         },
                     )
                 }
-            }
 
-            items(LenovoAboutDeviceTextSettings) { spec ->
-                DeviceInfoTextCard(
-                    spec = spec,
-                    repository = repository,
-                    colorScheme = cs,
-                )
-            }
-
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                RestartScopeCard(
-                    scope = RestartScope.SETTINGS,
-                    colorScheme = cs,
-                    onRestart = {
-                        rootState.restart(coroutineScope, RestartScope.SETTINGS) { result ->
-                            statusMessage = result.message
-                            statusFailed = !result.success
-                        }
-                    },
-                )
-            }
-
-            statusMessage?.let { message ->
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        text = message,
-                        fontSize = 13.sp,
-                        color = if (statusFailed) cs.accentRed else cs.accentGreen,
-                    )
+                statusMessage?.let { message ->
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            text = message,
+                            fontSize = 13.sp,
+                            color = if (statusFailed) cs.accentRed else cs.accentGreen,
+                        )
+                    }
                 }
             }
         }

@@ -181,4 +181,18 @@
     <string name="appearance_floating_nav_desc">平板上的导航栏变成悬浮卡片样式</string>
     <string name="appearance_liquid_glass">液态玻璃效果</string>
     <string name="appearance_liquid_glass_desc">导航栏显示模糊和半透明效果</string>
+    <string name="appearance_glass_card_opacity">玻璃卡片透明度</string>
+    <string name="appearance_glass_card_opacity_desc">调整卡片表面不透明度，减少自定义背景上的蒙白感。</string>
+    <string name="appearance_title_text_contrast">标题文字对比度</string>
+    <string name="appearance_title_text_contrast_desc">调整页面和卡片中主要标题文字的对比度。</string>
+    <string name="appearance_description_text_contrast">介绍说明文字对比度</string>
+    <string name="appearance_description_text_contrast_desc">调整副标题、说明和辅助文字的对比度。</string>
+    <string name="appearance_custom_background">自定义图片背景</string>
+    <string name="appearance_custom_background_desc">使用本地图片作为应用背景，会自动裁剪填充不同屏幕尺寸。</string>
+    <string name="appearance_select_background">选择图片</string>
+    <string name="appearance_clear_background">清除</string>
+    <string name="appearance_background_selected">已选择自定义背景</string>
+    <string name="appearance_background_empty">未选择自定义背景</string>
+    <string name="appearance_background_saved">背景图片已保存</string>
+    <string name="appearance_background_save_failed">保存背景失败：%1$s</string>
 </resources>

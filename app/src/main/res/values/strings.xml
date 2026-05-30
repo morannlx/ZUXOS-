@@ -139,6 +139,20 @@
     <string name="appearance_floating_nav_desc">Detached floating style for tablet navigation</string>
     <string name="appearance_liquid_glass">Liquid Glass Effect</string>
     <string name="appearance_liquid_glass_desc">Blur and glassmorphism on navigation bars</string>
+    <string name="appearance_glass_card_opacity">Glass Card Opacity</string>
+    <string name="appearance_glass_card_opacity_desc">Adjust the card surface opacity to reduce white haze over custom backgrounds.</string>
+    <string name="appearance_title_text_contrast">Title Text Contrast</string>
+    <string name="appearance_title_text_contrast_desc">Adjust primary title text contrast across cards and pages.</string>
+    <string name="appearance_description_text_contrast">Description Text Contrast</string>
+    <string name="appearance_description_text_contrast_desc">Adjust subtitle and description text contrast across cards and pages.</string>
+    <string name="appearance_custom_background">Custom Image Background</string>
+    <string name="appearance_custom_background_desc">Use a local image as the app background; it is cropped to fill the screen.</string>
+    <string name="appearance_select_background">Select Image</string>
+    <string name="appearance_clear_background">Clear</string>
+    <string name="appearance_background_selected">Custom background selected</string>
+    <string name="appearance_background_empty">No custom background</string>
+    <string name="appearance_background_saved">Background image saved</string>
+    <string name="appearance_background_save_failed">Failed to save background: %1$s</string>
 
     <!-- App Info -->
     <string name="system_framework_function">System Framework</string>

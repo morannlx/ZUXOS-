@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import me.inkdye.zuxos.R
 import me.inkdye.zuxos.root.RestartScope
 import me.inkdye.zuxos.ui.components.GlassSwitch
+import me.inkdye.zuxos.ui.components.LiquidGlassCardBackdropProvider
 import me.inkdye.zuxos.ui.components.PageHeader
 import me.inkdye.zuxos.ui.components.RestartScopeCard
 import me.inkdye.zuxos.ui.components.pageHorizontalPadding
@@ -54,7 +55,11 @@ class PackageInstallerSettingsActivity : ComponentActivity() {
 private fun PackageInstallerSettingsPage(onBack: () -> Unit) {
     val settings = rememberAppSettings()
     val repository = rememberSettingsRepository()
-    val cs = colorSchemeFor(resolveIsDark(settings.themeMode.value))
+    val cs = colorSchemeFor(
+        resolveIsDark(settings.themeMode.value),
+        titleTextContrast = settings.titleTextContrast.value,
+        descriptionTextContrast = settings.descriptionTextContrast.value,
+    )
     val coroutineScope = rememberCoroutineScope()
     val rootState = rememberRootUiState()
     var restartMessage by remember { mutableStateOf<String?>(null) }
@@ -68,56 +73,61 @@ private fun PackageInstallerSettingsPage(onBack: () -> Unit) {
         Modifier
             .fillMaxSize()
             .background(bgBrush)
-            .safeContentPadding()
     ) {
-        val horizontalPadding = pageHorizontalPadding()
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 260.dp),
-            modifier = Modifier.fillMaxSize().padding(horizontal = horizontalPadding),
-            contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+        LiquidGlassCardBackdropProvider(
+            backdropBrush = bgBrush,
+            enabled = settings.liquidGlassEnabled.value,
+            colorScheme = cs,
         ) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                PageHeader(
-                    title = stringResource(R.string.package_installer_settings_title),
-                    subtitle = stringResource(R.string.package_installer_settings_desc),
-                    colorScheme = cs,
-                    onBack = onBack,
-                )
-            }
-
-            PackageInstallerFeatureSettings.forEach { spec ->
-                item {
-                    val state = rememberBooleanSettingState(repository, spec)
-                    GlassSwitch(
-                        title = stringResource(spec.titleRes),
-                        description = stringResource(spec.descRes),
-                        checked = state.checked.value,
-                        onCheckedChange = { state.update(it) },
+            val horizontalPadding = pageHorizontalPadding()
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 260.dp),
+                modifier = Modifier.fillMaxSize().safeContentPadding().padding(horizontal = horizontalPadding),
+                contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    PageHeader(
+                        title = stringResource(R.string.package_installer_settings_title),
+                        subtitle = stringResource(R.string.package_installer_settings_desc),
                         colorScheme = cs,
+                        onBack = onBack,
                     )
                 }
-            }
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                RestartScopeCard(
-                    scope = RestartScope.PACKAGE_INSTALLER,
-                    colorScheme = cs,
-                    onRestart = {
-                        rootState.restart(coroutineScope, RestartScope.PACKAGE_INSTALLER) { result ->
-                            restartMessage = result.message
-                            restartFailed = !result.success
-                        }
-                    },
-                )
-            }
-            restartMessage?.let { message ->
+
+                PackageInstallerFeatureSettings.forEach { spec ->
+                    item {
+                        val state = rememberBooleanSettingState(repository, spec)
+                        GlassSwitch(
+                            title = stringResource(spec.titleRes),
+                            description = stringResource(spec.descRes),
+                            checked = state.checked.value,
+                            onCheckedChange = { state.update(it) },
+                            colorScheme = cs,
+                        )
+                    }
+                }
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        text = message,
-                        fontSize = 13.sp,
-                        color = if (restartFailed) cs.accentRed else cs.accentGreen,
+                    RestartScopeCard(
+                        scope = RestartScope.PACKAGE_INSTALLER,
+                        colorScheme = cs,
+                        onRestart = {
+                            rootState.restart(coroutineScope, RestartScope.PACKAGE_INSTALLER) { result ->
+                                restartMessage = result.message
+                                restartFailed = !result.success
+                            }
+                        },
                     )
+                }
+                restartMessage?.let { message ->
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            text = message,
+                            fontSize = 13.sp,
+                            color = if (restartFailed) cs.accentRed else cs.accentGreen,
+                        )
+                    }
                 }
             }
         }

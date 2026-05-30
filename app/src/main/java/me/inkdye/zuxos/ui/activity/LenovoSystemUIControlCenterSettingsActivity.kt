@@ -33,6 +33,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -58,11 +59,16 @@ import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import me.inkdye.zuxos.R
 import me.inkdye.zuxos.root.RestartScope
 import me.inkdye.zuxos.ui.components.BooleanSettingSwitch
+import me.inkdye.zuxos.ui.components.CustomizableAppBackgroundSurface
 import me.inkdye.zuxos.ui.components.GlassCard
+import me.inkdye.zuxos.ui.components.LocalGlassCardOpacity
+import me.inkdye.zuxos.ui.components.LocalLiquidGlassBackdrop
+import me.inkdye.zuxos.ui.components.LocalLiquidGlassEnabled
 import me.inkdye.zuxos.ui.components.LiquidGlassSlider
 import me.inkdye.zuxos.ui.components.PageHeader
 import me.inkdye.zuxos.ui.components.RestartScopeCard
 import me.inkdye.zuxos.ui.components.pageHorizontalPadding
+import me.inkdye.zuxos.ui.components.rememberCustomBackgroundBitmap
 import me.inkdye.zuxos.ui.root.rememberRootUiState
 import me.inkdye.zuxos.ui.settings.ColorSettingSpec
 import me.inkdye.zuxos.ui.settings.FloatSettingSpec
@@ -93,7 +99,11 @@ private fun LenovoSystemUIControlCenterSettingsPage(onBack: () -> Unit) {
     val repository = rememberSettingsRepository()
     val coroutineScope = rememberCoroutineScope()
     val rootState = rememberRootUiState()
-    val cs = colorSchemeFor(resolveIsDark(settings.themeMode.value))
+    val cs = colorSchemeFor(
+        resolveIsDark(settings.themeMode.value),
+        titleTextContrast = settings.titleTextContrast.value,
+        descriptionTextContrast = settings.descriptionTextContrast.value,
+    )
     var restartMessage by remember { mutableStateOf<String?>(null) }
     var restartFailed by remember { mutableStateOf(false) }
     val inactiveColorSpec = remember {
@@ -130,102 +140,117 @@ private fun LenovoSystemUIControlCenterSettingsPage(onBack: () -> Unit) {
     val bgBrush = Brush.verticalGradient(
         listOf(cs.bgGradientTop, cs.bgGradientMid, cs.bgGradientBottom)
     )
-    val backdrop = rememberLayerBackdrop {
-        drawRect(bgBrush)
-        drawContent()
-    }
+    val customBackground = rememberCustomBackgroundBitmap(settings)
+    val backdrop = rememberLayerBackdrop()
     val liquidGlass = settings.liquidGlassEnabled.value
 
     BoxWithConstraints(
         Modifier
             .fillMaxSize()
             .background(bgBrush)
-            .safeContentPadding()
     ) {
-        val horizontalPadding = pageHorizontalPadding()
-        val useAnchoredWideLayout = maxWidth >= 1180.dp
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 280.dp),
-            modifier = Modifier
+        Box(
+            Modifier
                 .fillMaxSize()
-                .padding(horizontal = horizontalPadding)
-                .layerBackdrop(backdrop),
-            contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+                .layerBackdrop(backdrop)
         ) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                PageHeader(
-                    title = stringResource(R.string.lenovo_systemui_control_center_settings_title),
-                    subtitle = stringResource(R.string.lenovo_systemui_control_center_settings_desc),
-                    colorScheme = cs,
-                    onBack = onBack,
-                )
-            }
-
-            if (useAnchoredWideLayout) {
+            CustomizableAppBackgroundSurface(
+                bitmap = customBackground,
+                bgGradient = bgBrush,
+                colorScheme = cs,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+        CompositionLocalProvider(
+            LocalLiquidGlassBackdrop provides backdrop,
+            LocalLiquidGlassEnabled provides liquidGlass,
+            LocalGlassCardOpacity provides settings.glassCardOpacity.value,
+        ) {
+            val horizontalPadding = pageHorizontalPadding()
+            val useAnchoredWideLayout = maxWidth >= 1180.dp
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 280.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .safeContentPadding()
+                    .padding(horizontal = horizontalPadding),
+                contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    WideControlCenterSettingsLayout(
-                        repository = repository,
+                    PageHeader(
+                        title = stringResource(R.string.lenovo_systemui_control_center_settings_title),
+                        subtitle = stringResource(R.string.lenovo_systemui_control_center_settings_desc),
                         colorScheme = cs,
-                        inactiveColorSpec = inactiveColorSpec,
-                        activeColorSpec = activeColorSpec,
-                        panelAlphaSpec = panelAlphaSpec,
-                        pullDownBlurSpec = pullDownBlurSpec,
-                        inactiveAlphaSpec = inactiveAlphaSpec,
-                        activeAlphaSpec = activeAlphaSpec,
-                        backdrop = backdrop,
-                        liquidGlass = liquidGlass,
-                    )
-                }
-            } else {
-                item {
-                    BooleanSettingSwitch(
-                        spec = LenovoSystemUIControlCenterMasterSetting,
-                        repository = repository,
-                        colorScheme = cs,
+                        onBack = onBack,
                     )
                 }
 
-                items(LenovoSystemUIControlCenterColorSettings) { spec ->
-                    ColorSettingCard(
-                        spec = spec,
-                        colorScheme = cs,
-                        backdrop = backdrop,
-                        liquidGlass = liquidGlass,
-                    )
+                if (useAnchoredWideLayout) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        WideControlCenterSettingsLayout(
+                            repository = repository,
+                            colorScheme = cs,
+                            inactiveColorSpec = inactiveColorSpec,
+                            activeColorSpec = activeColorSpec,
+                            panelAlphaSpec = panelAlphaSpec,
+                            pullDownBlurSpec = pullDownBlurSpec,
+                            inactiveAlphaSpec = inactiveAlphaSpec,
+                            activeAlphaSpec = activeAlphaSpec,
+                            backdrop = backdrop,
+                            liquidGlass = liquidGlass,
+                        )
+                    }
+                } else {
+                    item {
+                        BooleanSettingSwitch(
+                            spec = LenovoSystemUIControlCenterMasterSetting,
+                            repository = repository,
+                            colorScheme = cs,
+                        )
+                    }
+
+                    items(LenovoSystemUIControlCenterColorSettings) { spec ->
+                        ColorSettingCard(
+                            spec = spec,
+                            colorScheme = cs,
+                            backdrop = backdrop,
+                            liquidGlass = liquidGlass,
+                        )
+                    }
+
+                    items(LenovoSystemUIControlCenterFloatSettings) { spec ->
+                        FloatSettingCard(
+                            spec = spec,
+                            colorScheme = cs,
+                            backdrop = backdrop,
+                            liquidGlass = liquidGlass,
+                        )
+                    }
                 }
 
-                items(LenovoSystemUIControlCenterFloatSettings) { spec ->
-                    FloatSettingCard(
-                        spec = spec,
-                        colorScheme = cs,
-                        backdrop = backdrop,
-                        liquidGlass = liquidGlass,
-                    )
-                }
-            }
-
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                RestartScopeCard(
-                    scope = RestartScope.SYSTEMUI,
-                    colorScheme = cs,
-                    onRestart = {
-                        rootState.restart(coroutineScope, RestartScope.SYSTEMUI) { result ->
-                            restartMessage = result.message
-                            restartFailed = !result.success
-                        }
-                    },
-                )
-            }
-
-            restartMessage?.let { message ->
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        text = message,
-                        fontSize = 13.sp,
-                        color = if (restartFailed) cs.accentRed else cs.accentGreen,
+                    RestartScopeCard(
+                        scope = RestartScope.SYSTEMUI,
+                        colorScheme = cs,
+                        onRestart = {
+                            rootState.restart(coroutineScope, RestartScope.SYSTEMUI) { result ->
+                                restartMessage = result.message
+                                restartFailed = !result.success
+                            }
+                        },
                     )
+                }
+
+                restartMessage?.let { message ->
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            text = message,
+                            fontSize = 13.sp,
+                            color = if (restartFailed) cs.accentRed else cs.accentGreen,
+                        )
+                    }
                 }
             }
         }

@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import me.inkdye.zuxos.R
 import me.inkdye.zuxos.ui.components.ActionCard
+import me.inkdye.zuxos.ui.components.LiquidGlassCardBackdropProvider
 import me.inkdye.zuxos.ui.components.PageHeader
 import me.inkdye.zuxos.ui.components.pageHorizontalPadding
 import me.inkdye.zuxos.ui.settings.rememberAppSettings
@@ -42,7 +43,11 @@ class LenovoSystemUISettingsActivity : ComponentActivity() {
 @Composable
 private fun LenovoSystemUISettingsPage(onBack: () -> Unit) {
     val settings = rememberAppSettings()
-    val cs = colorSchemeFor(resolveIsDark(settings.themeMode.value))
+    val cs = colorSchemeFor(
+        resolveIsDark(settings.themeMode.value),
+        titleTextContrast = settings.titleTextContrast.value,
+        descriptionTextContrast = settings.descriptionTextContrast.value,
+    )
     val context = LocalContext.current
     val bgBrush = Brush.verticalGradient(
         listOf(cs.bgGradientTop, cs.bgGradientMid, cs.bgGradientBottom)
@@ -52,35 +57,40 @@ private fun LenovoSystemUISettingsPage(onBack: () -> Unit) {
         Modifier
             .fillMaxSize()
             .background(bgBrush)
-            .safeContentPadding()
     ) {
-        val horizontalPadding = pageHorizontalPadding()
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 280.dp),
-            modifier = Modifier.fillMaxSize().padding(horizontal = horizontalPadding),
-            contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+        LiquidGlassCardBackdropProvider(
+            backdropBrush = bgBrush,
+            enabled = settings.liquidGlassEnabled.value,
+            colorScheme = cs,
         ) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                PageHeader(
-                    title = stringResource(R.string.lenovo_systemui_settings_title),
-                    subtitle = stringResource(R.string.lenovo_systemui_settings_desc),
-                    colorScheme = cs,
-                    onBack = onBack,
-                )
-            }
-            item {
-                ActionCard(
-                    title = stringResource(R.string.lenovo_systemui_control_center_menu_title),
-                    description = stringResource(R.string.lenovo_systemui_control_center_menu_desc),
-                    colorScheme = cs,
-                    onClick = {
-                        context.startActivity(
-                            Intent(context, LenovoSystemUIControlCenterSettingsActivity::class.java)
-                        )
-                    },
-                )
+            val horizontalPadding = pageHorizontalPadding()
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 280.dp),
+                modifier = Modifier.fillMaxSize().safeContentPadding().padding(horizontal = horizontalPadding),
+                contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    PageHeader(
+                        title = stringResource(R.string.lenovo_systemui_settings_title),
+                        subtitle = stringResource(R.string.lenovo_systemui_settings_desc),
+                        colorScheme = cs,
+                        onBack = onBack,
+                    )
+                }
+                item {
+                    ActionCard(
+                        title = stringResource(R.string.lenovo_systemui_control_center_menu_title),
+                        description = stringResource(R.string.lenovo_systemui_control_center_menu_desc),
+                        colorScheme = cs,
+                        onClick = {
+                            context.startActivity(
+                                Intent(context, LenovoSystemUIControlCenterSettingsActivity::class.java)
+                            )
+                        },
+                    )
+                }
             }
         }
     }

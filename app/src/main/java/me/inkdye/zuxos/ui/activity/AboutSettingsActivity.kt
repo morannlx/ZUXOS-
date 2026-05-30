@@ -42,7 +42,11 @@ class AboutSettingsActivity : ComponentActivity() {
 @Composable
 private fun AboutSettingsPage(onBack: () -> Unit) {
     val settings = rememberAppSettings()
-    val cs = colorSchemeFor(resolveIsDark(settings.themeMode.value))
+    val cs = colorSchemeFor(
+        resolveIsDark(settings.themeMode.value),
+        titleTextContrast = settings.titleTextContrast.value,
+        descriptionTextContrast = settings.descriptionTextContrast.value,
+    )
 
     AppBackground(colorScheme = cs) {
         val horizontalPadding = pageHorizontalPadding()

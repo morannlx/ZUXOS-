@@ -30,6 +30,7 @@ import com.highcapable.betterandroid.ui.component.activity.AppViewsActivity
 import me.inkdye.zuxos.R
 import me.inkdye.zuxos.root.RestartScope
 import me.inkdye.zuxos.ui.components.BooleanSettingSwitch
+import me.inkdye.zuxos.ui.components.LiquidGlassCardBackdropProvider
 import me.inkdye.zuxos.ui.components.PageHeader
 import me.inkdye.zuxos.ui.components.RestartScopeCard
 import me.inkdye.zuxos.ui.components.pageHorizontalPadding
@@ -57,7 +58,11 @@ private fun AppInfoSettingsPage(onBack: () -> Unit) {
     val repository = rememberSettingsRepository()
     val coroutineScope = rememberCoroutineScope()
     val rootState = rememberRootUiState()
-    val cs = colorSchemeFor(resolveIsDark(settings.themeMode.value))
+    val cs = colorSchemeFor(
+        resolveIsDark(settings.themeMode.value),
+        titleTextContrast = settings.titleTextContrast.value,
+        descriptionTextContrast = settings.descriptionTextContrast.value,
+    )
     var restartMessage by remember { mutableStateOf<String?>(null) }
     var restartFailed by remember { mutableStateOf(false) }
 
@@ -69,52 +74,57 @@ private fun AppInfoSettingsPage(onBack: () -> Unit) {
         Modifier
             .fillMaxSize()
             .background(bgBrush)
-            .safeContentPadding()
     ) {
-        val horizontalPadding = pageHorizontalPadding()
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 260.dp),
-            modifier = Modifier.fillMaxSize().padding(horizontal = horizontalPadding),
-            contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+        LiquidGlassCardBackdropProvider(
+            backdropBrush = bgBrush,
+            enabled = settings.liquidGlassEnabled.value,
+            colorScheme = cs,
         ) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                PageHeader(
-                    title = stringResource(R.string.app_info_settings_title),
-                    subtitle = stringResource(R.string.app_info_settings_desc),
-                    colorScheme = cs,
-                    onBack = onBack,
-                )
-            }
-
-            items(AppInfoDetailSettings) { spec ->
-                BooleanSettingSwitch(
-                    spec = spec,
-                    repository = repository,
-                    colorScheme = cs,
-                )
-            }
-
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                RestartScopeCard(
-                    scope = RestartScope.SETTINGS,
-                    colorScheme = cs,
-                    onRestart = {
-                        rootState.restart(coroutineScope, RestartScope.SETTINGS) { result ->
-                            restartMessage = result.message
-                            restartFailed = !result.success
-                        }
-                    },
-                )
-            }
-            restartMessage?.let { message ->
+            val horizontalPadding = pageHorizontalPadding()
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 260.dp),
+                modifier = Modifier.fillMaxSize().safeContentPadding().padding(horizontal = horizontalPadding),
+                contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        text = message,
-                        fontSize = 13.sp,
-                        color = if (restartFailed) cs.accentRed else cs.accentGreen,
+                    PageHeader(
+                        title = stringResource(R.string.app_info_settings_title),
+                        subtitle = stringResource(R.string.app_info_settings_desc),
+                        colorScheme = cs,
+                        onBack = onBack,
                     )
+                }
+
+                items(AppInfoDetailSettings) { spec ->
+                    BooleanSettingSwitch(
+                        spec = spec,
+                        repository = repository,
+                        colorScheme = cs,
+                    )
+                }
+
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    RestartScopeCard(
+                        scope = RestartScope.SETTINGS,
+                        colorScheme = cs,
+                        onRestart = {
+                            rootState.restart(coroutineScope, RestartScope.SETTINGS) { result ->
+                                restartMessage = result.message
+                                restartFailed = !result.success
+                            }
+                        },
+                    )
+                }
+                restartMessage?.let { message ->
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            text = message,
+                            fontSize = 13.sp,
+                            color = if (restartFailed) cs.accentRed else cs.accentGreen,
+                        )
+                    }
                 }
             }
         }

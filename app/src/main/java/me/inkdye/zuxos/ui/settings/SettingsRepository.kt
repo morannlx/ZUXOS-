@@ -48,6 +48,9 @@ class SettingsRepository(context: Context) {
             themeMode = AppPreferences.getThemeMode(appContext),
             floatingNavEnabled = AppPreferences.isFloatingNavEnabled(appContext),
             liquidGlassEnabled = AppPreferences.isLiquidGlassEnabled(appContext),
+            glassCardOpacity = AppPreferences.getGlassCardOpacity(appContext),
+            titleTextContrast = AppPreferences.getTitleTextContrast(appContext),
+            descriptionTextContrast = AppPreferences.getDescriptionTextContrast(appContext),
             moduleBooleans = ModuleBooleanSettings.associate { spec ->
                 spec.key to getBoolean(spec)
             },
@@ -67,6 +70,9 @@ class SettingsRepository(context: Context) {
         AppPreferences.setThemeMode(appContext, snapshot.themeMode)
         AppPreferences.setFloatingNavEnabled(appContext, snapshot.floatingNavEnabled)
         AppPreferences.setLiquidGlassEnabled(appContext, snapshot.liquidGlassEnabled)
+        AppPreferences.setGlassCardOpacity(appContext, snapshot.glassCardOpacity)
+        AppPreferences.setTitleTextContrast(appContext, snapshot.titleTextContrast)
+        AppPreferences.setDescriptionTextContrast(appContext, snapshot.descriptionTextContrast)
         ModuleBooleanSettings.forEach { spec ->
             setBoolean(spec, snapshot.moduleBooleans[spec.key] ?: spec.defaultValue)
         }
@@ -88,6 +94,9 @@ class SettingsRepository(context: Context) {
         AppPreferences.setThemeMode(appContext, ThemeMode.SYSTEM)
         AppPreferences.setFloatingNavEnabled(appContext, false)
         AppPreferences.setLiquidGlassEnabled(appContext, true)
+        AppPreferences.setGlassCardOpacity(appContext, AppPreferences.DEFAULT_GLASS_CARD_OPACITY)
+        AppPreferences.setTitleTextContrast(appContext, AppPreferences.DEFAULT_TEXT_CONTRAST)
+        AppPreferences.setDescriptionTextContrast(appContext, AppPreferences.DEFAULT_TEXT_CONTRAST)
         ModuleBooleanSettings.forEach { spec ->
             setBoolean(spec, spec.defaultValue)
         }
@@ -110,6 +119,9 @@ class SettingsRepository(context: Context) {
             .put("themeMode", snapshot.themeMode.name)
             .put("floatingNavEnabled", snapshot.floatingNavEnabled)
             .put("liquidGlassEnabled", snapshot.liquidGlassEnabled)
+            .put("glassCardOpacity", snapshot.glassCardOpacity.toDouble())
+            .put("titleTextContrast", snapshot.titleTextContrast.toDouble())
+            .put("descriptionTextContrast", snapshot.descriptionTextContrast.toDouble())
 
         val module = JSONObject()
         snapshot.moduleBooleans.forEach { (key, value) ->
@@ -159,6 +171,18 @@ class SettingsRepository(context: Context) {
             }.getOrDefault(ThemeMode.SYSTEM),
             floatingNavEnabled = root.optBoolean("floatingNavEnabled", false),
             liquidGlassEnabled = root.optBoolean("liquidGlassEnabled", true),
+            glassCardOpacity = root
+                .optDouble("glassCardOpacity", AppPreferences.DEFAULT_GLASS_CARD_OPACITY.toDouble())
+                .toFloat()
+                .coerceIn(AppPreferences.MIN_GLASS_CARD_OPACITY, AppPreferences.MAX_GLASS_CARD_OPACITY),
+            titleTextContrast = root
+                .optDouble("titleTextContrast", AppPreferences.DEFAULT_TEXT_CONTRAST.toDouble())
+                .toFloat()
+                .coerceIn(AppPreferences.MIN_TEXT_CONTRAST, AppPreferences.MAX_TEXT_CONTRAST),
+            descriptionTextContrast = root
+                .optDouble("descriptionTextContrast", AppPreferences.DEFAULT_TEXT_CONTRAST.toDouble())
+                .toFloat()
+                .coerceIn(AppPreferences.MIN_TEXT_CONTRAST, AppPreferences.MAX_TEXT_CONTRAST),
             moduleBooleans = importedModuleBooleans,
             moduleFloats = importedModuleFloats,
             moduleColors = importedModuleColors,
@@ -177,6 +201,9 @@ data class SettingsSnapshot(
     val themeMode: ThemeMode,
     val floatingNavEnabled: Boolean,
     val liquidGlassEnabled: Boolean,
+    val glassCardOpacity: Float,
+    val titleTextContrast: Float,
+    val descriptionTextContrast: Float,
     val moduleBooleans: Map<String, Boolean>,
     val moduleFloats: Map<String, Float>,
     val moduleColors: Map<String, Int>,

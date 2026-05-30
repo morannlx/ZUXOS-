@@ -9,7 +9,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -38,7 +36,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.inkdye.zuxos.R
 import me.inkdye.zuxos.root.RestartScope
+import me.inkdye.zuxos.ui.components.GlassCard
 import me.inkdye.zuxos.ui.components.GlassSwitch
+import me.inkdye.zuxos.ui.components.LiquidGlassCardBackdropProvider
 import me.inkdye.zuxos.ui.components.PageHeader
 import me.inkdye.zuxos.ui.components.RestartScopeCard
 import me.inkdye.zuxos.ui.components.pageHorizontalPadding
@@ -65,69 +65,81 @@ class SystemFrameworkSettingsActivity : ComponentActivity() {
 private fun SystemFrameworkSettingsPage(onBack: () -> Unit) {
     val settings = rememberAppSettings()
     val repository = rememberSettingsRepository()
-    val cs = colorSchemeFor(resolveIsDark(settings.themeMode.value))
+    val cs = colorSchemeFor(
+        resolveIsDark(settings.themeMode.value),
+        titleTextContrast = settings.titleTextContrast.value,
+        descriptionTextContrast = settings.descriptionTextContrast.value,
+    )
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val rootState = rememberRootUiState()
     val disableFlagSecureState = rememberBooleanSettingState(repository, DisableFlagSecureSetting)
     var restartMessage by remember { mutableStateOf<String?>(null) }
     var restartFailed by remember { mutableStateOf(false) }
+    val bgBrush = Brush.verticalGradient(
+        listOf(cs.bgGradientTop, cs.bgGradientMid, cs.bgGradientBottom)
+    )
 
     BoxWithConstraints(
         Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(cs.bgGradientTop, cs.bgGradientMid, cs.bgGradientBottom)))
-            .safeContentPadding()
+            .background(bgBrush)
     ) {
-        val horizontalPadding = pageHorizontalPadding()
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 260.dp),
-            modifier = Modifier.fillMaxSize().padding(horizontal = horizontalPadding),
-            contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+        LiquidGlassCardBackdropProvider(
+            backdropBrush = bgBrush,
+            enabled = settings.liquidGlassEnabled.value,
+            colorScheme = cs,
         ) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                PageHeader(
-                    title = stringResource(R.string.system_framework_settings),
-                    subtitle = stringResource(R.string.system_framework_settings_desc),
-                    colorScheme = cs,
-                    onBack = onBack,
-                )
-            }
-            item {
-                CorePatchCard(cs = cs) {
-                    context.startActivity(Intent(context, CorePatchSettingsActivity::class.java))
-                }
-            }
-            item {
-                GlassSwitch(
-                    title = stringResource(DisableFlagSecureSetting.titleRes),
-                    description = stringResource(DisableFlagSecureSetting.descRes),
-                    checked = disableFlagSecureState.checked.value,
-                    onCheckedChange = { disableFlagSecureState.update(it) },
-                    colorScheme = cs,
-                )
-            }
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                RestartScopeCard(
-                    scope = RestartScope.ANDROID_SYSTEM,
-                    colorScheme = cs,
-                    onRestart = {
-                        rootState.restart(coroutineScope, RestartScope.ANDROID_SYSTEM) { result ->
-                            restartMessage = result.message
-                            restartFailed = !result.success
-                        }
-                    },
-                )
-            }
-            restartMessage?.let { message ->
+            val horizontalPadding = pageHorizontalPadding()
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 260.dp),
+                modifier = Modifier.fillMaxSize().safeContentPadding().padding(horizontal = horizontalPadding),
+                contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        text = message,
-                        fontSize = 13.sp,
-                        color = if (restartFailed) cs.accentRed else cs.accentGreen,
+                    PageHeader(
+                        title = stringResource(R.string.system_framework_settings),
+                        subtitle = stringResource(R.string.system_framework_settings_desc),
+                        colorScheme = cs,
+                        onBack = onBack,
                     )
+                }
+                item {
+                    CorePatchCard(cs = cs) {
+                        context.startActivity(Intent(context, CorePatchSettingsActivity::class.java))
+                    }
+                }
+                item {
+                    GlassSwitch(
+                        title = stringResource(DisableFlagSecureSetting.titleRes),
+                        description = stringResource(DisableFlagSecureSetting.descRes),
+                        checked = disableFlagSecureState.checked.value,
+                        onCheckedChange = { disableFlagSecureState.update(it) },
+                        colorScheme = cs,
+                    )
+                }
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    RestartScopeCard(
+                        scope = RestartScope.ANDROID_SYSTEM,
+                        colorScheme = cs,
+                        onRestart = {
+                            rootState.restart(coroutineScope, RestartScope.ANDROID_SYSTEM) { result ->
+                                restartMessage = result.message
+                                restartFailed = !result.success
+                            }
+                        },
+                    )
+                }
+                restartMessage?.let { message ->
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            text = message,
+                            fontSize = 13.sp,
+                            color = if (restartFailed) cs.accentRed else cs.accentGreen,
+                        )
+                    }
                 }
             }
         }
@@ -136,15 +148,15 @@ private fun SystemFrameworkSettingsPage(onBack: () -> Unit) {
 
 @Composable
 private fun CorePatchCard(cs: AppColorScheme, onClick: () -> Unit) {
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .background(cs.cardBackground)
-            .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { onClick() }
-            .padding(18.dp)
+    GlassCard(
+        colorScheme = cs,
+        shape = RoundedCornerShape(20.dp),
+        modifier = Modifier.clickable(
+            indication = null,
+            interactionSource = remember { MutableInteractionSource() },
+        ) { onClick() },
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
                 text = stringResource(R.string.core_patch_function),
                 fontWeight = FontWeight.Bold,

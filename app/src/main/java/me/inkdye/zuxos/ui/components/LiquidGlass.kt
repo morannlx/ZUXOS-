@@ -1,5 +1,6 @@
 package me.inkdye.zuxos.ui.components
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,11 +8,14 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -50,7 +55,52 @@ import com.kyant.backdrop.highlight.Highlight
 import com.kyant.backdrop.highlight.HighlightStyle
 import com.kyant.backdrop.shadow.InnerShadow
 import com.kyant.backdrop.shadow.Shadow
+import me.inkdye.zuxos.ui.settings.AppPreferences
+import me.inkdye.zuxos.ui.settings.rememberAppSettings
 import me.inkdye.zuxos.ui.theme.AppColorScheme
+import me.inkdye.zuxos.ui.theme.LightColorScheme
+
+val LocalLiquidGlassBackdrop = staticCompositionLocalOf<Backdrop?> { null }
+val LocalLiquidGlassEnabled = staticCompositionLocalOf { false }
+val LocalGlassCardOpacity = staticCompositionLocalOf { AppPreferences.DEFAULT_GLASS_CARD_OPACITY }
+
+@Composable
+fun LiquidGlassCardBackdropProvider(
+    backdropBrush: Brush,
+    enabled: Boolean,
+    colorScheme: AppColorScheme? = null,
+    customBackground: Bitmap? = null,
+    content: @Composable () -> Unit,
+) {
+    val settings = rememberAppSettings()
+    val settingsBackground = rememberCustomBackgroundBitmap(settings)
+    val effectiveColorScheme = colorScheme ?: LightColorScheme
+    val effectiveBackground = customBackground ?: settingsBackground
+    val cardBackdrop = rememberLayerBackdrop()
+    Box(
+        Modifier
+            .fillMaxSize()
+            .layerBackdrop(cardBackdrop)
+    ) {
+        if (effectiveBackground != null) {
+            CustomizableAppBackgroundSurface(
+                bitmap = effectiveBackground,
+                bgGradient = backdropBrush,
+                colorScheme = effectiveColorScheme,
+                modifier = Modifier.fillMaxSize(),
+            )
+        } else {
+            Box(Modifier.fillMaxSize().background(backdropBrush))
+        }
+    }
+    CompositionLocalProvider(
+        LocalLiquidGlassBackdrop provides cardBackdrop,
+        LocalLiquidGlassEnabled provides enabled,
+        LocalGlassCardOpacity provides settings.glassCardOpacity.value,
+    ) {
+        content()
+    }
+}
 
 fun Modifier.liquidGlassSurface(
     backdrop: Backdrop,
