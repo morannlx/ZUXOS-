@@ -52,10 +52,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kyant.backdrop.Backdrop
+import com.kyant.backdrop.backdrops.layerBackdrop
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import me.inkdye.zuxos.R
 import me.inkdye.zuxos.root.RestartScope
 import me.inkdye.zuxos.ui.components.BooleanSettingSwitch
 import me.inkdye.zuxos.ui.components.GlassCard
+import me.inkdye.zuxos.ui.components.LiquidGlassSlider
 import me.inkdye.zuxos.ui.components.PageHeader
 import me.inkdye.zuxos.ui.components.RestartScopeCard
 import me.inkdye.zuxos.ui.components.pageHorizontalPadding
@@ -126,6 +130,11 @@ private fun LenovoSystemUIControlCenterSettingsPage(onBack: () -> Unit) {
     val bgBrush = Brush.verticalGradient(
         listOf(cs.bgGradientTop, cs.bgGradientMid, cs.bgGradientBottom)
     )
+    val backdrop = rememberLayerBackdrop {
+        drawRect(bgBrush)
+        drawContent()
+    }
+    val liquidGlass = settings.liquidGlassEnabled.value
 
     BoxWithConstraints(
         Modifier
@@ -137,7 +146,10 @@ private fun LenovoSystemUIControlCenterSettingsPage(onBack: () -> Unit) {
         val useAnchoredWideLayout = maxWidth >= 1180.dp
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 280.dp),
-            modifier = Modifier.fillMaxSize().padding(horizontal = horizontalPadding),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = horizontalPadding)
+                .layerBackdrop(backdrop),
             contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -162,6 +174,8 @@ private fun LenovoSystemUIControlCenterSettingsPage(onBack: () -> Unit) {
                         pullDownBlurSpec = pullDownBlurSpec,
                         inactiveAlphaSpec = inactiveAlphaSpec,
                         activeAlphaSpec = activeAlphaSpec,
+                        backdrop = backdrop,
+                        liquidGlass = liquidGlass,
                     )
                 }
             } else {
@@ -174,11 +188,21 @@ private fun LenovoSystemUIControlCenterSettingsPage(onBack: () -> Unit) {
                 }
 
                 items(LenovoSystemUIControlCenterColorSettings) { spec ->
-                    ColorSettingCard(spec = spec, colorScheme = cs)
+                    ColorSettingCard(
+                        spec = spec,
+                        colorScheme = cs,
+                        backdrop = backdrop,
+                        liquidGlass = liquidGlass,
+                    )
                 }
 
                 items(LenovoSystemUIControlCenterFloatSettings) { spec ->
-                    FloatSettingCard(spec = spec, colorScheme = cs)
+                    FloatSettingCard(
+                        spec = spec,
+                        colorScheme = cs,
+                        backdrop = backdrop,
+                        liquidGlass = liquidGlass,
+                    )
                 }
             }
 
@@ -218,6 +242,8 @@ private fun WideControlCenterSettingsLayout(
     pullDownBlurSpec: FloatSettingSpec,
     inactiveAlphaSpec: FloatSettingSpec,
     activeAlphaSpec: FloatSettingSpec,
+    backdrop: Backdrop,
+    liquidGlass: Boolean,
 ) {
     Row(
         Modifier.fillMaxWidth(),
@@ -233,25 +259,49 @@ private fun WideControlCenterSettingsLayout(
                 repository = repository,
                 colorScheme = colorScheme,
             )
-            FloatSettingCard(spec = panelAlphaSpec, colorScheme = colorScheme)
-            FloatSettingCard(spec = pullDownBlurSpec, colorScheme = colorScheme)
+            FloatSettingCard(
+                spec = panelAlphaSpec,
+                colorScheme = colorScheme,
+                backdrop = backdrop,
+                liquidGlass = liquidGlass,
+            )
+            FloatSettingCard(
+                spec = pullDownBlurSpec,
+                colorScheme = colorScheme,
+                backdrop = backdrop,
+                liquidGlass = liquidGlass,
+            )
         }
         ColorSettingCard(
             spec = inactiveColorSpec,
             colorScheme = colorScheme,
+            backdrop = backdrop,
+            liquidGlass = liquidGlass,
             modifier = Modifier.weight(1f),
         )
         ColorSettingCard(
             spec = activeColorSpec,
             colorScheme = colorScheme,
+            backdrop = backdrop,
+            liquidGlass = liquidGlass,
             modifier = Modifier.weight(1f),
         )
         Column(
             Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            FloatSettingCard(spec = inactiveAlphaSpec, colorScheme = colorScheme)
-            FloatSettingCard(spec = activeAlphaSpec, colorScheme = colorScheme)
+            FloatSettingCard(
+                spec = inactiveAlphaSpec,
+                colorScheme = colorScheme,
+                backdrop = backdrop,
+                liquidGlass = liquidGlass,
+            )
+            FloatSettingCard(
+                spec = activeAlphaSpec,
+                colorScheme = colorScheme,
+                backdrop = backdrop,
+                liquidGlass = liquidGlass,
+            )
         }
     }
 }
@@ -266,6 +316,8 @@ private fun List<ColorSettingSpec>.requiredColorSetting(key: String): ColorSetti
 private fun FloatSettingCard(
     spec: FloatSettingSpec,
     colorScheme: AppColorScheme,
+    backdrop: Backdrop?,
+    liquidGlass: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val repository = rememberSettingsRepository()
@@ -297,7 +349,7 @@ private fun FloatSettingCard(
                     color = colorScheme.accentBlue,
                 )
             }
-            FlatSettingSlider(
+            LiquidGlassSlider(
                 value = value,
                 onValueChange = {
                     value = it.coerceIn(spec.valueRange)
@@ -306,6 +358,9 @@ private fun FloatSettingCard(
                 valueRange = spec.valueRange,
                 activeColor = colorScheme.accentGreen,
                 inactiveColor = colorScheme.glassSurface.copy(alpha = if (colorScheme.isDark) 0.56f else 0.76f),
+                colorScheme = colorScheme,
+                backdrop = backdrop,
+                liquidGlass = liquidGlass,
             )
         }
     }
@@ -315,6 +370,8 @@ private fun FloatSettingCard(
 private fun ColorSettingCard(
     spec: ColorSettingSpec,
     colorScheme: AppColorScheme,
+    backdrop: Backdrop?,
+    liquidGlass: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val repository = rememberSettingsRepository()
@@ -366,6 +423,8 @@ private fun ColorSettingCard(
                 hsv = hsv,
                 alpha = alpha,
                 colorScheme = colorScheme,
+                backdrop = backdrop,
+                liquidGlass = liquidGlass,
                 onColorChange = ::updateColor,
             )
             Spacer(Modifier.height(10.dp))
@@ -392,63 +451,13 @@ private fun ColorSettingCard(
 }
 
 @Composable
-private fun FlatSettingSlider(
-    value: Float,
-    onValueChange: (Float) -> Unit,
-    valueRange: ClosedFloatingPointRange<Float>,
-    activeColor: Color,
-    inactiveColor: Color,
-    modifier: Modifier = Modifier,
-) {
-    var size by remember { mutableStateOf(IntSize.Zero) }
-    val fraction = ((value - valueRange.start) / (valueRange.endInclusive - valueRange.start))
-        .coerceIn(0f, 1f)
-
-    fun updateFromX(x: Float) {
-        val width = size.width.coerceAtLeast(1)
-        val nextFraction = (x / width).coerceIn(0f, 1f)
-        val nextValue = valueRange.start + (valueRange.endInclusive - valueRange.start) * nextFraction
-        onValueChange(nextValue)
-    }
-
-    Canvas(
-        modifier
-            .fillMaxWidth()
-            .height(24.dp)
-            .onSizeChanged { size = it }
-            .pointerInput(valueRange) {
-                detectTapGestures { updateFromX(it.x) }
-            }
-            .pointerInput(valueRange) {
-                detectDragGestures { change, _ ->
-                    updateFromX(change.position.x)
-                }
-            }
-    ) {
-        val trackHeight = 9.dp.toPx()
-        val top = (size.height - trackHeight) / 2f
-        val radius = trackHeight / 2f
-        drawRoundRect(
-            color = inactiveColor,
-            topLeft = Offset(0f, top),
-            size = androidx.compose.ui.geometry.Size(size.width.toFloat(), trackHeight),
-            cornerRadius = androidx.compose.ui.geometry.CornerRadius(radius, radius),
-        )
-        drawRoundRect(
-            color = activeColor.copy(alpha = 0.78f),
-            topLeft = Offset(0f, top),
-            size = androidx.compose.ui.geometry.Size(size.width * fraction, trackHeight),
-            cornerRadius = androidx.compose.ui.geometry.CornerRadius(radius, radius),
-        )
-    }
-}
-
-@Composable
 private fun ArgbColorPicker(
     color: Int,
     hsv: FloatArray,
     alpha: Int,
     colorScheme: AppColorScheme,
+    backdrop: Backdrop?,
+    liquidGlass: Boolean,
     onColorChange: (Int) -> Unit,
 ) {
     val hue = hsv[0]
@@ -478,6 +487,8 @@ private fun ArgbColorPicker(
         value = alpha,
         activeColor = Color(color).copy(alpha = 1f),
         colorScheme = colorScheme,
+        backdrop = backdrop,
+        liquidGlass = liquidGlass,
         onChange = { nextAlpha ->
             onColorChange(AndroidColor.argb(nextAlpha, AndroidColor.red(color), AndroidColor.green(color), AndroidColor.blue(color)))
         },
@@ -487,6 +498,8 @@ private fun ArgbColorPicker(
         value = AndroidColor.red(color),
         activeColor = Color(0xFFE58B8B),
         colorScheme = colorScheme,
+        backdrop = backdrop,
+        liquidGlass = liquidGlass,
         onChange = { next ->
             onColorChange(AndroidColor.argb(alpha, next, AndroidColor.green(color), AndroidColor.blue(color)))
         },
@@ -496,6 +509,8 @@ private fun ArgbColorPicker(
         value = AndroidColor.green(color),
         activeColor = Color(0xFF74B99A),
         colorScheme = colorScheme,
+        backdrop = backdrop,
+        liquidGlass = liquidGlass,
         onChange = { next ->
             onColorChange(AndroidColor.argb(alpha, AndroidColor.red(color), next, AndroidColor.blue(color)))
         },
@@ -505,6 +520,8 @@ private fun ArgbColorPicker(
         value = AndroidColor.blue(color),
         activeColor = Color(0xFF82A7D6),
         colorScheme = colorScheme,
+        backdrop = backdrop,
+        liquidGlass = liquidGlass,
         onChange = { next ->
             onColorChange(AndroidColor.argb(alpha, AndroidColor.red(color), AndroidColor.green(color), next))
         },
@@ -605,6 +622,8 @@ private fun ChannelSliderRow(
     value: Int,
     activeColor: Color,
     colorScheme: AppColorScheme,
+    backdrop: Backdrop?,
+    liquidGlass: Boolean,
     onChange: (Int) -> Unit,
 ) {
     Row(
@@ -613,12 +632,15 @@ private fun ChannelSliderRow(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(label, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = colorScheme.textSecondary, modifier = Modifier.width(14.dp))
-        FlatSettingSlider(
+        LiquidGlassSlider(
             value = value.toFloat(),
             onValueChange = { onChange(it.roundToInt().coerceIn(0, 255)) },
             valueRange = 0f..255f,
             activeColor = activeColor,
             inactiveColor = colorScheme.glassSurface.copy(alpha = if (colorScheme.isDark) 0.50f else 0.78f),
+            colorScheme = colorScheme,
+            backdrop = backdrop,
+            liquidGlass = liquidGlass,
             modifier = Modifier.weight(1f),
         )
         Text(value.toString(), fontSize = 12.sp, color = colorScheme.textDim, modifier = Modifier.width(30.dp))

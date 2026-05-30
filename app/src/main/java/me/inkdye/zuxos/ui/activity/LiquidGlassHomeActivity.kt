@@ -17,6 +17,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -43,56 +44,58 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailItem
-import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import kotlin.math.roundToInt
 import androidx.core.graphics.drawable.toBitmap
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.kyant.backdrop.Backdrop
 import com.kyant.backdrop.backdrops.layerBackdrop
+import com.kyant.backdrop.backdrops.rememberCombinedBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import com.kyant.backdrop.drawBackdrop
 import com.kyant.backdrop.effects.blur
 import com.kyant.backdrop.effects.lens
 import com.kyant.backdrop.effects.vibrancy
 import com.kyant.backdrop.highlight.Highlight
-import com.kyant.backdrop.highlight.HighlightStyle
 import com.kyant.backdrop.shadow.InnerShadow
 import com.kyant.backdrop.shadow.Shadow
 import me.inkdye.zuxos.BuildConfig
 import me.inkdye.zuxos.R
 import me.inkdye.zuxos.root.RootState
 import me.inkdye.zuxos.root.RootStatus
+import me.inkdye.zuxos.ui.components.liquidGlassProgressiveBlur
+import me.inkdye.zuxos.ui.components.liquidGlassSurface
 import me.inkdye.zuxos.ui.components.pageHorizontalPadding
 import me.inkdye.zuxos.ui.root.rememberRootUiState
 import me.inkdye.zuxos.ui.settings.HookLoggingSetting
@@ -124,77 +127,6 @@ private val FeatureNeutral = Color(0xFF96A3AE)
 
 private fun glassNavTint(cs: AppColorScheme) =
     if (cs.isDark) cs.glassSurface.copy(alpha = 0.46f) else Color.White.copy(alpha = 0.42f)
-
-private fun Modifier.liquidGlassNavSurface(
-    backdrop: Backdrop,
-    shape: Shape,
-    liquidGlass: Boolean,
-    cs: AppColorScheme,
-    navTint: Color,
-    pressedProgress: Float = 0f,
-    blurRadius: Dp = 10.dp,
-    lensRadius: Dp = 24.dp,
-    lensRefraction: Dp = 44.dp,
-): Modifier {
-    val scale = 1f + pressedProgress * 0.025f
-    return if (liquidGlass) {
-        this.graphicsLayer {
-            scaleX = scale
-            scaleY = scale
-        }.drawBackdrop(
-            backdrop = backdrop,
-            shape = { shape },
-            effects = {
-                vibrancy()
-                blur(blurRadius.toPx())
-                lens(lensRadius.toPx(), lensRefraction.toPx(), depthEffect = true)
-            },
-            highlight = {
-                Highlight(
-                    width = 1.2.dp,
-                    blurRadius = 18.dp,
-                    alpha = if (cs.isDark) 0.30f else 0.46f,
-                    style = HighlightStyle.Default(
-                        color = cs.glassHighlight.copy(alpha = if (cs.isDark) 0.22f else 0.40f),
-                        angle = 38f,
-                        falloff = 1.65f
-                    )
-                )
-            },
-            shadow = {
-                Shadow(
-                    radius = 24.dp,
-                    offset = DpOffset(0.dp, 7.dp),
-                    color = Color.Black.copy(alpha = if (cs.isDark) 0.22f else 0.08f),
-                    alpha = 1f
-                )
-            },
-            innerShadow = {
-                InnerShadow(
-                    radius = 10.dp,
-                    offset = DpOffset(0.dp, 1.dp),
-                    color = cs.glassHighlight.copy(alpha = if (cs.isDark) 0.08f else 0.18f),
-                    alpha = 1f
-                )
-            },
-            onDrawSurface = {
-                drawRect(navTint)
-                drawRect(cs.glassHighlight.copy(alpha = if (cs.isDark) 0.03f else 0.06f))
-            }
-        )
-    } else {
-        this.shadow(
-            elevation = if (cs.isDark) 10.dp else 14.dp,
-            shape = shape,
-            clip = false,
-            ambientColor = cs.cardShadow,
-            spotColor = cs.cardShadow
-        )
-            .clip(shape)
-            .background(cs.glassSurface, shape)
-            .border(1.dp, cs.glassBorder, shape)
-    }
-}
 
 /* ── Feature Groups ─────────────────────────────── */
 private data class FeatureGroup(
@@ -292,6 +224,17 @@ private fun LiquidGlassHome() {
                             .padding(bottom = if (floatingNav) 28.dp else 0.dp),
                         contentAlignment = Alignment.BottomCenter
                     ) {
+                        Box(
+                            Modifier
+                                .align(Alignment.BottomCenter)
+                                .fillMaxWidth()
+                                .height(if (floatingNav) 128.dp else 104.dp)
+                                .liquidGlassProgressiveBlur(
+                                    backdrop = backdrop,
+                                    colorScheme = cs,
+                                    enabled = liquidGlass,
+                                )
+                        )
                         FloatingNavPill(
                             selectedTab = selectedTab,
                             backdrop = backdrop,
@@ -405,12 +348,12 @@ private fun GlassNavigationBar(
         .then(if (floatingNav) Modifier.padding(horizontal = floatPadH, vertical = floatPadV) else Modifier)
 
     Box(
-        baseModifier.liquidGlassNavSurface(
+        baseModifier.liquidGlassSurface(
             backdrop = backdrop,
             shape = navShape,
-            liquidGlass = liquidGlass,
-            cs = cs,
-            navTint = navTint
+            enabled = liquidGlass,
+            colorScheme = cs,
+            tint = navTint
         )
     ) {
         Row(
@@ -441,7 +384,7 @@ private fun GlassNavigationBar(
 private fun LiquidNavItem(
     page: NavPage,
     selected: Boolean,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     cs: AppColorScheme,
     iconSize: TextUnit,
     modifier: Modifier = Modifier,
@@ -476,10 +419,16 @@ private fun LiquidNavItem(
             .clip(itemShape)
             .then(if (selected) Modifier.background(selectedBrush, itemShape) else Modifier)
             .then(if (selected) Modifier.border(1.dp, cs.glassBorder, itemShape) else Modifier)
-            .clickable(
-                indication = null,
-                interactionSource = interactionSource,
-                onClick = onClick
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(
+                        indication = null,
+                        interactionSource = interactionSource,
+                        onClick = onClick
+                    )
+                } else {
+                    Modifier
+                }
             ),
         contentAlignment = Alignment.Center
     ) {
@@ -552,12 +501,12 @@ private fun FloatingNavPill(
     BoxWithConstraints(
         surfaceModifier
             .height(pillHeight)
-            .liquidGlassNavSurface(
+            .liquidGlassSurface(
                 backdrop = backdrop,
                 shape = pillShape,
-                liquidGlass = liquidGlass,
-                cs = cs,
-                navTint = navTint,
+                enabled = liquidGlass,
+                colorScheme = cs,
+                tint = navTint,
             )
             .padding(5.dp),
         contentAlignment = Alignment.CenterStart
@@ -565,39 +514,129 @@ private fun FloatingNavPill(
         val contentPadding = 2.dp
         val tabCount = navPages.size
         val tabWidth = (maxWidth - contentPadding * 2f) / tabCount.toFloat()
+        val tabWidthPx = with(LocalDensity.current) { tabWidth.toPx() }
         val isLtr = LocalLayoutDirection.current == LayoutDirection.Ltr
         val indicatorIndex = if (isLtr) selectedTab else tabCount - selectedTab - 1
-        val indicatorOffset by animateDpAsState(
-            targetValue = contentPadding + tabWidth * indicatorIndex.toFloat(),
+        val contentPaddingPx = with(LocalDensity.current) { contentPadding.toPx() }
+        var dragOffsetPx by remember { mutableFloatStateOf(0f) }
+        var draggingIndicator by remember { androidx.compose.runtime.mutableStateOf(false) }
+        val animatedIndicatorOffsetPx by animateFloatAsState(
+            targetValue = contentPaddingPx + tabWidthPx * indicatorIndex,
             animationSpec = spring(stiffness = 430f, dampingRatio = 0.78f),
             label = "pillIndicatorOffset"
         )
+        val indicatorOffsetPx = animatedIndicatorOffsetPx + dragOffsetPx
+        val dragStretch = (kotlin.math.abs(dragOffsetPx) / tabWidthPx.coerceAtLeast(1f)).coerceIn(0f, 1f)
         val indicatorShape = RoundedCornerShape(24.dp)
+        val tabsBackdrop = rememberLayerBackdrop()
+
+        Row(
+            Modifier
+                .clearAndSetSemantics {}
+                .alpha(0f)
+                .layerBackdrop(tabsBackdrop)
+                .drawBackdrop(
+                    backdrop = backdrop,
+                    shape = { pillShape },
+                    effects = {
+                        vibrancy()
+                        blur(8.dp.toPx())
+                        lens(22.dp.toPx(), 22.dp.toPx())
+                    },
+                    highlight = { Highlight.Default.copy(alpha = 0f) },
+                    shadow = { Shadow(alpha = 0f) },
+                    onDrawSurface = { drawRect(navTint) }
+                )
+                .graphicsLayer(colorFilter = ColorFilter.tint(cs.accentGreen))
+                .fillMaxSize()
+                .padding(horizontal = contentPadding),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            navPages.forEachIndexed { index, page ->
+                LiquidNavItem(
+                    page = page,
+                    selected = selectedTab == index,
+                    onClick = null,
+                    cs = cs,
+                    iconSize = iconSize,
+                    modifier = Modifier
+                        .width(tabWidth)
+                        .fillMaxHeight()
+                )
+            }
+        }
 
         Box(
             Modifier
-                .offset(x = indicatorOffset)
+                .zIndex(1f)
+                .graphicsLayer {
+                    translationX = indicatorOffsetPx
+                }
                 .width(tabWidth)
                 .fillMaxHeight()
                 .padding(3.dp)
-                .shadow(
-                    elevation = 8.dp,
-                    shape = indicatorShape,
-                    clip = false,
-                    ambientColor = cs.accentGreen.copy(alpha = if (cs.isDark) 0.14f else 0.08f),
-                    spotColor = cs.accentGreen.copy(alpha = if (cs.isDark) 0.14f else 0.08f)
-                )
-                .clip(indicatorShape)
-                .background(
-                    Brush.verticalGradient(
-                        listOf(
-                            cs.glassHighlight.copy(alpha = if (cs.isDark) 0.10f else 0.36f),
-                            cs.accentGreen.copy(alpha = if (cs.isDark) 0.18f else 0.12f),
+                .pointerInput(selectedTab, navPages.size, tabWidthPx, isLtr) {
+                    detectDragGestures(
+                        onDragStart = {
+                            draggingIndicator = true
+                            dragOffsetPx = 0f
+                        },
+                        onDragCancel = {
+                            draggingIndicator = false
+                            dragOffsetPx = 0f
+                        },
+                        onDragEnd = {
+                            val visualDelta = (dragOffsetPx / tabWidthPx).roundToInt()
+                            val logicalDelta = if (isLtr) visualDelta else -visualDelta
+                            val targetTab = (selectedTab + logicalDelta).coerceIn(0, navPages.lastIndex)
+                            draggingIndicator = false
+                            dragOffsetPx = 0f
+                            if (targetTab != selectedTab) onTabSelected(targetTab)
+                        },
+                    ) { change, dragAmount ->
+                        change.consume()
+                        val minVisualDelta = if (isLtr) -selectedTab else -(navPages.lastIndex - selectedTab)
+                        val maxVisualDelta = if (isLtr) navPages.lastIndex - selectedTab else selectedTab
+                        dragOffsetPx = (dragOffsetPx + dragAmount.x)
+                            .coerceIn(minVisualDelta * tabWidthPx, maxVisualDelta * tabWidthPx)
+                    }
+                }
+                .drawBackdrop(
+                    backdrop = rememberCombinedBackdrop(backdrop, tabsBackdrop),
+                    shape = { indicatorShape },
+                    effects = {
+                        lens(
+                            12.dp.toPx(),
+                            16.dp.toPx(),
+                            chromaticAberration = true
                         )
-                    ),
-                    indicatorShape
+                    },
+                    highlight = { Highlight.Default.copy(alpha = 0.95f) },
+                    shadow = {
+                        Shadow(
+                            radius = 16.dp,
+                            color = cs.accentGreen.copy(alpha = if (cs.isDark) 0.20f else 0.12f),
+                        )
+                    },
+                    innerShadow = {
+                        InnerShadow(
+                            radius = 7.dp,
+                            alpha = 0.78f,
+                            color = cs.glassHighlight.copy(alpha = if (cs.isDark) 0.10f else 0.24f),
+                        )
+                    },
+                    layerBlock = {
+                        scaleX = 1.04f + dragStretch * 0.22f
+                        scaleY = 1.04f - dragStretch * 0.04f
+                        if (draggingIndicator) {
+                            rotationZ = (dragOffsetPx / tabWidthPx.coerceAtLeast(1f)).coerceIn(-1f, 1f) * 2f
+                        }
+                    },
+                    onDrawSurface = {
+                        drawRect(if (cs.isDark) Color.White.copy(alpha = 0.08f) else Color.Black.copy(alpha = 0.08f))
+                        drawRect(cs.accentGreen.copy(alpha = if (cs.isDark) 0.05f else 0.04f))
+                    }
                 )
-                .border(1.dp, cs.glassBorder.copy(alpha = if (cs.isDark) 0.10f else 0.34f), indicatorShape)
         )
 
         Row(
@@ -635,128 +674,327 @@ private fun GlassNavigationRail(
     navPages: List<NavPage>,
     onTabSelected: (Int) -> Unit
 ) {
-    val railShape = RoundedCornerShape(
-        topStart = if (floatingNav) 24.dp else 0.dp,
-        topEnd = 24.dp,
-        bottomStart = if (floatingNav) 24.dp else 0.dp,
-        bottomEnd = 24.dp,
-    )
-    val baseModifier = if (floatingNav) {
-        Modifier
-            .wrapContentWidth()
-            .wrapContentHeight(Alignment.CenterVertically)
-    } else {
-        Modifier.fillMaxHeight()
-    }
-
-    val railModifier = baseModifier.liquidGlassNavSurface(
-        backdrop = backdrop,
-        shape = railShape,
-        liquidGlass = liquidGlass,
-        cs = cs,
-        navTint = navTint,
-        blurRadius = if (floatingNav) 10.dp else 8.dp,
-        lensRadius = if (floatingNav) 24.dp else 18.dp,
-        lensRefraction = if (floatingNav) 46.dp else 36.dp,
-    )
-
-    val iconSize = if (floatingNav) 22.sp else if (isCompactTablet) 18.sp else 22.sp
-    val labelSize = if (isCompactTablet) 10.sp else 11.sp
+    val railWidth = if (isCompactTablet) 74.dp else 88.dp
+    val itemSize = if (isCompactTablet) 56.dp else 64.dp
+    val itemGap = if (isCompactTablet) 5.dp else 7.dp
+    val verticalPadding = if (floatingNav) 10.dp else 20.dp
+    val horizontalPadding = if (isCompactTablet) 8.dp else 10.dp
     val headerSize = if (isCompactTablet) 36.dp else 44.dp
     val headerFontSize = if (isCompactTablet) 15.sp else 18.sp
+    val headerGap = if (isCompactTablet) 10.dp else 14.dp
+    val iconSize = if (isCompactTablet) 18.sp else 22.sp
+    val labelSize = if (isCompactTablet) 9.sp else 10.sp
+    val panelShape = if (floatingNav) {
+        RoundedCornerShape(38.dp)
+    } else {
+        RoundedCornerShape(topEnd = 34.dp, bottomEnd = 34.dp)
+    }
+    val itemShape = RoundedCornerShape(32.dp)
+    val panelTint = if (cs.isDark) cs.glassSurface.copy(alpha = 0.42f) else Color.White.copy(alpha = 0.38f)
+    val tabsBackdrop = rememberLayerBackdrop()
+    val density = LocalDensity.current
+    val firstItemOffsetPx = with(density) { (headerSize + headerGap).toPx() }
+    val itemStepPx = with(density) { (itemSize + itemGap).toPx() }
+    var dragOffsetPx by remember { mutableFloatStateOf(0f) }
+    var draggingIndicator by remember { androidx.compose.runtime.mutableStateOf(false) }
+    val animatedIndicatorOffsetPx by animateFloatAsState(
+        targetValue = firstItemOffsetPx + itemStepPx * selectedTab,
+        animationSpec = spring(stiffness = 430f, dampingRatio = 0.78f),
+        label = "tabletRailIndicatorOffset"
+    )
+    val indicatorOffsetPx = animatedIndicatorOffsetPx + dragOffsetPx
+    val dragStretch = (kotlin.math.abs(dragOffsetPx) / itemStepPx.coerceAtLeast(1f)).coerceIn(0f, 1f)
     val brandBrush = Brush.linearGradient(
         listOf(
             cs.accentGreen.copy(alpha = 0.95f),
             cs.accentBlue.copy(alpha = 0.92f),
         )
     )
+    val panelModifier = if (floatingNav) {
+        Modifier
+            .width(railWidth)
+            .wrapContentHeight(Alignment.CenterVertically)
+    } else {
+        Modifier
+            .width(railWidth)
+            .fillMaxHeight()
+    }
 
-    Box(railModifier) {
-        if (floatingNav) {
-            Column(
-                Modifier.padding(vertical = 10.dp, horizontal = 6.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Box(
-                    Modifier
-                        .size(headerSize)
-                        .background(
-                            brandBrush,
-                            CircleShape
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        "Z",
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = headerFontSize,
-                        color = Color.White
-                    )
-                }
+    if (!liquidGlass) {
+        Box(
+            panelModifier.liquidGlassSurface(
+                backdrop = backdrop,
+                shape = panelShape,
+                enabled = false,
+                colorScheme = cs,
+                tint = navTint,
+            )
+        ) {
+            TabletRailContent(
+                selectedTab = selectedTab,
+                navPages = navPages,
+                onTabSelected = onTabSelected,
+                cs = cs,
+                brandBrush = brandBrush,
+                headerSize = headerSize,
+                headerFontSize = headerFontSize,
+                iconSize = iconSize,
+                labelSize = labelSize,
+                itemSize = itemSize,
+                itemGap = itemGap,
+                verticalPadding = verticalPadding,
+                horizontalPadding = horizontalPadding,
+                headerGap = headerGap,
+            )
+        }
+        return
+    }
 
-                navPages.forEachIndexed { index, page ->
-                    LiquidNavItem(
-                        page = page,
-                        selected = selectedTab == index,
-                        onClick = { onTabSelected(index) },
-                        cs = cs,
-                        iconSize = iconSize,
-                        modifier = Modifier.size(48.dp)
-                    )
-                }
-            }
-        } else {
-            NavigationRail(
-                containerColor = Color.Transparent,
-                contentColor = cs.textPrimary,
-                header = {
-                    Box(
-                        Modifier
-                            .size(headerSize)
-                            .background(
-                                brandBrush,
-                                CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            "Z",
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = headerFontSize,
-                            color = Color.White
-                        )
-                    }
+    Box(
+        panelModifier
+            .drawBackdrop(
+                backdrop = backdrop,
+                shape = { panelShape },
+                effects = {
+                    vibrancy()
+                    blur(10.dp.toPx())
+                    lens(30.dp.toPx(), 34.dp.toPx(), depthEffect = true)
                 },
-            ) {
-                navPages.forEachIndexed { index, page ->
-                    NavigationRailItem(
-                        selected = selectedTab == index,
-                        onClick = { onTabSelected(index) },
-                        icon = {
-                            NavPageIcon(
-                                page = page,
-                                color = if (selectedTab == index) cs.accentGreen else cs.textDim,
-                                textSize = iconSize,
-                            )
-                        },
-                        label = {
-                            Text(
-                                stringResource(page.labelRes),
-                                fontSize = labelSize,
-                                fontWeight = if (selectedTab == index) FontWeight.SemiBold else FontWeight.Normal
-                            )
-                        },
-                        colors = NavigationRailItemDefaults.colors(
-                            selectedIconColor = cs.accentGreen,
-                            selectedTextColor = cs.accentGreen,
-                            unselectedIconColor = cs.textDim,
-                            unselectedTextColor = cs.textDim,
-                            indicatorColor = cs.accentGreen.copy(alpha = 0.12f),
-                        ),
-                    )
-                }
+                layerBlock = {
+                    scaleX = 1.01f
+                    scaleY = 1.01f
+                },
+                onDrawSurface = { drawRect(panelTint) }
+            )
+            .padding(horizontal = horizontalPadding, vertical = verticalPadding)
+    ) {
+        TabletRailContent(
+            selectedTab = selectedTab,
+            navPages = navPages,
+            onTabSelected = onTabSelected,
+            cs = cs,
+            brandBrush = brandBrush,
+            headerSize = headerSize,
+            headerFontSize = headerFontSize,
+            iconSize = iconSize,
+            labelSize = labelSize,
+            itemSize = itemSize,
+            itemGap = itemGap,
+            verticalPadding = 0.dp,
+            horizontalPadding = 0.dp,
+            headerGap = headerGap,
+        )
+
+        Column(
+            Modifier
+                .clearAndSetSemantics {}
+                .alpha(0f)
+                .layerBackdrop(tabsBackdrop)
+                .drawBackdrop(
+                    backdrop = backdrop,
+                    shape = { RoundedCornerShape(32.dp) },
+                    effects = {
+                        vibrancy()
+                        blur(10.dp.toPx())
+                        lens(26.dp.toPx(), 28.dp.toPx())
+                    },
+                    highlight = { Highlight.Default.copy(alpha = 0f) },
+                    shadow = { Shadow(alpha = 0f) },
+                    onDrawSurface = { drawRect(panelTint) }
+                )
+                .graphicsLayer(colorFilter = ColorFilter.tint(cs.accentGreen))
+        ) {
+            Box(Modifier.size(headerSize))
+            Spacer(Modifier.height(headerGap))
+            navPages.forEachIndexed { index, page ->
+                TabletRailItem(
+                    page = page,
+                    selected = selectedTab == index,
+                    onClick = null,
+                    cs = cs,
+                    iconSize = iconSize,
+                    labelSize = labelSize,
+                    modifier = Modifier.size(itemSize),
+                )
+                if (index != navPages.lastIndex) Spacer(Modifier.height(itemGap))
             }
+        }
+
+        Box(
+            Modifier
+                .graphicsLayer {
+                    translationY = indicatorOffsetPx
+                }
+                .size(itemSize)
+                .pointerInput(selectedTab, navPages.size, itemStepPx) {
+                    detectDragGestures(
+                        onDragStart = {
+                            draggingIndicator = true
+                            dragOffsetPx = 0f
+                        },
+                        onDragCancel = {
+                            draggingIndicator = false
+                            dragOffsetPx = 0f
+                        },
+                        onDragEnd = {
+                            val targetTab = (selectedTab + (dragOffsetPx / itemStepPx).roundToInt())
+                                .coerceIn(0, navPages.lastIndex)
+                            draggingIndicator = false
+                            dragOffsetPx = 0f
+                            if (targetTab != selectedTab) onTabSelected(targetTab)
+                        },
+                    ) { change, dragAmount ->
+                        change.consume()
+                        val minOffset = -selectedTab * itemStepPx
+                        val maxOffset = (navPages.lastIndex - selectedTab) * itemStepPx
+                        dragOffsetPx = (dragOffsetPx + dragAmount.y).coerceIn(minOffset, maxOffset)
+                    }
+                }
+                .drawBackdrop(
+                    backdrop = rememberCombinedBackdrop(backdrop, tabsBackdrop),
+                    shape = { itemShape },
+                    effects = {
+                        lens(
+                            16.dp.toPx(),
+                            22.dp.toPx(),
+                            chromaticAberration = true
+                        )
+                    },
+                    highlight = { Highlight.Default.copy(alpha = 0.95f) },
+                    shadow = {
+                        Shadow(
+                            radius = 22.dp,
+                            color = cs.accentGreen.copy(alpha = if (cs.isDark) 0.24f else 0.16f),
+                        )
+                    },
+                    innerShadow = {
+                        InnerShadow(
+                            radius = 10.dp,
+                            alpha = 0.8f,
+                            color = cs.glassHighlight.copy(alpha = if (cs.isDark) 0.10f else 0.26f),
+                        )
+                    },
+                    layerBlock = {
+                        scaleX = 1.10f - dragStretch * 0.04f
+                        scaleY = 1.10f + dragStretch * 0.24f
+                        if (draggingIndicator) {
+                            rotationZ = (dragOffsetPx / itemStepPx.coerceAtLeast(1f)).coerceIn(-1f, 1f) * 2.2f
+                        }
+                    },
+                    onDrawSurface = {
+                        drawRect(if (cs.isDark) Color.White.copy(alpha = 0.08f) else Color.Black.copy(alpha = 0.08f))
+                        drawRect(cs.accentGreen.copy(alpha = if (cs.isDark) 0.05f else 0.04f))
+                    }
+                )
+        )
+    }
+}
+
+@Composable
+private fun TabletRailContent(
+    selectedTab: Int,
+    navPages: List<NavPage>,
+    onTabSelected: (Int) -> Unit,
+    cs: AppColorScheme,
+    brandBrush: Brush,
+    headerSize: androidx.compose.ui.unit.Dp,
+    headerFontSize: TextUnit,
+    iconSize: TextUnit,
+    labelSize: TextUnit,
+    itemSize: androidx.compose.ui.unit.Dp,
+    itemGap: androidx.compose.ui.unit.Dp,
+    verticalPadding: androidx.compose.ui.unit.Dp,
+    horizontalPadding: androidx.compose.ui.unit.Dp,
+    headerGap: androidx.compose.ui.unit.Dp,
+) {
+    Column(
+        Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Box(
+            Modifier
+                .size(headerSize)
+                .background(brandBrush, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                "Z",
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = headerFontSize,
+                color = Color.White
+            )
+        }
+        Spacer(Modifier.height(headerGap))
+        navPages.forEachIndexed { index, page ->
+            TabletRailItem(
+                page = page,
+                selected = selectedTab == index,
+                onClick = { onTabSelected(index) },
+                cs = cs,
+                iconSize = iconSize,
+                labelSize = labelSize,
+                modifier = Modifier.size(itemSize),
+            )
+            if (index != navPages.lastIndex) Spacer(Modifier.height(itemGap))
+        }
+    }
+}
+
+@Composable
+private fun TabletRailItem(
+    page: NavPage,
+    selected: Boolean,
+    onClick: (() -> Unit)?,
+    cs: AppColorScheme,
+    iconSize: TextUnit,
+    labelSize: TextUnit,
+    modifier: Modifier = Modifier,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val pressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = when {
+            pressed -> 0.92f
+            selected -> 1.12f
+            else -> 1f
+        },
+        animationSpec = spring(stiffness = 420f, dampingRatio = 0.72f),
+        label = "tabletRailItemScale"
+    )
+    val contentColor = if (selected) cs.accentGreen else cs.textDim
+    Box(
+        modifier
+            .clip(RoundedCornerShape(28.dp))
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(
+                        indication = null,
+                        interactionSource = interactionSource,
+                        onClick = onClick,
+                    )
+                } else {
+                    Modifier
+                }
+            )
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            NavPageIcon(page = page, color = contentColor, textSize = iconSize)
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text = stringResource(page.labelRes),
+                fontSize = labelSize,
+                color = contentColor,
+                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+                maxLines = 1,
+            )
         }
     }
 }
