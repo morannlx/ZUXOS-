@@ -26,6 +26,7 @@ import me.inkdye.zuxos.ui.components.BooleanSettingSwitch
 import me.inkdye.zuxos.ui.components.PageHeader
 import me.inkdye.zuxos.ui.components.pageHorizontalPadding
 import me.inkdye.zuxos.ui.settings.HookLoggingSetting
+import me.inkdye.zuxos.ui.settings.SettingsHomeEntrySetting
 import me.inkdye.zuxos.ui.settings.rememberAppSettings
 import me.inkdye.zuxos.ui.settings.rememberSettingsRepository
 import me.inkdye.zuxos.ui.theme.colorSchemeFor
@@ -68,6 +69,14 @@ private fun GeneralSettingsPage(onBack: () -> Unit) {
                     subtitle = stringResource(R.string.general_settings_desc),
                     colorScheme = cs,
                     onBack = onBack,
+                )
+            }
+
+            item {
+                BooleanSettingSwitch(
+                    spec = SettingsHomeEntrySetting,
+                    repository = repository,
+                    colorScheme = cs,
                 )
             }
 

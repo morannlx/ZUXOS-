@@ -96,6 +96,8 @@
     <string name="settings_reset_done">已恢复默认</string>
     <string name="hook_logging_enabled">启用日志记录</string>
     <string name="hook_logging_enabled_desc">记录功能的注册、运行、失败等日志，开启后可以看到日志页面</string>
+    <string name="settings_home_entry_enabled">在设置中显示入口</string>
+    <string name="settings_home_entry_enabled_desc">在联想设置主页面显示 ZUXOS+ 入口</string>
 
     <!-- 日志页 -->
     <string name="page_logs_title">运行日志</string>

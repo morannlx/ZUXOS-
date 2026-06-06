@@ -80,6 +80,7 @@ object SettingKeys {
     const val LENOVO_SYSTEMUI_CONTROL_CENTER_PULL_DOWN_BLUR_RADIUS =
         ModuleConfig.LENOVO_SYSTEMUI_CONTROL_CENTER_PULL_DOWN_BLUR_RADIUS
     const val HOOK_LOGGING_ENABLED = "hook_logging_enabled"
+    const val SETTINGS_HOME_ENTRY_ENABLED = ModuleConfig.SETTINGS_HOME_ENTRY_ENABLED
     const val DISABLE_FLAG_SECURE = ModuleConfig.DISABLE_FLAG_SECURE
     const val CORE_PATCH_ENABLED = ModuleConfig.CORE_PATCH_ENABLED
     const val CORE_PATCH_DOWNGRADE = ModuleConfig.CORE_PATCH_DOWNGRADE
@@ -127,6 +128,13 @@ val HookLoggingSetting = BooleanSettingSpec(
     titleRes = R.string.hook_logging_enabled,
     descRes = R.string.hook_logging_enabled_desc,
     defaultValue = false,
+)
+
+val SettingsHomeEntrySetting = BooleanSettingSpec(
+    key = SettingKeys.SETTINGS_HOME_ENTRY_ENABLED,
+    titleRes = R.string.settings_home_entry_enabled,
+    descRes = R.string.settings_home_entry_enabled_desc,
+    defaultValue = true,
 )
 
 val PackageInstallerFeatureSettings = listOf(
@@ -479,6 +487,7 @@ val AppInfoDetailSettings = listOf(
 val ModuleBooleanSettings =
     listOf(
         HookLoggingSetting,
+        SettingsHomeEntrySetting,
         DisableFlagSecureSetting,
         CorePatchMasterSetting,
         LenovoAboutDeviceMasterSetting,

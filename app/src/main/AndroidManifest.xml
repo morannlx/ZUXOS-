@@ -130,6 +130,11 @@
             android:exported="true" />
 
         <provider
+            android:name=".config.ModuleConfigProvider"
+            android:authorities="${applicationId}.config"
+            android:exported="true" />
+
+        <provider
             android:name=".provider.AboutDeviceImageProvider"
             android:authorities="${applicationId}.aboutdeviceimage"
             android:exported="true"

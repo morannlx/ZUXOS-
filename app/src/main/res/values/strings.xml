@@ -96,6 +96,8 @@
     <string name="settings_reset_done">Settings have been reset</string>
     <string name="hook_logging_enabled">Enable Hook Logs</string>
     <string name="hook_logging_enabled_desc">Record hook registration, enablement, execution, failures, and stack traces; shows the Logs tab when enabled</string>
+    <string name="settings_home_entry_enabled">Show Entry in Settings</string>
+    <string name="settings_home_entry_enabled_desc">Show the ZUXOS+ entry on Lenovo Settings home page</string>
 
     <!-- Logs Page -->
     <string name="page_logs_title">Hook Logs</string>

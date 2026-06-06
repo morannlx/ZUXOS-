@@ -14,6 +14,7 @@ import me.inkdye.zuxos.corepatch.CorePatchForT
 import me.inkdye.zuxos.corepatch.CorePatchForU
 import me.inkdye.zuxos.corepatch.CorePatchForV
 import me.inkdye.zuxos.hook.settings.AppInfoExtend
+import me.inkdye.zuxos.hook.settings.SettingsHomeEntryHook
 import me.inkdye.zuxos.hook.lenovo.LenovoAboutDeviceInfoHook
 import me.inkdye.zuxos.hook.lenovo.LenovoGameAssistantFeatureUnlockHook
 import me.inkdye.zuxos.hook.lenovo.LenovoSystemUIControlCenterHook
@@ -35,6 +36,7 @@ class HookEntry : IYukiHookXposedInit {
 
     init {
         Hooks.register(
+            SettingsHomeEntryHook,
             AppInfoExtend,
             PackageInstallerDisableScanHook,
             PackageInstallerAllowPermissionHook,

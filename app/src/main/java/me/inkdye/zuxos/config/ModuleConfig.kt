@@ -72,6 +72,7 @@ object ModuleConfig {
     const val LENOVO_SYSTEMUI_CONTROL_CENTER_PULL_DOWN_BLUR_RADIUS =
         "lenovo_systemui_control_center_pull_down_blur_radius"
     const val HOOK_LOGGING_ENABLED = "hook_logging_enabled"
+    const val SETTINGS_HOME_ENTRY_ENABLED = "settings_home_entry_enabled"
     const val DISABLE_FLAG_SECURE = "disable_flag_secure"
     const val CORE_PATCH_ENABLED = "core_patch_enabled"
     const val CORE_PATCH_DOWNGRADE = "downgrade"
