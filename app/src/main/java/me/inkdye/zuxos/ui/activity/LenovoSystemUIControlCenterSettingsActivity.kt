@@ -136,7 +136,6 @@ private fun LenovoSystemUIControlCenterSettingsPage(onBack: () -> Unit) {
             SettingKeys.LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_ACTIVE_ALPHA,
         )
     }
-
     val bgBrush = Brush.verticalGradient(
         listOf(cs.bgGradientTop, cs.bgGradientMid, cs.bgGradientBottom)
     )
@@ -347,8 +346,7 @@ private fun FloatSettingCard(
 ) {
     val repository = rememberSettingsRepository()
     var value by remember(spec.key) { mutableFloatStateOf(repository.getFloat(spec)) }
-    val isAlpha = spec.valueRange.endInclusive <= 1f
-    val displayValue = if (isAlpha) "${(value * 100f).roundToInt()}%" else "${value.roundToInt()} px"
+    val displayValue = spec.displayValue(value)
 
     GlassCard(colorScheme = colorScheme, modifier = modifier) {
         Column(Modifier.fillMaxWidth().padding(16.dp)) {
@@ -390,6 +388,12 @@ private fun FloatSettingCard(
         }
     }
 }
+
+private fun FloatSettingSpec.displayValue(value: Float): String =
+    when {
+        valueRange.endInclusive <= 1f -> "${(value * 100f).roundToInt()}%"
+        else -> "${value.roundToInt()} px"
+    }
 
 @Composable
 private fun ColorSettingCard(
