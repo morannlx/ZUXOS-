@@ -124,10 +124,18 @@
     <string name="import_settings_success">设置已导入</string>
     <string name="settings_operation_failed">操作失败：%1$s</string>
     <string name="about_settings_title">关于</string>
-    <string name="about_settings_desc">版本和运行信息</string>
-    <string name="about_module">插件</string>
-    <string name="about_version_code">版本号</string>
-    <string name="about_config_items">设置项</string>
+    <string name="about_settings_desc">版本和致谢信息</string>
+    <string name="about_author">作者</string>
+    <string name="about_author_name">墨染_nlx</string>
+    <string name="about_coolapk_homepage">酷安主页</string>
+    <string name="about_telegram_channel">Telegram 频道</string>
+    <string name="about_acknowledgements">致谢</string>
+    <string name="about_author_line">作者：%1$s</string>
+    <string name="about_version_line">版本：%1$s</string>
+    <string name="about_description">ZUXOS+ 是面向联想 ZUX/ZUI 设备的系统增强模块。</string>
+    <string name="about_credit_zux_ztool_desc">ZUXOS/ZUI 模块功能的参考与实现灵感来源。</string>
+    <string name="about_credit_corepatch_desc">用于 Android 包管理器签名与安装策略相关补丁。</string>
+    <string name="about_credit_yukihookapi_desc">本模块使用的 Xposed Hook 开发框架。</string>
 
     <!-- 应用信息 -->
     <string name="system_framework_function">系统框架</string>

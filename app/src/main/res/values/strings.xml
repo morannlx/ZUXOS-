@@ -124,10 +124,18 @@
     <string name="import_settings_success">Configuration imported</string>
     <string name="settings_operation_failed">Operation failed: %1$s</string>
     <string name="about_settings_title">About</string>
-    <string name="about_settings_desc">Version info and runtime details</string>
-    <string name="about_module">Module</string>
-    <string name="about_version_code">Version Code</string>
-    <string name="about_config_items">Config Items</string>
+    <string name="about_settings_desc">Version info and credits</string>
+    <string name="about_author">Author</string>
+    <string name="about_author_name">墨染_nlx</string>
+    <string name="about_coolapk_homepage">Coolapk Homepage</string>
+    <string name="about_telegram_channel">Telegram Channel</string>
+    <string name="about_acknowledgements">Acknowledgements</string>
+    <string name="about_author_line">Author: %1$s</string>
+    <string name="about_version_line">Version: %1$s</string>
+    <string name="about_description">ZUXOS+ is a system enhancement module for Lenovo ZUX/ZUI devices.</string>
+    <string name="about_credit_zux_ztool_desc">Reference and inspiration for ZUXOS/ZUI module features.</string>
+    <string name="about_credit_corepatch_desc">Android package manager signature and install policy patching.</string>
+    <string name="about_credit_yukihookapi_desc">Xposed hook framework used by this module.</string>
 
     <!-- Appearance Settings -->
     <string name="appearance_title">Appearance</string>

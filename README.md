@@ -3,53 +3,89 @@
 [![Xposed Module](https://img.shields.io/badge/Xposed-Module-brightgreen.svg)](https://github.com/morannlx/ZUXOS+)
 [![YukiHookAPI](https://img.shields.io/badge/Framework-YukiHookAPI-blue.svg)](https://github.com/HighCapable/YukiHookAPI)
 
-**ZUXOS+** is an Android Xposed module for ZUXOS/ZUI-related system
-enhancements. It provides a Compose settings app, configurable hook groups,
-hook event logs, import/export support, and LSPosed-friendly module scopes.
 
-## Features
+**ZUXOS+** 是一款面向联想 ZUXOS / ZUI 设备的 Xposed 增强模块，主要用于补全系统设置入口、解锁系统功能、优化安装器行为，并提供适配平板界面的 Compose 配置面板。
 
-- System framework: Core Patch options and `FLAG_SECURE` bypass.
-- Android Settings: app-info metadata extension.
-- Lenovo System Update: hide new-version reminders and expose local install.
-- Package Installer: scan bypass, permission trust flow, warning skip, ad
-  removal, style override, and delete-button behavior.
-- Hook logs: optional JSONL event recording with in-app filtering and clearing.
-- Settings app: responsive phone/tablet UI with theme, floating navigation, and
-  Liquid Glass navigation effects.
+## 主要功能
 
-## Project Structure
+### 系统框架增强
 
-```text
-app/src/main/java/me/inkdye/zuxos/
-├── application/        # App startup and defaults
-├── config/             # Cross-process module configuration
-├── corepatch/          # Android system Core Patch implementations
-├── hook/               # Hook interface, registry, entry point, and modules
-├── logging/            # Hook event provider and local log store
-├── root/               # Root status and restart commands
-└── ui/                 # Compose activities, components, settings, and theme
-```
+- **核心破解**：支持允许应用降级安装、跳过 APK 签名验证、放宽签名能力检查、绕过厂商安装黑名单等功能。
+- **强制允许截屏**：解除 `FLAG_SECURE` 对截屏和录屏的限制。
+- **安装验证优化**：可禁用安装包验证代理，减少系统安装限制带来的阻断。
 
-## Build
+### 设置与应用信息
 
-```bash
-./gradlew :app:assembleDebug
-```
+- **设置入口集成**：在系统设置中注入 ZUXOS+ 功能入口，并按系统现有页面风格组织一级、二级、三级菜单。
+- **应用信息扩展**：在应用详情页显示包名、SDK 版本、首次安装时间、最后更新时间和安装来源。
+- **长按复制**：应用信息条目支持长按复制，便于调试和分享包名等信息。
+- **关于设备自定义**：可修改联想“关于平板电脑”页面中的设备名称、型号、处理器、存储、内存、软件版本、Android 版本，并支持替换顶部设备图片。
 
-The debug APK is written to:
+### 联想系统更新
 
-```text
-app/build/outputs/apk/debug/app-debug.apk
-```
+- **隐藏新版本提醒**：屏蔽系统更新小红点、通知和新版本提示，同时保留系统更新入口。
+- **本地安装入口**：强制显示本地更新选项，不影响原有 OTA 功能。
 
-## Tech Stack
+### ZUX 桌面
 
-- Kotlin 2.3.21, Java 17 target
-- Android Gradle Plugin 8.10.1, Gradle Wrapper 8.11.1
-- Android SDK 36, minSdk 27
-- Jetpack Compose with Material 3, Compose BOM 2025.05.00
-- YukiHookAPI 1.3.1 with KSP
-- BetterAndroid, Hikage, KavaRef, AndroidLiquidGlass Backdrop
+- **更大的 Dock 栏**：提高 Dock 图标数量上限。
+- **自定义桌面网格**：支持覆盖桌面行数和列数。
+- **原生后台管理**：阻止最近任务清理时强制停止受保护应用。
+- **白名单模式**：仅保护指定包名的应用。
+- **最近任务内存显示**：在最近任务底部显示已用内存 / 总内存。
+- **隐藏桌面图标名称**：隐藏桌面图标下方文字，不改变布局和点击区域。
 
-See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for the full maintainer guide.
+### 游戏助手
+
+- **拯救者系列门禁**：使用 Elden / 拯救者系列游戏助手门禁，并修复 CPU 频率和温度显示。
+- **功能强制开启**：强制开启语音助手 / 变声器、弹幕、高光时刻、游戏岛、防误触、通知免打扰、智能预下载、智能旁路充电、移动网络加速和主卡加速。
+
+### 系统界面
+
+- **控制中心自定义**：支持修改快捷开关未开启 / 开启状态颜色。
+- **透明度调整**：支持调整快捷开关背景透明度和控制中心整体透明度。
+- **背景模糊强度**：支持调整下拉通知栏时底层背景模糊程度。
+
+### 软件包安装程序
+
+- **跳过安全扫描**：减少安装前扫描等待。
+- **自动授予权限**：安装应用时自动允许权限确认流程。
+- **跳过未上架警告页**：跳过联想安装器的安全警告页面。
+- **去广告**：安装完成后不显示推荐应用。
+- **原生安装界面**：使用系统自带安装界面替代 ZUI 安装界面。
+- **保留安装包**：安装完成后不自动删除安装包文件。
+
+### 模块配置
+
+- **Hook 日志**：可记录功能注册、运行和失败日志，并在应用内查看、筛选和清理。
+- **配置导入导出**：支持将当前模块设置备份为 JSON 文件，也可从备份恢复。
+- **外观设置**：支持浅色 / 深色 / 跟随系统、悬浮导航栏、液态玻璃效果、卡片透明度和自定义背景。
+
+## 安装要求
+
+- **系统**：联想 ZUXOS / ZUI，Android 9 及以上。
+- **框架**：LSPosed 或其他兼容的 Xposed 框架。
+- **权限**：部分功能需要重启对应作用域；系统重启、作用域重启等操作需要 Root 权限。
+- **作用域**：请在 LSPosed 中按需勾选系统框架、系统设置、ZUX 桌面、系统界面、游戏助手、系统更新、软件包安装程序等相关应用。
+
+
+## 鸣谢
+
+本项目参考或使用了以下优秀的开源项目：
+
+- [ZUX-ZTool](https://github.com/qwqawa64/ZUX-ZTool.git)：ZUXOS / ZUI 模块功能参考。
+- [CorePatch](https://github.com/LSPosed/CorePatch.git)：Android 包管理器签名与安装策略hook参考。
+- [YukiHookAPI](https://github.com/HighCapable/YukiHookAPI.git)：Xposed Hook 开发框架。
+
+## 作者
+
+- 作者：墨染_nlx
+- 酷安主页：[https://www.coolapk.com/u/3473766](https://www.coolapk.com/u/3473766)
+- Telegram 频道：[https://t.me/ZUXOS233](https://t.me/ZUXOS233)
+
+## 免责声明
+
+1. 本模块仅供学习交流使用，请勿用于非法用途。
+2. 模块涉及系统底层 Hook 和系统行为修改，使用前请自行备份重要数据。
+3. 不同 ZUXOS / ZUI 版本的类名、资源和功能门禁可能存在差异，部分功能可能无法在所有设备上生效。
+4. 因使用本模块导致的系统异常、数据丢失、设备故障或其它损失，作者不承担责任。
