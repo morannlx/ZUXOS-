@@ -249,7 +249,7 @@
     <string name="lenovo_game_assistant_settings_title">游戏助手</string>
     <string name="lenovo_game_assistant_settings_desc">设置游戏助手的功能开关</string>
     <string name="lenovo_game_assistant_force_direct_features_title">强制开启直接功能门禁</string>
-    <string name="lenovo_game_assistant_force_direct_features_desc">强制开启语音助手、弹幕、高光时刻、灵动岛、防误触、免打扰、预下载、旁路充电和网络加速</string>
+    <string name="lenovo_game_assistant_force_direct_features_desc">强制开启语音助手、弹幕、高光时刻、游戏岛、防误触、免打扰、预下载、旁路充电和网络加速</string>
     <string name="lenovo_game_assistant_spoof_elden_title">使用拯救者系列游戏助手</string>
     <string name="lenovo_game_assistant_spoof_elden_desc">使用 Elden/拯救者系列游戏助手门禁，并修复 CPU 频率和温度显示</string>
     <string name="lenovo_game_assistant_force_voice_assistant_title">语音助手 / 变声器</string>
@@ -258,8 +258,8 @@
     <string name="lenovo_game_assistant_force_barrage_desc">强制开启弹幕功能</string>
     <string name="lenovo_game_assistant_force_highlight_title">高光</string>
     <string name="lenovo_game_assistant_force_highlight_desc">强制开启高光时刻功能</string>
-    <string name="lenovo_game_assistant_force_island_title">灵动岛</string>
-    <string name="lenovo_game_assistant_force_island_desc">强制开启灵动岛功能</string>
+    <string name="lenovo_game_assistant_force_island_title">游戏岛</string>
+    <string name="lenovo_game_assistant_force_island_desc">强制开启游戏岛功能</string>
     <string name="lenovo_game_assistant_force_prevent_misoperation_title">防误触</string>
     <string name="lenovo_game_assistant_force_prevent_misop_desc">强制开启防误触功能</string>
     <string name="lenovo_game_assistant_force_notification_dnd_title">通知免打扰</string>

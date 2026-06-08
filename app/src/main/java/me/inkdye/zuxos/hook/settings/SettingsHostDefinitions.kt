@@ -114,7 +114,7 @@ internal object SettingsHostDefinitions {
                 SettingsHostBooleanItem(ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_VOICE_ASSISTANT, "语音助手 / 变声器"),
                 SettingsHostBooleanItem(ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_BARRAGE, "弹幕"),
                 SettingsHostBooleanItem(ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_HIGHLIGHT, "高光"),
-                SettingsHostBooleanItem(ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_ISLAND, "灵动岛"),
+                SettingsHostBooleanItem(ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_ISLAND, "游戏岛"),
                 SettingsHostBooleanItem(ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_PREVENT_MISOPERATION, "防误触"),
                 SettingsHostBooleanItem(ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_NOTIFICATION_DND, "通知免打扰"),
                 SettingsHostBooleanItem(ModuleConfig.LENOVO_GAME_ASSISTANT_FORCE_INTELLIGENT_PRE_DOWNLOAD, "智能预下载"),
