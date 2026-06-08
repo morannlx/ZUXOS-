@@ -81,6 +81,14 @@ object SettingKeys {
         ModuleConfig.LENOVO_SYSTEMUI_CONTROL_CENTER_PULL_DOWN_BLUR_RADIUS
     const val HOOK_LOGGING_ENABLED = "hook_logging_enabled"
     const val SETTINGS_HOME_ENTRY_ENABLED = ModuleConfig.SETTINGS_HOME_ENTRY_ENABLED
+    const val LAUNCHER_HOTSEAT_EXPAND = ModuleConfig.LAUNCHER_HOTSEAT_EXPAND
+    const val LAUNCHER_CUSTOM_GRID = ModuleConfig.LAUNCHER_CUSTOM_GRID
+    const val LAUNCHER_CUSTOM_GRID_ROWS = ModuleConfig.LAUNCHER_CUSTOM_GRID_ROWS
+    const val LAUNCHER_CUSTOM_GRID_COLUMNS = ModuleConfig.LAUNCHER_CUSTOM_GRID_COLUMNS
+    const val LAUNCHER_DISABLE_FORCE_STOP = ModuleConfig.LAUNCHER_DISABLE_FORCE_STOP
+    const val LAUNCHER_FORCE_STOP_WHITELIST_ENABLE = ModuleConfig.LAUNCHER_FORCE_STOP_WHITELIST_ENABLE
+    const val LAUNCHER_FORCE_STOP_WHITELIST = ModuleConfig.LAUNCHER_FORCE_STOP_WHITELIST
+    const val LAUNCHER_RECENTS_MEMORY = ModuleConfig.LAUNCHER_RECENTS_MEMORY
     const val DISABLE_FLAG_SECURE = ModuleConfig.DISABLE_FLAG_SECURE
     const val CORE_PATCH_ENABLED = ModuleConfig.CORE_PATCH_ENABLED
     const val CORE_PATCH_DOWNGRADE = ModuleConfig.CORE_PATCH_DOWNGRADE
@@ -121,6 +129,14 @@ data class TextSettingSpec(
     @param:StringRes val titleRes: Int,
     @param:StringRes val descRes: Int,
     val defaultValue: String,
+)
+
+data class IntSettingSpec(
+    val key: String,
+    @param:StringRes val titleRes: Int,
+    @param:StringRes val descRes: Int,
+    val defaultValue: Int,
+    val valueRange: IntRange,
 )
 
 val HookLoggingSetting = BooleanSettingSpec(
@@ -380,6 +396,65 @@ val LenovoSystemUIControlCenterFloatSettings = listOf(
     ),
 )
 
+val LenovoLauncherFeatureSettings = listOf(
+    BooleanSettingSpec(
+        SettingKeys.LAUNCHER_HOTSEAT_EXPAND,
+        R.string.lenovo_launcher_hotseat_expand_title,
+        R.string.lenovo_launcher_hotseat_expand_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.LAUNCHER_CUSTOM_GRID,
+        R.string.lenovo_launcher_custom_grid_title,
+        R.string.lenovo_launcher_custom_grid_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.LAUNCHER_DISABLE_FORCE_STOP,
+        R.string.lenovo_launcher_disable_force_stop_title,
+        R.string.lenovo_launcher_disable_force_stop_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.LAUNCHER_FORCE_STOP_WHITELIST_ENABLE,
+        R.string.lenovo_launcher_force_stop_whitelist_enable_title,
+        R.string.lenovo_launcher_force_stop_whitelist_enable_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.LAUNCHER_RECENTS_MEMORY,
+        R.string.lenovo_launcher_recents_memory_title,
+        R.string.lenovo_launcher_recents_memory_desc,
+        false,
+    ),
+)
+
+val LenovoLauncherGridIntSettings = listOf(
+    IntSettingSpec(
+        SettingKeys.LAUNCHER_CUSTOM_GRID_ROWS,
+        R.string.lenovo_launcher_grid_rows_title,
+        R.string.lenovo_launcher_grid_rows_desc,
+        4,
+        3..12,
+    ),
+    IntSettingSpec(
+        SettingKeys.LAUNCHER_CUSTOM_GRID_COLUMNS,
+        R.string.lenovo_launcher_grid_columns_title,
+        R.string.lenovo_launcher_grid_columns_desc,
+        6,
+        3..12,
+    ),
+)
+
+val LenovoLauncherTextSettings = listOf(
+    TextSettingSpec(
+        SettingKeys.LAUNCHER_FORCE_STOP_WHITELIST,
+        R.string.lenovo_launcher_force_stop_whitelist_title,
+        R.string.lenovo_launcher_force_stop_whitelist_desc,
+        "",
+    ),
+)
+
 val DisableFlagSecureSetting = BooleanSettingSpec(
     key = SettingKeys.DISABLE_FLAG_SECURE,
     titleRes = R.string.disable_flag_secure_title,
@@ -496,10 +571,13 @@ val ModuleBooleanSettings =
     ) +
         AppInfoDetailSettings + PackageInstallerFeatureSettings +
         LenovoSystemUpdateFeatureSettings + LenovoGameAssistantFeatureSettings +
+        LenovoLauncherFeatureSettings +
         CorePatchFeatureSettings
 
 val ModuleFloatSettings = LenovoSystemUIControlCenterFloatSettings
 
 val ModuleColorSettings = LenovoSystemUIControlCenterColorSettings
 
-val ModuleTextSettings = LenovoAboutDeviceTextSettings
+val ModuleTextSettings = LenovoAboutDeviceTextSettings + LenovoLauncherTextSettings
+
+val ModuleIntSettings = LenovoLauncherGridIntSettings

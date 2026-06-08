@@ -22,6 +22,15 @@ internal data class SettingsHostTextItem(
     val defaultValue: String = "",
 ) : SettingsHostItem
 
+internal data class SettingsHostIntItem(
+    override val key: String,
+    override val title: String,
+    override val summary: String = "",
+    val defaultValue: Int,
+    val min: Int,
+    val max: Int,
+) : SettingsHostItem
+
 internal data class SettingsHostFloatItem(
     override val key: String,
     override val title: String,
@@ -125,6 +134,20 @@ internal object SettingsHostDefinitions {
                 SettingsHostFloatItem(ModuleConfig.LENOVO_SYSTEMUI_CONTROL_CENTER_TILE_ACTIVE_ALPHA, "激活磁贴透明度", defaultValue = 0.92f, min = 0f, max = 1f),
                 SettingsHostFloatItem(ModuleConfig.LENOVO_SYSTEMUI_CONTROL_CENTER_PANEL_ALPHA, "面板透明度", defaultValue = 0.9f, min = 0f, max = 1f),
                 SettingsHostFloatItem(ModuleConfig.LENOVO_SYSTEMUI_CONTROL_CENTER_PULL_DOWN_BLUR_RADIUS, "下拉背景模糊半径", defaultValue = 18f, min = 0f, max = 200f),
+            ),
+        ),
+        SettingsHostPage(
+            id = "launcher",
+            title = "桌面",
+            items = listOf(
+                SettingsHostBooleanItem(ModuleConfig.LAUNCHER_HOTSEAT_EXPAND, "更大的 Dock 栏"),
+                SettingsHostBooleanItem(ModuleConfig.LAUNCHER_CUSTOM_GRID, "自定义桌面网格"),
+                SettingsHostIntItem(ModuleConfig.LAUNCHER_CUSTOM_GRID_ROWS, "行数", defaultValue = 4, min = 3, max = 12),
+                SettingsHostIntItem(ModuleConfig.LAUNCHER_CUSTOM_GRID_COLUMNS, "列数", defaultValue = 6, min = 3, max = 12),
+                SettingsHostBooleanItem(ModuleConfig.LAUNCHER_DISABLE_FORCE_STOP, "原生后台管理"),
+                SettingsHostBooleanItem(ModuleConfig.LAUNCHER_FORCE_STOP_WHITELIST_ENABLE, "白名单模式"),
+                SettingsHostTextItem(ModuleConfig.LAUNCHER_FORCE_STOP_WHITELIST, "受保护包名", "多个包名使用英文逗号分隔"),
+                SettingsHostBooleanItem(ModuleConfig.LAUNCHER_RECENTS_MEMORY, "最近任务显示内存"),
             ),
         ),
         SettingsHostPage(

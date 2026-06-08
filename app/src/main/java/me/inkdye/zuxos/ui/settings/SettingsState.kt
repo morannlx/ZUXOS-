@@ -26,6 +26,23 @@ class BooleanSettingState(
     }
 }
 
+class IntSettingState(
+    private val repository: SettingsRepository,
+    private val spec: IntSettingSpec,
+) {
+    val value: MutableState<Int> = mutableStateOf(repository.getInt(spec))
+
+    fun update(nextValue: Int) {
+        val coerced = nextValue.coerceIn(spec.valueRange)
+        value.value = coerced
+        repository.setInt(spec, coerced)
+    }
+
+    fun reload() {
+        value.value = repository.getInt(spec)
+    }
+}
+
 @Composable
 fun rememberSettingsRepository(): SettingsRepository {
     val context = LocalContext.current
@@ -39,6 +56,29 @@ fun rememberBooleanSettingState(
 ): BooleanSettingState {
     val state = remember(repository, spec) {
         BooleanSettingState(repository, spec)
+    }
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner, state) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                state.reload()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    return state
+}
+
+@Composable
+fun rememberIntSettingState(
+    repository: SettingsRepository,
+    spec: IntSettingSpec,
+): IntSettingState {
+    val state = remember(repository, spec) {
+        IntSettingState(repository, spec)
     }
     val lifecycleOwner = LocalLifecycleOwner.current
 

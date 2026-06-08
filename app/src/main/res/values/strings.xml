@@ -49,8 +49,8 @@
     <string name="page_features_title">Features</string>
     <string name="page_features_subtitle">Hook-enabled system enhancements</string>
     <string name="feature_group_desktop">Desktop</string>
-    <string name="feature_group_desktop_item1">Dock bar customization</string>
-    <string name="feature_group_desktop_item2">5x6 / 5x7 grid layout</string>
+    <string name="feature_group_desktop_item1">Dock, grid, and recents tweaks</string>
+    <string name="feature_group_desktop_item2">Recents memory and background protection</string>
     <string name="feature_group_audio">Audio</string>
     <string name="feature_group_audio_item1">VAFX framework</string>
     <string name="feature_group_audio_item2">Spatial audio</string>
@@ -248,6 +248,27 @@
     <string name="lenovo_system_update_hide_new_version_reminder_desc">Keep system update new-version badges, About page labels, and new-version notifications hidden while preserving the update entry itself</string>
     <string name="lenovo_system_update_force_local_install_title">Force Local Install Entry</string>
     <string name="lenovo_system_update_force_local_install_desc">Always show the local update package menu item and keep the original System Update tap flow</string>
+
+    <!-- ZUX Launcher -->
+    <string name="lenovo_launcher_settings_title">Desktop</string>
+    <string name="lenovo_launcher_settings_desc">Configure ZUX Launcher hooks</string>
+    <string name="lenovo_launcher_hotseat_expand_title">Larger Dock</string>
+    <string name="lenovo_launcher_hotseat_expand_desc">Raise the Dock icon limit to 20</string>
+    <string name="lenovo_launcher_custom_grid_title">Custom Desktop Grid</string>
+    <string name="lenovo_launcher_custom_grid_desc">Override Launcher row and column counts</string>
+    <string name="lenovo_launcher_grid_rows_title">Rows</string>
+    <string name="lenovo_launcher_grid_rows_desc">Desktop grid row count</string>
+    <string name="lenovo_launcher_grid_columns_title">Columns</string>
+    <string name="lenovo_launcher_grid_columns_desc">Desktop grid column count</string>
+    <string name="lenovo_launcher_disable_force_stop_title">Native Background Management</string>
+    <string name="lenovo_launcher_disable_force_stop_desc">Prevent Launcher recents cleanup from force-stopping protected apps</string>
+    <string name="lenovo_launcher_force_stop_whitelist_enable_title">Whitelist Mode</string>
+    <string name="lenovo_launcher_force_stop_whitelist_enable_desc">Protect only packages listed in the whitelist</string>
+    <string name="lenovo_launcher_force_stop_whitelist_title">Protected Packages</string>
+    <string name="lenovo_launcher_force_stop_whitelist_desc">Comma-separated package names</string>
+    <string name="lenovo_launcher_recents_memory_title">Show Memory in Recents</string>
+    <string name="lenovo_launcher_recents_memory_desc">Display used memory / total memory at the bottom of Recents</string>
+    <string name="lenovo_launcher_whitelist_placeholder">com.example.app,com.example.other</string>
 
     <!-- Lenovo Game Assistant -->
     <string name="lenovo_game_assistant_function">Lenovo Game Assistant</string>

@@ -134,6 +134,7 @@ object SettingsHomeEntryHook : Hook {
             val preference = when (item) {
                 is SettingsHostBooleanItem -> createBooleanPreference(context, classLoader, item)
                 is SettingsHostTextItem -> createTextPreference(context, classLoader, item)
+                is SettingsHostIntItem -> createIntPreference(context, classLoader, item)
                 is SettingsHostFloatItem -> createFloatPreference(context, classLoader, item)
                 is SettingsHostColorItem -> createColorPreference(context, classLoader, item)
             } ?: return@forEachIndexed
@@ -214,6 +215,19 @@ object SettingsHomeEntryHook : Hook {
         preference.call("setPersistent", false)
         preference.call("setText", value)
         preference.call("setOnPreferenceChangeListener", createTextChangeListener(classLoader, context, item))
+        return preference
+    }
+
+    private fun createIntPreference(context: Context, classLoader: ClassLoader?, item: SettingsHostIntItem): Any? {
+        val preference = createEditTextPreference(context, classLoader) ?: return null
+        val value = loadInt(context, item.key, item.defaultValue).coerceIn(item.min, item.max)
+        val formatted = value.toString()
+        preference.call("setKey", item.key)
+        preference.call("setTitle", item.title)
+        preference.call("setSummary", item.summary.ifBlank { formatted })
+        preference.call("setPersistent", false)
+        preference.call("setText", formatted)
+        preference.call("setOnPreferenceChangeListener", createIntChangeListener(classLoader, context, item))
         return preference
     }
 
@@ -298,6 +312,17 @@ object SettingsHomeEntryHook : Hook {
             val formatted = formatFloat(parsed)
             saveFloat(context, item.key, parsed)
             preference?.call("setSummary", formatted)
+            preference?.call("setText", formatted)
+            true
+        }
+
+    private fun createIntChangeListener(classLoader: ClassLoader?, context: Context, item: SettingsHostIntItem): Any? =
+        createChangeListener(classLoader) { preference, value ->
+            val parsed = (value as? String)?.toIntOrNull()?.coerceIn(item.min, item.max)
+                ?: return@createChangeListener false
+            val formatted = parsed.toString()
+            saveInt(context, item.key, parsed)
+            preference?.call("setSummary", item.summary.ifBlank { formatted })
             preference?.call("setText", formatted)
             true
         }

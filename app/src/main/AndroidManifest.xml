@@ -90,6 +90,11 @@
             android:screenOrientation="behind" />
 
         <activity
+            android:name=".ui.activity.LenovoLauncherSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="behind" />
+
+        <activity
             android:name=".ui.activity.PackageInstallerSettingsActivity"
             android:exported="false"
             android:screenOrientation="behind" />

@@ -30,10 +30,17 @@ class SettingsRepository(context: Context) {
     }
 
     fun getText(spec: TextSettingSpec): String =
-        ModuleConfig.loadString(appContext, spec.key, "")
+        ModuleConfig.loadString(appContext, spec.key, spec.defaultValue)
 
     fun setText(spec: TextSettingSpec, value: String) {
         ModuleConfig.saveString(appContext, spec.key, value)
+    }
+
+    fun getInt(spec: IntSettingSpec): Int =
+        ModuleConfig.loadInt(appContext, spec.key, spec.defaultValue).coerceIn(spec.valueRange)
+
+    fun setInt(spec: IntSettingSpec, value: Int) {
+        ModuleConfig.saveInt(appContext, spec.key, value.coerceIn(spec.valueRange))
     }
 
     fun getString(key: String, defaultValue: String = ""): String =
@@ -63,6 +70,9 @@ class SettingsRepository(context: Context) {
             moduleTexts = ModuleTextSettings.associate { spec ->
                 spec.key to getText(spec)
             } + (ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_PATH to getString(ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_PATH)),
+            moduleInts = ModuleIntSettings.associate { spec ->
+                spec.key to getInt(spec)
+            },
         )
     }
 
@@ -83,7 +93,10 @@ class SettingsRepository(context: Context) {
             setColor(spec, snapshot.moduleColors[spec.key] ?: spec.defaultValue)
         }
         ModuleTextSettings.forEach { spec ->
-            setText(spec, snapshot.moduleTexts[spec.key] ?: "")
+            setText(spec, snapshot.moduleTexts[spec.key] ?: spec.defaultValue)
+        }
+        ModuleIntSettings.forEach { spec ->
+            setInt(spec, snapshot.moduleInts[spec.key] ?: spec.defaultValue)
         }
         snapshot.moduleTexts[ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_PATH]?.let { path ->
             setString(ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_PATH, path)
@@ -107,7 +120,10 @@ class SettingsRepository(context: Context) {
             setColor(spec, spec.defaultValue)
         }
         ModuleTextSettings.forEach { spec ->
-            setText(spec, "")
+            setText(spec, spec.defaultValue)
+        }
+        ModuleIntSettings.forEach { spec ->
+            setInt(spec, spec.defaultValue)
         }
         setString(ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_PATH, "")
     }
@@ -143,6 +159,11 @@ class SettingsRepository(context: Context) {
             texts.put(key, value)
         }
         root.put("moduleTexts", texts)
+        val ints = JSONObject()
+        snapshot.moduleInts.forEach { (key, value) ->
+            ints.put(key, value)
+        }
+        root.put("moduleInts", ints)
         return root.toString(2)
     }
 
@@ -152,6 +173,7 @@ class SettingsRepository(context: Context) {
         val floats = root.optJSONObject("moduleFloats") ?: JSONObject()
         val colors = root.optJSONObject("moduleColors") ?: JSONObject()
         val texts = root.optJSONObject("moduleTexts") ?: JSONObject()
+        val ints = root.optJSONObject("moduleInts") ?: JSONObject()
         val importedModuleBooleans = ModuleBooleanSettings.associate { spec ->
             spec.key to module.optBoolean(spec.key, spec.defaultValue)
         }
@@ -162,8 +184,11 @@ class SettingsRepository(context: Context) {
             spec.key to colors.optInt(spec.key, spec.defaultValue)
         }
         val importedModuleTexts = ModuleTextSettings.associate { spec ->
-            spec.key to texts.optString(spec.key, "")
+            spec.key to texts.optString(spec.key, spec.defaultValue)
         } + (ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_PATH to texts.optString(ModuleConfig.LENOVO_ABOUT_DEVICE_IMAGE_PATH, ""))
+        val importedModuleInts = ModuleIntSettings.associate { spec ->
+            spec.key to ints.optInt(spec.key, spec.defaultValue).coerceIn(spec.valueRange)
+        }
 
         val snapshot = SettingsSnapshot(
             themeMode = runCatching {
@@ -187,6 +212,7 @@ class SettingsRepository(context: Context) {
             moduleFloats = importedModuleFloats,
             moduleColors = importedModuleColors,
             moduleTexts = importedModuleTexts,
+            moduleInts = importedModuleInts,
         )
         restore(snapshot)
         return snapshot
@@ -208,4 +234,5 @@ data class SettingsSnapshot(
     val moduleFloats: Map<String, Float>,
     val moduleColors: Map<String, Int>,
     val moduleTexts: Map<String, String>,
+    val moduleInts: Map<String, Int>,
 )

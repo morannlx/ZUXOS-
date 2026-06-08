@@ -20,6 +20,10 @@ import me.inkdye.zuxos.hook.lenovo.LenovoGameAssistantFeatureUnlockHook
 import me.inkdye.zuxos.hook.lenovo.LenovoSystemUIControlCenterHook
 import me.inkdye.zuxos.hook.lenovo.LenovoSystemUpdateLocalInstallHook
 import me.inkdye.zuxos.hook.lenovo.LenovoSystemUpdateReminderHook
+import me.inkdye.zuxos.hook.launcher.LauncherForceStopHook
+import me.inkdye.zuxos.hook.launcher.LauncherGridHook
+import me.inkdye.zuxos.hook.launcher.LauncherHotseatHook
+import me.inkdye.zuxos.hook.launcher.LauncherRecentsMemoryHook
 import me.inkdye.zuxos.hook.packageinstaller.PackageInstallerAllowPermissionHook
 import me.inkdye.zuxos.hook.packageinstaller.PackageInstallerDisableDeleteHook
 import me.inkdye.zuxos.hook.packageinstaller.PackageInstallerDisableInstallerAdHook
@@ -49,6 +53,10 @@ class HookEntry : IYukiHookXposedInit {
             LenovoSystemUIControlCenterHook,
             LenovoSystemUpdateReminderHook,
             LenovoSystemUpdateLocalInstallHook,
+            LauncherHotseatHook,
+            LauncherGridHook,
+            LauncherForceStopHook,
+            LauncherRecentsMemoryHook,
             DisableFlagSecure,
         )
     }

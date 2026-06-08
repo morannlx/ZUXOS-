@@ -9,5 +9,6 @@
         <item>com.android.packageinstaller</item>
         <item>com.google.android.packageinstaller</item>
         <item>com.zui.game.service</item>
+        <item>com.zui.launcher</item>
     </string-array>
 </resources>
