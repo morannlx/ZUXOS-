@@ -107,32 +107,26 @@ object SettingsHomeEntryHook : Hook {
         screen.call("setOrderingAsAdded", false)
 
         val pageId = args.getString(SettingsHostDefinitions.HOST_PAGE_ID, SettingsHostDefinitions.ROOT_PAGE_ID)
-        if (pageId == SettingsHostDefinitions.ROOT_PAGE_ID) {
-            renderRootPage(screen, context, classLoader, fragment)
-        } else {
-            SettingsHostDefinitions.page(pageId)?.let { page ->
-                renderDetailPage(screen, context, classLoader, page)
-            }
+        val page = SettingsHostDefinitions.page(pageId) ?: SettingsHostDefinitions.page(SettingsHostDefinitions.ROOT_PAGE_ID)
+        if (page != null) {
+            renderPage(screen, context, classLoader, fragment, args, page)
         }
 
         fragment.call("setPreferenceScreen", screen)
     }
 
-    private fun renderRootPage(screen: Any, context: Context, classLoader: ClassLoader?, fragment: Any) {
-        SettingsHostDefinitions.pages.forEachIndexed { index, page ->
-            val preference = createArrowPreference(context, classLoader) ?: return@forEachIndexed
-            preference.call("setKey", "zuxos_page_${page.id}")
-            preference.call("setTitle", page.title)
-            preference.call("setOrder", index)
-            preference.call("setOnPreferenceClickListener", createHomeEntryClickListener(classLoader, context, fragment, page.id))
-            screen.call("addPreference", preference)
-        }
-    }
-
-    private fun renderDetailPage(screen: Any, context: Context, classLoader: ClassLoader?, page: SettingsHostPage) {
-        page.items.forEachIndexed { index, item ->
+    private fun renderPage(
+        screen: Any,
+        context: Context,
+        classLoader: ClassLoader?,
+        fragment: Any,
+        args: Bundle,
+        page: SettingsHostPage,
+    ) {
+        page.items.filter { item -> item.isVisible(context) }.forEachIndexed { index, item ->
             val preference = when (item) {
-                is SettingsHostBooleanItem -> createBooleanPreference(context, classLoader, item)
+                is SettingsHostMenuItem -> createMenuPreference(context, classLoader, fragment, item)
+                is SettingsHostBooleanItem -> createBooleanPreference(context, classLoader, fragment, args, item)
                 is SettingsHostTextItem -> createTextPreference(context, classLoader, item)
                 is SettingsHostIntItem -> createIntPreference(context, classLoader, item)
                 is SettingsHostFloatItem -> createFloatPreference(context, classLoader, item)
@@ -142,6 +136,11 @@ object SettingsHomeEntryHook : Hook {
             screen.call("addPreference", preference)
         }
     }
+
+    private fun SettingsHostItem.isVisible(context: Context): Boolean =
+        visibleWhen.all { condition ->
+            loadBoolean(context, condition.key, condition.defaultValue) == condition.expectedValue
+        }
 
     private fun createHomepagePreference(context: Context, classLoader: ClassLoader?): Any? =
         createInstance(
@@ -195,14 +194,34 @@ object SettingsHomeEntryHook : Hook {
             context,
         )
 
-    private fun createBooleanPreference(context: Context, classLoader: ClassLoader?, item: SettingsHostBooleanItem): Any? {
+    private fun createMenuPreference(
+        context: Context,
+        classLoader: ClassLoader?,
+        fragment: Any,
+        item: SettingsHostMenuItem,
+    ): Any? {
+        val preference = createArrowPreference(context, classLoader) ?: return null
+        preference.call("setKey", item.key)
+        preference.call("setTitle", item.title)
+        if (item.summary.isNotBlank()) preference.call("setSummary", item.summary)
+        preference.call("setOnPreferenceClickListener", createHomeEntryClickListener(classLoader, context, fragment, item.pageId))
+        return preference
+    }
+
+    private fun createBooleanPreference(
+        context: Context,
+        classLoader: ClassLoader?,
+        fragment: Any,
+        args: Bundle,
+        item: SettingsHostBooleanItem,
+    ): Any? {
         val preference = createSwitchPreference(context, classLoader) ?: return null
         preference.call("setKey", item.key)
         preference.call("setTitle", item.title)
         if (item.summary.isNotBlank()) preference.call("setSummary", item.summary)
         preference.call("setPersistent", false)
         preference.call("setChecked", loadBoolean(context, item.key, item.defaultValue))
-        preference.call("setOnPreferenceChangeListener", createBooleanChangeListener(classLoader, context, item))
+        preference.call("setOnPreferenceChangeListener", createBooleanChangeListener(classLoader, context, fragment, args, item))
         return preference
     }
 
@@ -283,16 +302,19 @@ object SettingsHomeEntryHook : Hook {
     private fun createBooleanChangeListener(
         classLoader: ClassLoader?,
         context: Context,
+        fragment: Any,
+        args: Bundle,
         item: SettingsHostBooleanItem,
     ): Any? {
         val listenerClass = XposedHelpers.findClassIfExists(
             "androidx.preference.Preference\$OnPreferenceChangeListener",
             classLoader,
         ) ?: return null
-        return Proxy.newProxyInstance(classLoader, arrayOf(listenerClass)) { _, method, args ->
+        return Proxy.newProxyInstance(classLoader, arrayOf(listenerClass)) { _, method, methodArgs ->
             if (method.name != "onPreferenceChange") return@newProxyInstance true
-            val enabled = args?.getOrNull(1) as? Boolean ?: return@newProxyInstance false
+            val enabled = methodArgs?.getOrNull(1) as? Boolean ?: return@newProxyInstance false
             saveBoolean(context, item.key, enabled)
+            rebuildHostSettingsPage(fragment, context, classLoader, args)
             true
         }
     }

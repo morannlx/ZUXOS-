@@ -143,6 +143,13 @@ private data class FeatureGroup(
     val accentColor: Color = FeatureBlue
 )
 
+private const val PACKAGE_ANDROID_SETTINGS = "com.android.settings"
+private const val PACKAGE_LENOVO_OTA = "com.lenovo.ota"
+private const val PACKAGE_GAME_SERVICE = "com.zui.game.service"
+private const val PACKAGE_SYSTEMUI = "com.android.systemui"
+private const val PACKAGE_ZUX_LAUNCHER = "com.zui.launcher"
+private const val PACKAGE_INSTALLER = "com.android.packageinstaller"
+
 private val featureGroups = listOf(
     FeatureGroup("▦", R.string.feature_group_framework, listOf(
         R.string.feature_group_framework_item1,
@@ -150,27 +157,27 @@ private val featureGroups = listOf(
     ), "android", FeatureGreen),
     FeatureGroup("⚙", R.string.feature_group_system, listOf(
         R.string.feature_group_system_item1
-    ), "com.android.settings", FeatureNeutral),
+    ), PACKAGE_ANDROID_SETTINGS, FeatureNeutral),
     FeatureGroup("↻", R.string.feature_group_lenovo_system_update, listOf(
         R.string.feature_group_lenovo_system_update_item1,
         R.string.feature_group_lenovo_system_update_item2
-    ), "com.lenovo.ota", FeatureGreen),
+    ), PACKAGE_LENOVO_OTA, FeatureGreen),
     FeatureGroup("✦", R.string.feature_group_lenovo_game_assistant, listOf(
         R.string.feature_group_lenovo_game_assistant_item1,
         R.string.feature_group_lenovo_game_assistant_item2
-    ), "com.zui.game.service", FeatureBlue),
+    ), PACKAGE_GAME_SERVICE, FeatureBlue),
     FeatureGroup("◫", R.string.feature_group_lenovo_systemui, listOf(
         R.string.feature_group_lenovo_systemui_item1,
         R.string.feature_group_lenovo_systemui_item2
-    ), "com.android.systemui", FeatureNeutral),
+    ), PACKAGE_SYSTEMUI, FeatureNeutral),
     FeatureGroup("▦", R.string.feature_group_desktop, listOf(
         R.string.feature_group_desktop_item1,
         R.string.feature_group_desktop_item2
-    ), "com.zui.launcher", FeatureGreen),
+    ), PACKAGE_ZUX_LAUNCHER, FeatureGreen),
     FeatureGroup("▣", R.string.feature_group_package_installer, listOf(
         R.string.feature_group_package_installer_item1,
         R.string.feature_group_package_installer_item2
-    ), "com.android.packageinstaller", FeatureBlue)
+    ), PACKAGE_INSTALLER, FeatureBlue)
 )
 
 /* ── Navigation ─────────────────────────────────── */
@@ -1318,17 +1325,17 @@ private fun FeaturesPage(cs: AppColorScheme) {
                 FeatureGroupCard(context, group, cs) {
                     if (group.targetPackage == "android") {
                         context.startActivity(Intent(context, SystemFrameworkSettingsActivity::class.java))
-                    } else if (group.targetPackage == "com.android.settings") {
+                    } else if (group.targetPackage == PACKAGE_ANDROID_SETTINGS) {
                         context.startActivity(Intent(context, SystemSettingsActivity::class.java))
-                    } else if (group.targetPackage == "com.lenovo.ota") {
+                    } else if (group.targetPackage == PACKAGE_LENOVO_OTA) {
                         context.startActivity(Intent(context, LenovoSystemUpdateSettingsActivity::class.java))
-                    } else if (group.targetPackage == "com.zui.game.service") {
+                    } else if (group.targetPackage == PACKAGE_GAME_SERVICE) {
                         context.startActivity(Intent(context, LenovoGameAssistantSettingsActivity::class.java))
-                    } else if (group.targetPackage == "com.android.systemui") {
+                    } else if (group.targetPackage == PACKAGE_SYSTEMUI) {
                         context.startActivity(Intent(context, LenovoSystemUISettingsActivity::class.java))
-                    } else if (group.targetPackage == "com.zui.launcher") {
+                    } else if (group.targetPackage == PACKAGE_ZUX_LAUNCHER) {
                         context.startActivity(Intent(context, LenovoLauncherSettingsActivity::class.java))
-                    } else if (group.targetPackage == "com.android.packageinstaller") {
+                    } else if (group.targetPackage == PACKAGE_INSTALLER) {
                         context.startActivity(Intent(context, PackageInstallerSettingsActivity::class.java))
                     }
                 }
