@@ -89,6 +89,7 @@ object SettingKeys {
     const val LAUNCHER_FORCE_STOP_WHITELIST_ENABLE = ModuleConfig.LAUNCHER_FORCE_STOP_WHITELIST_ENABLE
     const val LAUNCHER_FORCE_STOP_WHITELIST = ModuleConfig.LAUNCHER_FORCE_STOP_WHITELIST
     const val LAUNCHER_RECENTS_MEMORY = ModuleConfig.LAUNCHER_RECENTS_MEMORY
+    const val LAUNCHER_HIDE_ICON_LABEL = ModuleConfig.LAUNCHER_HIDE_ICON_LABEL
     const val DISABLE_FLAG_SECURE = ModuleConfig.DISABLE_FLAG_SECURE
     const val CORE_PATCH_ENABLED = ModuleConfig.CORE_PATCH_ENABLED
     const val CORE_PATCH_DOWNGRADE = ModuleConfig.CORE_PATCH_DOWNGRADE
@@ -425,6 +426,12 @@ val LenovoLauncherFeatureSettings = listOf(
         SettingKeys.LAUNCHER_RECENTS_MEMORY,
         R.string.lenovo_launcher_recents_memory_title,
         R.string.lenovo_launcher_recents_memory_desc,
+        false,
+    ),
+    BooleanSettingSpec(
+        SettingKeys.LAUNCHER_HIDE_ICON_LABEL,
+        R.string.lenovo_launcher_hide_icon_label_title,
+        R.string.lenovo_launcher_hide_icon_label_desc,
         false,
     ),
 )

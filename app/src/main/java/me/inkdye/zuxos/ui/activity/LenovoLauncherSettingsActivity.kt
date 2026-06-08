@@ -86,6 +86,7 @@ private fun LenovoLauncherSettingsPage(onBack: () -> Unit) {
     val forceStopSpec = LenovoLauncherFeatureSettings.first { it.key == SettingKeys.LAUNCHER_DISABLE_FORCE_STOP }
     val whitelistModeSpec = LenovoLauncherFeatureSettings.first { it.key == SettingKeys.LAUNCHER_FORCE_STOP_WHITELIST_ENABLE }
     val memorySpec = LenovoLauncherFeatureSettings.first { it.key == SettingKeys.LAUNCHER_RECENTS_MEMORY }
+    val hideIconLabelSpec = LenovoLauncherFeatureSettings.first { it.key == SettingKeys.LAUNCHER_HIDE_ICON_LABEL }
     val gridState = rememberBooleanSettingState(repository, gridSpec)
     val forceStopState = rememberBooleanSettingState(repository, forceStopSpec)
     val whitelistModeState = rememberBooleanSettingState(repository, whitelistModeSpec)
@@ -181,6 +182,16 @@ private fun LenovoLauncherSettingsPage(onBack: () -> Unit) {
                     GlassSwitch(
                         title = stringResource(memorySpec.titleRes),
                         description = stringResource(memorySpec.descRes),
+                        checked = state.checked.value,
+                        onCheckedChange = { state.update(it) },
+                        colorScheme = cs,
+                    )
+                }
+                item {
+                    val state = rememberBooleanSettingState(repository, hideIconLabelSpec)
+                    GlassSwitch(
+                        title = stringResource(hideIconLabelSpec.titleRes),
+                        description = stringResource(hideIconLabelSpec.descRes),
                         checked = state.checked.value,
                         onCheckedChange = { state.update(it) },
                         colorScheme = cs,

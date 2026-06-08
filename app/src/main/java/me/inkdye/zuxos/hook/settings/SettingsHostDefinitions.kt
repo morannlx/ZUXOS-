@@ -148,6 +148,7 @@ internal object SettingsHostDefinitions {
                 SettingsHostBooleanItem(ModuleConfig.LAUNCHER_FORCE_STOP_WHITELIST_ENABLE, "白名单模式"),
                 SettingsHostTextItem(ModuleConfig.LAUNCHER_FORCE_STOP_WHITELIST, "受保护包名", "多个包名使用英文逗号分隔"),
                 SettingsHostBooleanItem(ModuleConfig.LAUNCHER_RECENTS_MEMORY, "最近任务显示内存"),
+                SettingsHostBooleanItem(ModuleConfig.LAUNCHER_HIDE_ICON_LABEL, "隐藏桌面图标名称"),
             ),
         ),
         SettingsHostPage(

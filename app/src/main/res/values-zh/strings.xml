@@ -88,6 +88,8 @@
     <string name="lenovo_launcher_force_stop_whitelist_desc">多个包名使用英文逗号分隔</string>
     <string name="lenovo_launcher_recents_memory_title">最近任务显示内存</string>
     <string name="lenovo_launcher_recents_memory_desc">在最近任务底部显示已用内存 / 总内存</string>
+    <string name="lenovo_launcher_hide_icon_label_title">隐藏桌面图标名称</string>
+    <string name="lenovo_launcher_hide_icon_label_desc">隐藏桌面图标下方文字，不改变布局和点击区域</string>
     <string name="lenovo_launcher_whitelist_placeholder">com.example.app,com.example.other</string>
     <string name="page_logs_title">运行日志</string>
     <string name="page_logs_subtitle">查看功能运行记录</string>

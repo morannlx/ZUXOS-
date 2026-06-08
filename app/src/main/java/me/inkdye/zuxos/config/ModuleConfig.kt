@@ -81,6 +81,7 @@ object ModuleConfig {
     const val LAUNCHER_FORCE_STOP_WHITELIST_ENABLE = "ForceStopWhiteListEnable"
     const val LAUNCHER_FORCE_STOP_WHITELIST = "ForceStopWhiteList"
     const val LAUNCHER_RECENTS_MEMORY = "launcher_recents_memory"
+    const val LAUNCHER_HIDE_ICON_LABEL = "launcher_hide_icon_label"
     const val DISABLE_FLAG_SECURE = "disable_flag_secure"
     const val CORE_PATCH_ENABLED = "core_patch_enabled"
     const val CORE_PATCH_DOWNGRADE = "downgrade"

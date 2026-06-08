@@ -268,6 +268,8 @@
     <string name="lenovo_launcher_force_stop_whitelist_desc">Comma-separated package names</string>
     <string name="lenovo_launcher_recents_memory_title">Show Memory in Recents</string>
     <string name="lenovo_launcher_recents_memory_desc">Display used memory / total memory at the bottom of Recents</string>
+    <string name="lenovo_launcher_hide_icon_label_title">Hide Desktop Icon Labels</string>
+    <string name="lenovo_launcher_hide_icon_label_desc">Hide text below workspace icons without changing layout or touch behavior</string>
     <string name="lenovo_launcher_whitelist_placeholder">com.example.app,com.example.other</string>
 
     <!-- Lenovo Game Assistant -->
