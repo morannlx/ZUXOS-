@@ -144,6 +144,29 @@
     <string name="app_info_enable_long_copy">启用长按复制</string>
     <string name="app_info_enable_long_copy_desc">长按就能复制应用信息</string>
 
+    <string name="theme_function">主题</string>
+    <string name="theme_function_desc">管理联想本地主题资源和已导入字体</string>
+    <string name="theme_settings_title">主题</string>
+    <string name="theme_settings_desc">管理本地主题资源，包括通过 Root 把 TTF 字体导入到系统字体库</string>
+    <string name="import_font_title">导入字体</string>
+    <string name="import_font_summary">支持 TTF 格式，导入到系统字体管理器</string>
+    <string name="preparing_font_file">正在准备字体文件...</string>
+    <string name="unknown_font_filename">unknown_font.ttf</string>
+    <string name="input_font_info_title">输入字体信息</string>
+    <string name="default_font_description">自定义导入的字体 %1$s</string>
+    <string name="font_name_empty">字体名称不能为空</string>
+    <string name="font_description_empty">字体描述不能为空</string>
+    <string name="importing_font">正在导入字体...</string>
+    <string name="import_success_message">字体已导入到系统字体库，请前往 设置 - 个性定制 - 字体 - 本地 查看。</string>
+    <string name="import_failed_message">字体导入失败：%1$s</string>
+    <string name="font_file_error">文件错误：%1$s</string>
+    <string name="font_language">简体</string>
+    <string name="font_author">Import By ZUXOS+</string>
+    <string name="font_preview_text">ZUXOS+\n\n自定义字体预览\n\n0123456789\n一二三四五六七八九十</string>
+    <string name="do_not_use_duplicated_font_name">请不要使用重复的字体名称</string>
+    <string name="font_name">字体名称</string>
+    <string name="font_description">字体描述</string>
+
     <!-- 联想系统更新 -->
     <string name="lenovo_system_update_function">联想系统更新</string>
     <string name="lenovo_system_update_function_desc">屏蔽系统更新的小红点和通知</string>
@@ -188,6 +211,8 @@
     <string name="feature_group_package_installer">软件包安装程序</string>
     <string name="feature_group_package_installer_item1">跳过安全扫描和警告页</string>
     <string name="feature_group_package_installer_item2">安装后保留 APK 文件</string>
+    <string name="feature_group_safe_center">安全中心</string>
+    <string name="feature_group_safe_center_item1">阻止后台定期安全扫描</string>
     <string name="package_installer_settings_title">软件包安装程序</string>
     <string name="package_installer_settings_desc">设置应用安装器的行为</string>
     <string name="package_installer_disable_scan_title">跳过安全扫描</string>
@@ -202,6 +227,11 @@
     <string name="package_installer_style_desc">用系统自带的安装界面代替 ZUI 的</string>
     <string name="package_installer_disable_delete_title">不要删除安装包</string>
     <string name="package_installer_disable_delete_desc">装完应用后保留安装包文件</string>
+
+    <string name="safe_center_settings_title">安全中心</string>
+    <string name="safe_center_settings_desc">设置联想安全中心 Hook 功能</string>
+    <string name="safe_center_block_scan_title">禁止安全扫描</string>
+    <string name="safe_center_block_scan_desc">阻止联想安全中心定期后台安全扫描及相关弹窗</string>
 
     <!-- 外观设置 -->
     <string name="appearance_title">外观</string>

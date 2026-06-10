@@ -5,7 +5,6 @@ import android.app.ActivityManager
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Rect
-import android.graphics.drawable.GradientDrawable
 import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
@@ -280,30 +279,18 @@ object LauncherRecentsMemoryHook : Hook {
             includeFontPadding = false
             elevation = dp(context, 8).toFloat()
             maxLines = 1
-            minHeight = memoryPillHeight(context)
-            background = createMemoryBackground(context)
-            setPadding(
-                dimensionPixelSize(context, "recents_clear_all_padding_left", 12),
-                0,
-                dimensionPixelSize(context, "recents_clear_all_padding_right", 16),
-                0,
-            )
+            background = null
+            setShadowLayer(dp(context, 2).toFloat(), 0f, dp(context, 1).toFloat(), Color.argb(130, 0, 0, 0))
+            setPadding(0, 0, 0, 0)
             isClickable = false
             isFocusable = false
             updateMemoryText(this, context)
         }
 
-    private fun createMemoryBackground(context: Context): GradientDrawable =
-        GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = dimensionPixelSize(context, "task_cleanup_bg_corner", 22).toFloat()
-            setColor(resourceColor(context, "recents_cleanup_background", Color.argb(76, 255, 255, 255)))
-        }
-
     private fun createMemoryLayoutParams(context: Context): FrameLayout.LayoutParams =
         FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
-            memoryPillHeight(context),
+            ViewGroup.LayoutParams.WRAP_CONTENT,
             Gravity.TOP or Gravity.END,
         ).apply {
             topMargin = dimensionPixelSize(context, "task_cleanup_top_margin", 39)
@@ -377,7 +364,7 @@ object LauncherRecentsMemoryHook : Hook {
 
         val anchorLeft = anchorLocation[0] - hostLocation[0]
         val anchorTop = anchorLocation[1] - hostLocation[1]
-        val textHeight = textView.height.takeIf { it > 0 } ?: dimensionPixelSize(textView.context, "task_cleanup_height", 45)
+        val textHeight = textView.height.takeIf { it > 0 } ?: dp(textView.context, 18)
         layoutParams.gravity = Gravity.TOP or Gravity.END
         layoutParams.topMargin = (anchorTop + (clearAllButton.height - textHeight) / 2).coerceAtLeast(0)
         layoutParams.rightMargin = (host.width - anchorLeft + dp(textView.context, 12)).coerceAtLeast(dp(textView.context, 8))
@@ -518,7 +505,7 @@ object LauncherRecentsMemoryHook : Hook {
     private fun updateMemoryText(textView: TextView?, context: Context) {
         textView ?: return
         val memory = readMemoryFromProc() ?: readMemoryFromActivityManager(context) ?: return
-        textView.text = "内存使用情况： ${formatUsedGb(memory.usedBytes)} / ${formatTotalGb(memory.totalBytes)}"
+        textView.text = "${formatAvailableGb(memory.availableBytes)}可用 | ${formatTotalGb(memory.totalBytes)}"
     }
 
     private fun readMemoryFromProc(): MemorySnapshot? =
@@ -544,10 +531,9 @@ object LauncherRecentsMemoryHook : Hook {
         return MemorySnapshot(info.totalMem, info.availMem)
     }
 
-    private fun formatUsedGb(bytes: Long): String {
+    private fun formatAvailableGb(bytes: Long): String {
         val gb = bytes.toDouble() / (1024.0 * 1024.0 * 1024.0)
-        val rounded = String.format(Locale.US, "%.1f", gb).trimEnd('0').trimEnd('.')
-        return "$rounded GB"
+        return String.format(Locale.US, "%.2f GB", gb)
     }
 
     private fun formatTotalGb(bytes: Long): String {
@@ -574,18 +560,6 @@ object LauncherRecentsMemoryHook : Hook {
 
     private fun fallbackMemoryRightMargin(context: Context): Int {
         return dimensionPixelSize(context, "overview_options_view_right_margin_min", 219)
-    }
-
-    private fun memoryPillHeight(context: Context): Int =
-        dimensionPixelSize(context, "task_cleanup_height", 45)
-
-    private fun resourceColor(context: Context, name: String, fallback: Int): Int {
-        val id = context.resources.getIdentifier(name, "color", LauncherConstants.PACKAGE_ZUX_LAUNCHER)
-        return if (id != 0) {
-            runCatching { context.resources.getColor(id, context.theme) }.getOrDefault(fallback)
-        } else {
-            fallback
-        }
     }
 
     private fun runHook(name: String, block: () -> Unit) {

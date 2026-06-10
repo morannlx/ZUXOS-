@@ -14,6 +14,7 @@ enum class RootStatus {
 
 enum class RestartScope(val label: String, internal val command: String) {
     SETTINGS("Settings", "am force-stop com.android.settings"),
+    SAFE_CENTER("SafeCenter", "am force-stop com.zui.safecenter; am force-stop com.lenovo.safecenter"),
     PACKAGE_INSTALLER(
         "Package Installer",
         "am force-stop com.android.packageinstaller; am force-stop com.google.android.packageinstaller",
@@ -87,6 +88,11 @@ object RootManager {
     suspend fun restart(scope: RestartScope): RootCommandResult = withContext(Dispatchers.IO) {
         runSu(scope.command)
     }
+
+    suspend fun execute(command: String, timeoutSeconds: Long = DEFAULT_TIMEOUT_SECONDS): RootCommandResult =
+        withContext(Dispatchers.IO) {
+            runSu(command, timeoutSeconds)
+        }
 
     private fun hasSuBinary(): Boolean {
         if (suPaths.any { File(it).canExecute() || File(it).exists() }) return true

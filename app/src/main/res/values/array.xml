@@ -10,5 +10,7 @@
         <item>com.google.android.packageinstaller</item>
         <item>com.zui.game.service</item>
         <item>com.zui.launcher</item>
+        <item>com.zui.safecenter</item>
+        <item>com.lenovo.safecenter</item>
     </string-array>
 </resources>

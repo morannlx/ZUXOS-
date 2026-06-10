@@ -57,6 +57,26 @@ class RootUiState {
             onResult(result)
         }
     }
+
+    fun execute(scope: CoroutineScope, command: String, onResult: (RootCommandResult) -> Unit) {
+        scope.launch {
+            busy.value = true
+            val current = RootManager.requestAccess()
+            state.value = current
+            val result = if (current.isGranted) {
+                RootManager.execute(command)
+            } else {
+                RootCommandResult(
+                    success = false,
+                    exitCode = -1,
+                    output = "",
+                    error = current.message ?: current.status.name,
+                )
+            }
+            busy.value = false
+            onResult(result)
+        }
+    }
 }
 
 @Composable

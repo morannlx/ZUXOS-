@@ -100,6 +100,16 @@
             android:screenOrientation="behind" />
 
         <activity
+            android:name=".ui.activity.SafeCenterSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="behind" />
+
+        <activity
+            android:name=".ui.activity.ThemeSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="behind" />
+
+        <activity
             android:name=".ui.activity.AppearanceSettingsActivity"
             android:exported="false"
             android:screenOrientation="behind" />

@@ -149,6 +149,7 @@ private const val PACKAGE_GAME_SERVICE = "com.zui.game.service"
 private const val PACKAGE_SYSTEMUI = "com.android.systemui"
 private const val PACKAGE_ZUX_LAUNCHER = "com.zui.launcher"
 private const val PACKAGE_INSTALLER = "com.android.packageinstaller"
+private const val PACKAGE_SAFE_CENTER = "com.zui.safecenter"
 
 private val featureGroups = listOf(
     FeatureGroup("▦", R.string.feature_group_framework, listOf(
@@ -177,7 +178,10 @@ private val featureGroups = listOf(
     FeatureGroup("▣", R.string.feature_group_package_installer, listOf(
         R.string.feature_group_package_installer_item1,
         R.string.feature_group_package_installer_item2
-    ), PACKAGE_INSTALLER, FeatureBlue)
+    ), PACKAGE_INSTALLER, FeatureBlue),
+    FeatureGroup("◆", R.string.feature_group_safe_center, listOf(
+        R.string.feature_group_safe_center_item1
+    ), PACKAGE_SAFE_CENTER, FeatureNeutral)
 )
 
 /* ── Navigation ─────────────────────────────────── */
@@ -1337,6 +1341,8 @@ private fun FeaturesPage(cs: AppColorScheme) {
                         context.startActivity(Intent(context, LenovoLauncherSettingsActivity::class.java))
                     } else if (group.targetPackage == PACKAGE_INSTALLER) {
                         context.startActivity(Intent(context, PackageInstallerSettingsActivity::class.java))
+                    } else if (group.targetPackage == PACKAGE_SAFE_CENTER) {
+                        context.startActivity(Intent(context, SafeCenterSettingsActivity::class.java))
                     }
                 }
             }

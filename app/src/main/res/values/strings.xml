@@ -78,6 +78,8 @@
     <string name="feature_group_package_installer">Package Installer</string>
     <string name="feature_group_package_installer_item1">Skip safety scan and warning page</string>
     <string name="feature_group_package_installer_item2">Keep APK files after installation</string>
+    <string name="feature_group_safe_center">Safe Center</string>
+    <string name="feature_group_safe_center_item1">Block scheduled background virus scans</string>
     <string name="no_features_available">No hook features available</string>
 
     <!-- Settings Page -->
@@ -211,6 +213,30 @@
     <string name="app_info_show_install_source_desc">Display the installer package name</string>
     <string name="app_info_enable_long_copy">Enable Long Press Copy</string>
     <string name="app_info_enable_long_copy_desc">Long press to copy all app info text to clipboard</string>
+
+    <!-- Theme -->
+    <string name="theme_function">Theme</string>
+    <string name="theme_function_desc">Manage Lenovo local theme resources and imported fonts</string>
+    <string name="theme_settings_title">Theme</string>
+    <string name="theme_settings_desc">Manage local theme resources, including importing TTF fonts into the system font library with Root</string>
+    <string name="import_font_title">Import Font</string>
+    <string name="import_font_summary">Supports TTF files and installs them into the system font manager</string>
+    <string name="preparing_font_file">Preparing font file...</string>
+    <string name="unknown_font_filename">unknown_font.ttf</string>
+    <string name="input_font_info_title">Font Info</string>
+    <string name="default_font_description">Custom imported font %1$s</string>
+    <string name="font_name_empty">Font name cannot be empty</string>
+    <string name="font_description_empty">Font description cannot be empty</string>
+    <string name="importing_font">Importing font...</string>
+    <string name="import_success_message">Font imported. Open Settings - Personalization - Fonts - Local to view it.</string>
+    <string name="import_failed_message">Font import failed: %1$s</string>
+    <string name="font_file_error">File error: %1$s</string>
+    <string name="font_language">Simplified Chinese</string>
+    <string name="font_author">Import By ZUXOS+</string>
+    <string name="font_preview_text">ZUXOS+\n\nCustom Font Preview\n\n0123456789\nABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
+    <string name="do_not_use_duplicated_font_name">Do not use a duplicate font name</string>
+    <string name="font_name">Font Name</string>
+    <string name="font_description">Font Description</string>
 
     <!-- Lenovo About Device -->
     <string name="lenovo_about_device_function">About Device</string>
@@ -350,4 +376,10 @@
     <string name="package_installer_style_desc">Bypass ZUI restrictions and use the dialog-style native installer flow</string>
     <string name="package_installer_disable_delete_title">Do Not Delete APK</string>
     <string name="package_installer_disable_delete_desc">Clear the post-install option that deletes the original APK file</string>
+
+    <!-- Safe Center -->
+    <string name="safe_center_settings_title">Safe Center</string>
+    <string name="safe_center_settings_desc">Configure Lenovo Safe Center hooks</string>
+    <string name="safe_center_block_scan_title">Disable Safety Scan</string>
+    <string name="safe_center_block_scan_desc">Block Lenovo Safe Center scheduled background virus scans and related scan popups</string>
 </resources>

@@ -39,6 +39,11 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            signingConfigs.findByName("r9elease")?.let {
+                signingConfig = it
+            }
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true

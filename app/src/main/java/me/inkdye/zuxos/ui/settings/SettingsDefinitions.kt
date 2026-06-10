@@ -17,6 +17,7 @@ object SettingKeys {
     const val PACKAGE_INSTALLER_DISABLE_INSTALLER_AD = "disable_installerAD"
     const val PACKAGE_INSTALLER_STYLE_HOOK = "packageInstallerStyle_hook"
     const val PACKAGE_INSTALLER_DISABLE_DELETE = "package_installer_disable_delete"
+    const val SAFE_CENTER_BLOCK_SCAN = ModuleConfig.SAFE_CENTER_BLOCK_SCAN
     const val LENOVO_SYSTEM_UPDATE_HIDE_NEW_VERSION_REMINDER =
         ModuleConfig.LENOVO_SYSTEM_UPDATE_HIDE_NEW_VERSION_REMINDER
     const val LENOVO_SYSTEM_UPDATE_FORCE_LOCAL_INSTALL =
@@ -189,6 +190,15 @@ val PackageInstallerFeatureSettings = listOf(
         SettingKeys.PACKAGE_INSTALLER_DISABLE_DELETE,
         R.string.package_installer_disable_delete_title,
         R.string.package_installer_disable_delete_desc,
+        false,
+    ),
+)
+
+val SafeCenterFeatureSettings = listOf(
+    BooleanSettingSpec(
+        SettingKeys.SAFE_CENTER_BLOCK_SCAN,
+        R.string.safe_center_block_scan_title,
+        R.string.safe_center_block_scan_desc,
         false,
     ),
 )
@@ -577,6 +587,7 @@ val ModuleBooleanSettings =
         LenovoSystemUIControlCenterMasterSetting,
     ) +
         AppInfoDetailSettings + PackageInstallerFeatureSettings +
+        SafeCenterFeatureSettings +
         LenovoSystemUpdateFeatureSettings + LenovoGameAssistantFeatureSettings +
         LenovoLauncherFeatureSettings +
         CorePatchFeatureSettings
