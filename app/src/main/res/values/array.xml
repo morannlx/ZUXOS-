@@ -5,6 +5,7 @@
         <item>android</item>
         <item>com.android.settings</item>
         <item>com.android.systemui</item>
+        <item>com.zui.wallpapersetting</item>
         <item>com.lenovo.ota</item>
         <item>com.android.packageinstaller</item>
         <item>com.google.android.packageinstaller</item>

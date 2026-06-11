@@ -2,6 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+
     <application
         android:name=".application.DefaultApplication"
         android:allowBackup="true"
@@ -128,6 +134,20 @@
             android:name=".ui.activity.AboutSettingsActivity"
             android:exported="false"
             android:screenOrientation="behind" />
+
+        <service
+            android:name=".wallpaper.ZuxosVideoWallpaperService"
+            android:exported="true"
+            android:label="@string/home_video_wallpaper_label"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/zuxos_video_wallpaper" />
+        </service>
 
         <provider
             android:name="androidx.core.content.FileProvider"

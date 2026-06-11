@@ -194,6 +194,22 @@
     <string name="theme_settings_desc">管理本地主题资源，包括通过 Root 把 TTF 字体导入到系统字体库</string>
     <string name="import_font_title">导入字体</string>
     <string name="import_font_summary">支持 TTF 格式，导入到系统字体管理器</string>
+    <string name="lock_video_wallpaper_title">自定义视频动态壁纸</string>
+    <string name="lock_video_wallpaper_summary">把 MP4 添加到联想系统动态壁纸库。锁屏播放一次，桌面动态壁纸循环播放；导入后不会自动应用。</string>
+    <string name="lock_video_wallpaper_library_title">打开系统壁纸库</string>
+    <string name="lock_video_wallpaper_library_summary">先强停并重新打开联想“壁纸和主题风格”，再到动态壁纸里选择 ZUXOS+ 项手动设置。</string>
+    <string name="lock_video_wallpaper_file_access_title">授予文件访问权限</string>
+    <string name="lock_video_wallpaper_file_access_desc">允许访问所有文件后，ZUXOS+ 可直接把视频写入联想壁纸库；受限系统目录才会使用 Root 兜底。</string>
+    <string name="lock_video_wallpaper_importing">正在导入视频动态壁纸...</string>
+    <string name="lock_video_wallpaper_import_success_direct">视频已添加到系统动态壁纸库。请打开系统壁纸库手动应用：%1$s</string>
+    <string name="lock_video_wallpaper_import_success_root">已通过 Root 兜底添加到系统动态壁纸库。请打开系统壁纸库手动应用：%1$s</string>
+    <string name="lock_video_wallpaper_import_success_multi">已添加 %1$d 个视频到系统动态壁纸库。请打开系统壁纸库手动选择其中一个。</string>
+    <string name="lock_video_wallpaper_import_failed">视频动态壁纸导入失败：%1$s</string>
+    <string name="lock_video_wallpaper_library_opening">正在重启并打开系统壁纸库...</string>
+    <string name="lock_video_wallpaper_library_opened">已打开系统壁纸库。如果仍看不到 ZUXOS+ 项，请确认 LSPosed 作用域包含“壁纸和主题风格”后重启设备。</string>
+    <string name="lock_video_wallpaper_library_open_failed">打开联想壁纸库失败：%1$s</string>
+    <string name="home_video_wallpaper_label">ZUXOS+ 视频动态壁纸</string>
+    <string name="home_video_wallpaper_desc">用于播放已导入 ZUXOS+ MP4 的桌面动态壁纸服务，桌面端会自动循环播放。</string>
     <string name="preparing_font_file">正在准备字体文件...</string>
     <string name="unknown_font_filename">unknown_font.ttf</string>
     <string name="input_font_info_title">输入字体信息</string>
@@ -333,7 +349,6 @@
     <string name="lenovo_systemui_control_center_pull_down_blur_radius_title">底层背景模糊强度</string>
     <string name="lenovo_systemui_control_center_pull_down_blur_radius_desc">下拉通知栏时背景的模糊程度</string>
     <string name="lenovo_systemui_control_center_color_format_hint">使用 #AARRGGBB 或 #RRGGBB</string>
-
     <!-- 软件包安装程序 -->
     <string name="package_installer_settings_title">软件包安装程序</string>
     <string name="package_installer_settings_desc">设置应用安装器的行为</string>

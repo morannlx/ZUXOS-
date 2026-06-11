@@ -40,7 +40,7 @@ android {
     }
     buildTypes {
         debug {
-            signingConfigs.findByName("r9elease")?.let {
+            signingConfigs.findByName("release")?.let {
                 signingConfig = it
             }
         }
@@ -119,6 +119,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
 
     implementation(libs.material)
+    implementation(libs.media3.exoplayer)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

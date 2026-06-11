@@ -1,9 +1,14 @@
 package me.inkdye.zuxos.ui.activity
 
+import android.content.ComponentName
+import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.OpenableColumns
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -44,6 +49,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.inkdye.zuxos.R
+import me.inkdye.zuxos.root.RootManager
 import me.inkdye.zuxos.ui.components.ActionCard
 import me.inkdye.zuxos.ui.components.GlassCard
 import me.inkdye.zuxos.ui.components.LiquidGlassCardBackdropProvider
@@ -54,6 +60,7 @@ import me.inkdye.zuxos.ui.theme.AppColorScheme
 import me.inkdye.zuxos.ui.theme.colorSchemeFor
 import me.inkdye.zuxos.ui.theme.resolveIsDark
 import me.inkdye.zuxos.utils.FontInstallerManager
+import me.inkdye.zuxos.wallpaper.LenovoLockVideoWallpaperManager
 import java.io.File
 
 class ThemeSettingsActivity : ComponentActivity() {
@@ -83,7 +90,7 @@ private fun ThemeSettingsPage(onBack: () -> Unit) {
     var statusMessage by remember { mutableStateOf<String?>(null) }
     var statusFailed by remember { mutableStateOf(false) }
 
-    val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+    val fontPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri == null) return@rememberLauncherForActivityResult
         coroutineScope.launch {
             busyMessage = context.getString(R.string.preparing_font_file)
@@ -101,6 +108,42 @@ private fun ThemeSettingsPage(onBack: () -> Unit) {
                 busyMessage = null
                 statusFailed = true
                 statusMessage = context.getString(R.string.font_file_error, error.message.orEmpty())
+            }
+        }
+    }
+
+    val videoPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
+        if (uris.isEmpty()) return@rememberLauncherForActivityResult
+        coroutineScope.launch {
+            busyMessage = context.getString(R.string.lock_video_wallpaper_importing)
+            statusMessage = null
+            runCatching {
+                withContext(Dispatchers.IO) {
+                    uris.map { uri ->
+                        LenovoLockVideoWallpaperManager.importVideo(context, uri)
+                    }
+                }
+            }.onSuccess { results ->
+                busyMessage = null
+                statusFailed = false
+                statusMessage = if (results.size == 1) {
+                    val result = results.first()
+                    when (result.method) {
+                        LenovoLockVideoWallpaperManager.ApplyMethod.DIRECT ->
+                            context.getString(R.string.lock_video_wallpaper_import_success_direct, result.videoPath)
+                        LenovoLockVideoWallpaperManager.ApplyMethod.ROOT ->
+                            context.getString(R.string.lock_video_wallpaper_import_success_root, result.videoPath)
+                    }
+                } else {
+                    context.getString(R.string.lock_video_wallpaper_import_success_multi, results.size)
+                }
+            }.onFailure { error ->
+                busyMessage = null
+                statusFailed = true
+                statusMessage = context.getString(
+                    R.string.lock_video_wallpaper_import_failed,
+                    error.message.orEmpty(),
+                )
             }
         }
     }
@@ -140,7 +183,7 @@ private fun ThemeSettingsPage(onBack: () -> Unit) {
                         description = stringResource(R.string.import_font_summary),
                         colorScheme = cs,
                         onClick = {
-                            picker.launch(
+                            fontPicker.launch(
                                 arrayOf(
                                     "font/ttf",
                                     "application/x-font-ttf",
@@ -150,6 +193,59 @@ private fun ThemeSettingsPage(onBack: () -> Unit) {
                             )
                         },
                     )
+                }
+
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    ActionCard(
+                        title = stringResource(R.string.lock_video_wallpaper_title),
+                        description = stringResource(R.string.lock_video_wallpaper_summary),
+                        colorScheme = cs,
+                        onClick = {
+                            videoPicker.launch(arrayOf("video/mp4", "video/*"))
+                        },
+                    )
+                }
+
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    ActionCard(
+                        title = stringResource(R.string.lock_video_wallpaper_library_title),
+                        description = stringResource(R.string.lock_video_wallpaper_library_summary),
+                        colorScheme = cs,
+                        onClick = {
+                            coroutineScope.launch {
+                                busyMessage = context.getString(R.string.lock_video_wallpaper_library_opening)
+                                statusMessage = null
+                                runCatching {
+                                    context.killLenovoWallpaperLibrary()
+                                    context.openLenovoWallpaperLibrary()
+                                }.onSuccess {
+                                    busyMessage = null
+                                    statusFailed = false
+                                    statusMessage = context.getString(R.string.lock_video_wallpaper_library_opened)
+                                }.onFailure { error ->
+                                    busyMessage = null
+                                    statusFailed = true
+                                    statusMessage = context.getString(
+                                        R.string.lock_video_wallpaper_library_open_failed,
+                                        error.message.orEmpty(),
+                                    )
+                                }
+                            }
+                        },
+                    )
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        ActionCard(
+                            title = stringResource(R.string.lock_video_wallpaper_file_access_title),
+                            description = stringResource(R.string.lock_video_wallpaper_file_access_desc),
+                            colorScheme = cs,
+                            onClick = {
+                                context.openAllFilesAccessSettings()
+                            },
+                        )
+                    }
                 }
 
                 busyMessage?.let { message ->
@@ -292,4 +388,51 @@ private fun android.content.Context.displayName(uri: Uri): String? {
         if (index >= 0 && it.moveToFirst()) return it.getString(index)
     }
     return uri.lastPathSegment
+}
+
+private fun android.content.Context.openAllFilesAccessSettings() {
+    val appIntent = Intent(
+        Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+        Uri.parse("package:$packageName"),
+    )
+    runCatching {
+        startActivity(appIntent)
+    }.onFailure {
+        startActivity(Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION))
+    }
+}
+
+private suspend fun android.content.Context.killLenovoWallpaperLibrary() {
+    withContext(Dispatchers.IO) {
+        runCatching {
+            ProcessBuilder(
+                "sh",
+                "-c",
+                "am force-stop ${LenovoLockVideoWallpaperManager.WALLPAPER_SETTING_PACKAGE}",
+            ).start().waitFor()
+        }
+        runCatching {
+            RootManager.execute(
+                "am force-stop ${LenovoLockVideoWallpaperManager.WALLPAPER_SETTING_PACKAGE}",
+                timeoutSeconds = 5,
+            )
+        }
+    }
+}
+
+private fun android.content.Context.openLenovoWallpaperLibrary() {
+    val explicitIntent = Intent().apply {
+        component = ComponentName(
+            LenovoLockVideoWallpaperManager.WALLPAPER_SETTING_PACKAGE,
+            "com.zui.wallpapersetting.activity.CustomizaActivity",
+        )
+    }
+    runCatching {
+        startActivity(explicitIntent)
+    }.getOrElse {
+        val launcher = packageManager.getLaunchIntentForPackage(
+            LenovoLockVideoWallpaperManager.WALLPAPER_SETTING_PACKAGE,
+        ) ?: throw it
+        startActivity(launcher)
+    }
 }

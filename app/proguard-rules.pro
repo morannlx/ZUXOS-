@@ -19,3 +19,4 @@
     void attachBaseContext(android.content.Context);
 }
 -keep class * extends android.app.Activity
+-keep class * extends android.service.wallpaper.WallpaperService

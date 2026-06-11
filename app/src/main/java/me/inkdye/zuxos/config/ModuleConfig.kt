@@ -72,6 +72,8 @@ object ModuleConfig {
         "lenovo_systemui_control_center_panel_alpha"
     const val LENOVO_SYSTEMUI_CONTROL_CENTER_PULL_DOWN_BLUR_RADIUS =
         "lenovo_systemui_control_center_pull_down_blur_radius"
+    const val LENOVO_WALLPAPER_CUSTOM_LOCK_VIDEO =
+        "lenovo_wallpaper_custom_lock_video"
     const val HOOK_LOGGING_ENABLED = "hook_logging_enabled"
     const val SETTINGS_HOME_ENTRY_ENABLED = "settings_home_entry_enabled"
     const val LAUNCHER_HOTSEAT_EXPAND = "zui_launcher_hotseat"

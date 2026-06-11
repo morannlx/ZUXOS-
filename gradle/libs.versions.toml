@@ -25,6 +25,7 @@ activity-compose = "1.10.1"
 androidx-core-ktx = "1.17.0"
 androidx-appcompat = "1.7.1"
 material = "1.13.0"
+media3 = "1.10.0"
 androidx-constraintlayout = "2.2.1"
 androidx-preference-ktx = "1.2.1"
 androidx-core-splashscreen = "1.0.1"
@@ -58,6 +59,7 @@ backdrop = { group = "io.github.kyant0", name = "backdrop", version.ref = "backd
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraintlayout" }
 androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "androidx-preference-ktx" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidx-core-splashscreen" }
