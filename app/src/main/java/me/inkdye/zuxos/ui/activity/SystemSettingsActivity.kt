@@ -92,6 +92,16 @@ private fun SystemSettingsPage(onBack: () -> Unit) {
                 }
                 item {
                     SettingGridCard(
+                        title = stringResource(R.string.display_size_function),
+                        desc = stringResource(R.string.display_size_function_desc),
+                        cs = cs,
+                        onClick = {
+                            context.startActivity(Intent(context, DisplaySizeSettingsActivity::class.java))
+                        },
+                    )
+                }
+                item {
+                    SettingGridCard(
                         title = stringResource(R.string.app_info_function),
                         desc = stringResource(R.string.app_info_function_desc),
                         cs = cs,

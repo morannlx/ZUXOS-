@@ -23,10 +23,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import me.inkdye.zuxos.R
 import me.inkdye.zuxos.ui.components.ActionCard
+import me.inkdye.zuxos.ui.components.BooleanSettingSwitch
 import me.inkdye.zuxos.ui.components.LiquidGlassCardBackdropProvider
 import me.inkdye.zuxos.ui.components.PageHeader
 import me.inkdye.zuxos.ui.components.pageHorizontalPadding
+import me.inkdye.zuxos.ui.settings.LenovoVivoStyleHangingSetting
 import me.inkdye.zuxos.ui.settings.rememberAppSettings
+import me.inkdye.zuxos.ui.settings.rememberSettingsRepository
 import me.inkdye.zuxos.ui.theme.colorSchemeFor
 import me.inkdye.zuxos.ui.theme.resolveIsDark
 
@@ -43,6 +46,7 @@ class LenovoSystemUISettingsActivity : ComponentActivity() {
 @Composable
 private fun LenovoSystemUISettingsPage(onBack: () -> Unit) {
     val settings = rememberAppSettings()
+    val repository = rememberSettingsRepository()
     val cs = colorSchemeFor(
         resolveIsDark(settings.themeMode.value),
         titleTextContrast = settings.titleTextContrast.value,
@@ -77,6 +81,13 @@ private fun LenovoSystemUISettingsPage(onBack: () -> Unit) {
                         subtitle = stringResource(R.string.lenovo_systemui_settings_desc),
                         colorScheme = cs,
                         onBack = onBack,
+                    )
+                }
+                item {
+                    BooleanSettingSwitch(
+                        spec = LenovoVivoStyleHangingSetting,
+                        repository = repository,
+                        colorScheme = cs,
                     )
                 }
                 item {

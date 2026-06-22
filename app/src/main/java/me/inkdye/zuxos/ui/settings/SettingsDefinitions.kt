@@ -80,6 +80,10 @@ object SettingKeys {
         ModuleConfig.LENOVO_SYSTEMUI_CONTROL_CENTER_PANEL_ALPHA
     const val LENOVO_SYSTEMUI_CONTROL_CENTER_PULL_DOWN_BLUR_RADIUS =
         ModuleConfig.LENOVO_SYSTEMUI_CONTROL_CENTER_PULL_DOWN_BLUR_RADIUS
+    const val LENOVO_VIVO_STYLE_HANGING_ENABLED =
+        ModuleConfig.LENOVO_VIVO_STYLE_HANGING_ENABLED
+    const val LENOVO_DESKTOP_MODE_ROTATION_MODE =
+        ModuleConfig.LENOVO_DESKTOP_MODE_ROTATION_MODE
     const val HOOK_LOGGING_ENABLED = "hook_logging_enabled"
     const val SETTINGS_HOME_ENTRY_ENABLED = ModuleConfig.SETTINGS_HOME_ENTRY_ENABLED
     const val LAUNCHER_HOTSEAT_EXPAND = ModuleConfig.LAUNCHER_HOTSEAT_EXPAND
@@ -241,43 +245,43 @@ val LenovoAboutDeviceTextSettings = listOf(
         SettingKeys.LENOVO_ABOUT_DEVICE_NAME,
         R.string.lenovo_about_device_name_title,
         R.string.lenovo_about_device_name_desc,
-        "Lenovo Xiaoxin Pad Pro",
+        "",
     ),
     TextSettingSpec(
         SettingKeys.LENOVO_ABOUT_DEVICE_MODEL,
         R.string.lenovo_about_device_model_title,
         R.string.lenovo_about_device_model_desc,
-        "TB372FC",
+        "",
     ),
     TextSettingSpec(
         SettingKeys.LENOVO_ABOUT_DEVICE_PROCESSOR,
         R.string.lenovo_about_device_processor_title,
         R.string.lenovo_about_device_processor_desc,
-        "Snapdragon 8+ Gen 1",
+        "",
     ),
     TextSettingSpec(
         SettingKeys.LENOVO_ABOUT_DEVICE_ROM,
         R.string.lenovo_about_device_rom_title,
         R.string.lenovo_about_device_rom_desc,
-        "256 GB / 512 GB",
+        "",
     ),
     TextSettingSpec(
         SettingKeys.LENOVO_ABOUT_DEVICE_RAM,
         R.string.lenovo_about_device_ram_title,
         R.string.lenovo_about_device_ram_desc,
-        "12 GB",
+        "",
     ),
     TextSettingSpec(
         SettingKeys.LENOVO_ABOUT_DEVICE_SOFTWARE_VERSION,
         R.string.lenovo_about_device_software_version_title,
         R.string.lenovo_about_device_software_version_desc,
-        "ZUXOS 16.0.0",
+        "",
     ),
     TextSettingSpec(
         SettingKeys.LENOVO_ABOUT_DEVICE_ANDROID_VERSION,
         R.string.lenovo_about_device_android_version_title,
         R.string.lenovo_about_device_android_version_desc,
-        "15",
+        "",
     ),
 )
 
@@ -355,6 +359,21 @@ val LenovoSystemUIControlCenterMasterSetting = BooleanSettingSpec(
     titleRes = R.string.lenovo_systemui_control_center_enabled_title,
     descRes = R.string.lenovo_systemui_control_center_enabled_desc,
     defaultValue = false,
+)
+
+val LenovoVivoStyleHangingSetting = BooleanSettingSpec(
+    key = SettingKeys.LENOVO_VIVO_STYLE_HANGING_ENABLED,
+    titleRes = R.string.lenovo_vivo_style_hanging_title,
+    descRes = R.string.lenovo_vivo_style_hanging_desc,
+    defaultValue = false,
+)
+
+val LenovoDesktopModeRotationModeSetting = IntSettingSpec(
+    key = SettingKeys.LENOVO_DESKTOP_MODE_ROTATION_MODE,
+    titleRes = R.string.lenovo_desktop_mode_rotation_mode_title,
+    descRes = R.string.lenovo_desktop_mode_rotation_mode_desc,
+    defaultValue = 0,
+    valueRange = 0..4,
 )
 
 val LenovoSystemUIControlCenterColorSettings = listOf(
@@ -585,6 +604,7 @@ val ModuleBooleanSettings =
         LenovoAboutDeviceMasterSetting,
         LenovoAboutDeviceImageSetting,
         LenovoSystemUIControlCenterMasterSetting,
+        LenovoVivoStyleHangingSetting,
     ) +
         AppInfoDetailSettings + PackageInstallerFeatureSettings +
         SafeCenterFeatureSettings +
@@ -599,3 +619,4 @@ val ModuleColorSettings = LenovoSystemUIControlCenterColorSettings
 val ModuleTextSettings = LenovoAboutDeviceTextSettings + LenovoLauncherTextSettings
 
 val ModuleIntSettings = LenovoLauncherGridIntSettings
+    .plus(LenovoDesktopModeRotationModeSetting)

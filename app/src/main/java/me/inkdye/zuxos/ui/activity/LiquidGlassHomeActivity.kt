@@ -148,6 +148,7 @@ private const val PACKAGE_LENOVO_OTA = "com.lenovo.ota"
 private const val PACKAGE_GAME_SERVICE = "com.zui.game.service"
 private const val PACKAGE_SYSTEMUI = "com.android.systemui"
 private const val PACKAGE_ZUX_LAUNCHER = "com.zui.launcher"
+private const val PACKAGE_WORK_DESKTOP = "com.zui.desktoplauncher"
 private const val PACKAGE_INSTALLER = "com.android.packageinstaller"
 private const val PACKAGE_SAFE_CENTER = "com.zui.safecenter"
 
@@ -175,6 +176,10 @@ private val featureGroups = listOf(
         R.string.feature_group_desktop_item1,
         R.string.feature_group_desktop_item2
     ), PACKAGE_ZUX_LAUNCHER, FeatureGreen),
+    FeatureGroup("▥", R.string.feature_group_work_desktop, listOf(
+        R.string.feature_group_work_desktop_item1,
+        R.string.feature_group_work_desktop_item2
+    ), PACKAGE_WORK_DESKTOP, FeatureBlue),
     FeatureGroup("▣", R.string.feature_group_package_installer, listOf(
         R.string.feature_group_package_installer_item1,
         R.string.feature_group_package_installer_item2
@@ -1339,6 +1344,8 @@ private fun FeaturesPage(cs: AppColorScheme) {
                         context.startActivity(Intent(context, LenovoSystemUISettingsActivity::class.java))
                     } else if (group.targetPackage == PACKAGE_ZUX_LAUNCHER) {
                         context.startActivity(Intent(context, LenovoLauncherSettingsActivity::class.java))
+                    } else if (group.targetPackage == PACKAGE_WORK_DESKTOP) {
+                        context.startActivity(Intent(context, WorkDesktopSettingsActivity::class.java))
                     } else if (group.targetPackage == PACKAGE_INSTALLER) {
                         context.startActivity(Intent(context, PackageInstallerSettingsActivity::class.java))
                     } else if (group.targetPackage == PACKAGE_SAFE_CENTER) {

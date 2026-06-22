@@ -185,7 +185,7 @@ object AppInfoExtend : Hook {
                                                 Toast
                                                     .makeText(
                                                         context,
-                                                        "已复制: $value",
+                                                        "已复制：$value",
                                                         Toast.LENGTH_SHORT
                                                     )
                                                     .show()

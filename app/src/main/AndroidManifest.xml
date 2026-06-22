@@ -61,6 +61,12 @@
             android:screenOrientation="behind" />
 
         <activity
+            android:name=".ui.activity.DisplaySizeSettingsActivity"
+            android:configChanges="density|keyboardHidden|orientation|screenSize|smallestScreenSize|uiMode"
+            android:exported="false"
+            android:screenOrientation="behind" />
+
+        <activity
             android:name=".ui.activity.CorePatchSettingsActivity"
             android:exported="false"
             android:screenOrientation="behind" />
@@ -97,6 +103,11 @@
 
         <activity
             android:name=".ui.activity.LenovoLauncherSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="behind" />
+
+        <activity
+            android:name=".ui.activity.WorkDesktopSettingsActivity"
             android:exported="false"
             android:screenOrientation="behind" />
 

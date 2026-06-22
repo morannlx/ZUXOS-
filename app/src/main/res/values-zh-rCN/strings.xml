@@ -34,9 +34,9 @@
     <string name="info_inactive">未启用</string>
     <string name="info_brand">品牌</string>
     <string name="info_model">型号</string>
-    <string name="info_android">安卓版本</string>
+    <string name="info_android">Android 版本</string>
     <string name="root_status_title">Root 权限</string>
-    <string name="root_status_checking">正在检查 Root 权限...</string>
+    <string name="root_status_checking">正在检查 Root 权限…</string>
     <string name="root_status_unknown">未知</string>
     <string name="root_status_unavailable">不可用</string>
     <string name="root_status_denied">已拒绝</string>
@@ -51,6 +51,9 @@
     <string name="feature_group_desktop">桌面</string>
     <string name="feature_group_desktop_item1">Dock、网格和最近任务调整</string>
     <string name="feature_group_desktop_item2">最近任务内存和后台保护</string>
+    <string name="feature_group_work_desktop">Work 桌面</string>
+    <string name="feature_group_work_desktop_item1">电脑模式屏幕方向</string>
+    <string name="feature_group_work_desktop_item2">锁定 Work 桌面显示方向</string>
     <string name="feature_group_audio">音频</string>
     <string name="feature_group_audio_item1">VAFX 框架</string>
     <string name="feature_group_audio_item2">空间音频</string>
@@ -97,7 +100,7 @@
     <string name="settings_reset_defaults_desc">把主题、导航和功能设置恢复成默认</string>
     <string name="settings_reset_done">已恢复默认</string>
     <string name="hook_logging_enabled">启用日志记录</string>
-    <string name="hook_logging_enabled_desc">记录功能的注册、运行、失败等日志，开启后可以看到日志页面</string>
+    <string name="hook_logging_enabled_desc">记录 Hook 的注册、运行和失败日志，开启后显示日志页面</string>
     <string name="settings_home_entry_enabled">在设置中显示入口</string>
     <string name="settings_home_entry_enabled_desc">在联想设置主页面显示 ZUXOS+ 入口</string>
 
@@ -113,7 +116,7 @@
 
     <!-- 系统设置 -->
     <string name="system_settings_title">系统设置</string>
-    <string name="system_settings_desc">设置系统增强功能</string>
+    <string name="system_settings_desc">配置系统级增强功能</string>
     <string name="general_settings_title">通用</string>
     <string name="general_settings_desc">插件偏好和维护操作</string>
     <string name="export_settings_title">导出 / 导入</string>
@@ -134,40 +137,40 @@
     <string name="about_acknowledgements">致谢</string>
     <string name="about_author_line">作者：%1$s</string>
     <string name="about_version_line">版本：%1$s</string>
-    <string name="about_description">ZUXOS+ 是面向联想 ZUX/ZUI 设备的系统增强模块。</string>
-    <string name="about_credit_zux_ztool_desc">ZUXOS/ZUI 模块功能的参考与实现灵感来源。</string>
-    <string name="about_credit_corepatch_desc">用于 Android 包管理器签名与安装策略相关补丁。</string>
-    <string name="about_credit_yukihookapi_desc">本模块使用的 Xposed Hook 开发框架。</string>
+    <string name="about_description">ZUXOS+ 一个自定义系统增强的模块。</string>
+    <string name="about_credit_zux_ztool_desc">ZUXOS 部分模块功能的参考与实现灵感来源。</string>
+    <string name="about_credit_corepatch_desc">核心破解功能的hook参考。</string>
+    <string name="about_credit_yukihookapi_desc">本模块的开发框架。</string>
 
-    <!-- 应用信息 -->
+    <!-- 系统框架 -->
     <string name="system_framework_function">系统框架</string>
-    <string name="system_framework_function_desc">跳过应用安装限制，解除截屏封锁</string>
+    <string name="system_framework_function_desc">跳过安装限制，解除截屏封锁</string>
     <string name="system_framework_settings">系统框架</string>
-    <string name="system_framework_settings_desc">设置系统框架功能</string>
+    <string name="system_framework_settings_desc">管理系统框架 Hook</string>
     <string name="core_patch_settings">核心破解</string>
-    <string name="core_patch_settings_desc">设置应用签名和安装检查</string>
+    <string name="core_patch_settings_desc">管理应用签名与安装检查</string>
     <string name="core_patch_function">核心破解</string>
     <string name="core_patch_function_desc">兼容 Android 9-16，跳过安装限制</string>
     <string name="disable_flag_secure_title">强制允许截屏</string>
-    <string name="disable_flag_secure_desc">解除截屏和录屏的限制</string>
+    <string name="disable_flag_secure_desc">允许对任意应用进行截屏和录屏</string>
     <string name="core_patch_master_title">开启核心破解</string>
     <string name="core_patch_master_desc">开启后需要重启手机才能生效</string>
-    <string name="core_patch_downgrade_title">允许降级安装</string>
-    <string name="core_patch_downgrade_desc">允许安装旧版本的应用</string>
+    <string name="core_patch_downgrade_title">允许降级安装应用</string>
+    <string name="core_patch_downgrade_desc">允许应用在安装新版本的情况下直接覆盖安装旧版本</string>
     <string name="core_patch_auth_creak_title">禁用 APK 签名验证</string>
-    <string name="core_patch_auth_creak_desc">跳过应用签名检查</string>
+    <string name="core_patch_auth_creak_desc">关闭安装应用时的签名验证，可以安装被篡改的应用</string>
     <string name="core_patch_digest_creak_title">绕过签名能力检查</string>
-    <string name="core_patch_digest_creak_desc">放宽应用签名的检查要求</string>
+    <string name="core_patch_digest_creak_desc">放宽签名能力和密钥集检查</string>
     <string name="core_patch_exact_sig_check_title">绕过精确签名匹配</string>
-    <string name="core_patch_exact_sig_check_desc">跳过精确签名比对</string>
+    <string name="core_patch_exact_sig_check_desc">强制精确签名比对通过</string>
     <string name="core_patch_use_pre_sig_title">使用历史签名</string>
-    <string name="core_patch_use_pre_sig_desc">用旧签名也能匹配权限</string>
+    <string name="core_patch_use_pre_sig_desc">允许使用历史签名匹配权限</string>
     <string name="core_patch_bypass_block_title">绕过厂商安装黑名单</string>
     <string name="core_patch_bypass_block_desc">跳过厂商的应用安装限制</string>
     <string name="core_patch_shared_user_title">绕过 sharedUserId 签名检查</string>
-    <string name="core_patch_shared_user_desc">放宽共享用户 ID 的签名检查</string>
+    <string name="core_patch_shared_user_desc">放宽 sharedUserId 签名兼容性检查</string>
     <string name="core_patch_disable_verification_agent_title">禁用安装包验证代理</string>
-    <string name="core_patch_disable_verification_agent_desc">安装应用时跳过验证</string>
+    <string name="core_patch_disable_verification_agent_desc">安装时跳过验证代理检查</string>
 
     <!-- 应用信息 -->
     <string name="app_info_function">应用信息</string>
@@ -191,51 +194,51 @@
     <string name="theme_function">主题</string>
     <string name="theme_function_desc">管理联想本地主题资源和已导入字体</string>
     <string name="theme_settings_title">主题</string>
-    <string name="theme_settings_desc">管理本地主题资源，包括通过 Root 把 TTF 字体导入到系统字体库</string>
+    <string name="theme_settings_desc">管理本地主题资源，支持通过 Root 导入 TTF 字体到系统字体库</string>
     <string name="import_font_title">导入字体</string>
     <string name="import_font_summary">支持 TTF 格式，导入到系统字体管理器</string>
     <string name="lock_video_wallpaper_title">自定义视频动态壁纸</string>
-    <string name="lock_video_wallpaper_summary">把 MP4 添加到联想系统动态壁纸库。锁屏播放一次，桌面动态壁纸循环播放；导入后不会自动应用。</string>
+    <string name="lock_video_wallpaper_summary">将 MP4 添加到联想系统动态壁纸库。导入后需手动应用。</string>
     <string name="lock_video_wallpaper_library_title">打开系统壁纸库</string>
-    <string name="lock_video_wallpaper_library_summary">先强停并重新打开联想“壁纸和主题风格”，再到动态壁纸里选择 ZUXOS+ 项手动设置。</string>
+    <string name="lock_video_wallpaper_library_summary">强停并重新打开联想"壁纸和主题风格"，到动态壁纸里选择 ZUXOS+ 项手动设置。</string>
     <string name="lock_video_wallpaper_file_access_title">授予文件访问权限</string>
-    <string name="lock_video_wallpaper_file_access_desc">允许访问所有文件后，ZUXOS+ 可直接把视频写入联想壁纸库；受限系统目录才会使用 Root 兜底。</string>
-    <string name="lock_video_wallpaper_importing">正在导入视频动态壁纸...</string>
-    <string name="lock_video_wallpaper_import_success_direct">视频已添加到系统动态壁纸库。请打开系统壁纸库手动应用：%1$s</string>
-    <string name="lock_video_wallpaper_import_success_root">已通过 Root 兜底添加到系统动态壁纸库。请打开系统壁纸库手动应用：%1$s</string>
-    <string name="lock_video_wallpaper_import_success_multi">已添加 %1$d 个视频到系统动态壁纸库。请打开系统壁纸库手动选择其中一个。</string>
+    <string name="lock_video_wallpaper_file_access_desc">允许访问所有文件后可直接写入联想壁纸库。</string>
+    <string name="lock_video_wallpaper_importing">正在导入视频动态壁纸…</string>
+    <string name="lock_video_wallpaper_import_success_direct">视频已添加到系统动态壁纸库，请打开壁纸库手动应用：%1$s</string>
+    <string name="lock_video_wallpaper_import_success_root">已通过 Root 兜底添加到系统动态壁纸库，请打开壁纸库手动应用：%1$s</string>
+    <string name="lock_video_wallpaper_import_success_multi">已添加 %1$d 个视频到系统动态壁纸库，请打开壁纸库手动选择。</string>
     <string name="lock_video_wallpaper_import_failed">视频动态壁纸导入失败：%1$s</string>
-    <string name="lock_video_wallpaper_library_opening">正在重启并打开系统壁纸库...</string>
-    <string name="lock_video_wallpaper_library_opened">已打开系统壁纸库。如果仍看不到 ZUXOS+ 项，请确认 LSPosed 作用域包含“壁纸和主题风格”后重启设备。</string>
+    <string name="lock_video_wallpaper_library_opening">正在重启并打开系统壁纸库…</string>
+    <string name="lock_video_wallpaper_library_opened">已打开系统壁纸库。如果仍看不到 ZUXOS+ 项，请确认 LSPosed 作用域包含"壁纸和主题风格"后重启设备。</string>
     <string name="lock_video_wallpaper_library_open_failed">打开联想壁纸库失败：%1$s</string>
     <string name="home_video_wallpaper_label">ZUXOS+ 视频动态壁纸</string>
-    <string name="home_video_wallpaper_desc">用于播放已导入 ZUXOS+ MP4 的桌面动态壁纸服务，桌面端会自动循环播放。</string>
-    <string name="preparing_font_file">正在准备字体文件...</string>
+    <string name="home_video_wallpaper_desc">桌面动态壁纸服务，播放已导入的 ZUXOS+ MP4 视频，自动循环。</string>
+    <string name="preparing_font_file">正在准备字体文件…</string>
     <string name="unknown_font_filename">unknown_font.ttf</string>
     <string name="input_font_info_title">输入字体信息</string>
-    <string name="default_font_description">自定义导入的字体 %1$s</string>
+    <string name="default_font_description">ZUXOS+ 导入的自定义字体 %1$s</string>
     <string name="font_name_empty">字体名称不能为空</string>
     <string name="font_description_empty">字体描述不能为空</string>
-    <string name="importing_font">正在导入字体...</string>
+    <string name="importing_font">正在导入字体…</string>
     <string name="import_success_message">字体已导入到系统字体库，请前往 设置 - 个性定制 - 字体 - 本地 查看。</string>
     <string name="import_failed_message">字体导入失败：%1$s</string>
     <string name="font_file_error">文件错误：%1$s</string>
     <string name="font_language">简体</string>
     <string name="font_author">Import By ZUXOS+</string>
     <string name="font_preview_text">ZUXOS+\n\n自定义字体预览\n\n0123456789\n一二三四五六七八九十</string>
-    <string name="do_not_use_duplicated_font_name">请不要使用重复的字体名称</string>
+    <string name="do_not_use_duplicated_font_name">千万不要起重复的字体名称</string>
     <string name="font_name">字体名称</string>
     <string name="font_description">字体描述</string>
 
-    <!-- 联想关于设备 -->
+    <!-- 关于设备 -->
     <string name="lenovo_about_device_function">关于设备</string>
-    <string name="lenovo_about_device_function_desc">自定义联想“关于平板电脑”页面字段和顶部设备图片</string>
+    <string name="lenovo_about_device_function_desc">自定义联想"关于平板电脑"页面字段和顶部设备图片</string>
     <string name="lenovo_about_device_settings_title">关于设备</string>
-    <string name="lenovo_about_device_settings_desc">修改联想设置里“关于平板电脑”页面的显示内容</string>
+    <string name="lenovo_about_device_settings_desc">修改联想设置里"关于平板电脑"页面的显示内容</string>
     <string name="lenovo_about_device_enabled_title">启用关于设备自定义</string>
     <string name="lenovo_about_device_enabled_desc">自定义"关于平板电脑"中的设备名称、型号、处理器、存储、内存、软件版本、Android 版本和图片</string>
     <string name="lenovo_about_device_image_enabled_title">替换设备图片</string>
-    <string name="lenovo_about_device_image_enabled_desc">使用选择的图片替换“关于平板电脑”顶部设备图</string>
+    <string name="lenovo_about_device_image_enabled_desc">使用选择的图片替换"关于平板电脑"顶部设备图</string>
     <string name="lenovo_about_device_image_title">设备图片</string>
     <string name="lenovo_about_device_image_empty">未选择图片</string>
     <string name="lenovo_about_device_image_path_empty">尚未选择自定义图片</string>
@@ -245,7 +248,7 @@
     <string name="lenovo_about_device_image_save_failed">保存图片失败：%1$s</string>
     <string name="lenovo_about_device_keep_original">保持原始显示</string>
     <string name="lenovo_about_device_name_title">设备名称</string>
-    <string name="lenovo_about_device_name_desc">只改顶部显示的名称，可编辑的”本机名称”不变</string>
+    <string name="lenovo_about_device_name_desc">只改顶部显示的名称，可编辑的"本机名称"不变</string>
     <string name="lenovo_about_device_model_title">设备型号</string>
     <string name="lenovo_about_device_model_desc">型号和硬件字段</string>
     <string name="lenovo_about_device_processor_title">处理器</string>
@@ -274,9 +277,9 @@
 
     <!-- ZUX 桌面 -->
     <string name="lenovo_launcher_settings_title">桌面</string>
-    <string name="lenovo_launcher_settings_desc">设置 ZUX 桌面 Hook 功能</string>
+    <string name="lenovo_launcher_settings_desc">配置 ZUX 桌面 Hook 功能</string>
     <string name="lenovo_launcher_hotseat_expand_title">更大的 Dock 栏</string>
-    <string name="lenovo_launcher_hotseat_expand_desc">把 Dock 图标数量上限提高到 20</string>
+    <string name="lenovo_launcher_hotseat_expand_desc">解除 Dock 栏的图标数量限制，能够塞下更多图标</string>
     <string name="lenovo_launcher_custom_grid_title">自定义桌面网格</string>
     <string name="lenovo_launcher_custom_grid_desc">覆盖桌面行数和列数</string>
     <string name="lenovo_launcher_grid_rows_title">行数</string>
@@ -284,7 +287,7 @@
     <string name="lenovo_launcher_grid_columns_title">列数</string>
     <string name="lenovo_launcher_grid_columns_desc">桌面网格列数</string>
     <string name="lenovo_launcher_disable_force_stop_title">原生后台管理</string>
-    <string name="lenovo_launcher_disable_force_stop_desc">阻止最近任务清理强制停止受保护应用</string>
+    <string name="lenovo_launcher_disable_force_stop_desc">联想的后台策略比较激进，开启后使用原生后台策略，保证后台服务存活</string>
     <string name="lenovo_launcher_force_stop_whitelist_enable_title">白名单模式</string>
     <string name="lenovo_launcher_force_stop_whitelist_enable_desc">只保护白名单中的包名</string>
     <string name="lenovo_launcher_force_stop_whitelist_title">受保护包名</string>
@@ -299,9 +302,9 @@
     <string name="lenovo_game_assistant_function">游戏助手</string>
     <string name="lenovo_game_assistant_function_desc">强制开启游戏助手的各项功能</string>
     <string name="lenovo_game_assistant_settings_title">游戏助手</string>
-    <string name="lenovo_game_assistant_settings_desc">设置游戏助手的功能开关</string>
-    <string name="lenovo_game_assistant_force_direct_features_title">强制开启直接功能门禁</string>
-    <string name="lenovo_game_assistant_force_direct_features_desc">强制开启语音助手、弹幕、高光时刻、游戏岛、防误触、免打扰、预下载、旁路充电和网络加速</string>
+    <string name="lenovo_game_assistant_settings_desc">配置游戏助手的功能开关</string>
+    <string name="lenovo_game_assistant_force_direct_features_title">强制开启全部功能</string>
+    <string name="lenovo_game_assistant_force_direct_features_desc">一键强制开启语音助手、弹幕、高光时刻、游戏岛、防误触、免打扰、预下载、旁路充电和网络加速</string>
     <string name="lenovo_game_assistant_spoof_elden_title">使用拯救者系列游戏助手</string>
     <string name="lenovo_game_assistant_spoof_elden_desc">使用 Elden/拯救者系列游戏助手门禁，并修复 CPU 频率和温度显示</string>
     <string name="lenovo_game_assistant_force_voice_assistant_title">语音助手 / 变声器</string>
@@ -325,7 +328,7 @@
     <string name="lenovo_game_assistant_force_main_sim_accelerate_title">主卡加速</string>
     <string name="lenovo_game_assistant_force_main_sim_accelerate_desc">强制开启主卡加速功能</string>
 
-    <!-- 联想 SystemUI 控制中心 -->
+    <!-- SystemUI -->
     <string name="lenovo_systemui_settings_title">系统界面</string>
     <string name="lenovo_systemui_settings_desc">设置系统界面的显示效果</string>
     <string name="lenovo_systemui_control_center_menu_title">控制中心</string>
@@ -334,13 +337,24 @@
     <string name="lenovo_systemui_control_center_settings_desc">自定义控制中心快捷开关的颜色、透明度和背景模糊</string>
     <string name="lenovo_systemui_control_center_enabled_title">控制中心自定义总开关</string>
     <string name="lenovo_systemui_control_center_enabled_desc">修改后需要重启系统界面才能生效</string>
-    <string name="lenovo_systemui_control_center_tile_inactive_color_title">磁贴颜色(未开启)</string>
+    <string name="lenovo_vivo_style_hanging_title">小窗贴边</string>
+    <string name="lenovo_vivo_style_hanging_desc">扩展联想小窗挂起：推向边缘后半隐藏，3 秒后变淡，点击恢复挂起，下拉恢复小窗。修改后需要重启系统界面。</string>
+    <string name="work_desktop_settings_title">Work 桌面</string>
+    <string name="work_desktop_settings_desc">设置联想 Work 桌面的电脑模式显示行为</string>
+    <string name="lenovo_desktop_mode_rotation_mode_title">电脑模式屏幕方向</string>
+    <string name="lenovo_desktop_mode_rotation_mode_desc">预先指定电脑模式下使用的屏幕方向。</string>
+    <string name="lenovo_desktop_mode_rotation_auto">系统默认</string>
+    <string name="lenovo_desktop_mode_rotation_landscape">横屏</string>
+    <string name="lenovo_desktop_mode_rotation_reverse_landscape">反向横屏</string>
+    <string name="lenovo_desktop_mode_rotation_portrait">竖屏</string>
+    <string name="lenovo_desktop_mode_rotation_reverse_portrait">反向竖屏</string>
+    <string name="lenovo_systemui_control_center_tile_inactive_color_title">磁贴颜色（未开启）</string>
     <string name="lenovo_systemui_control_center_tile_inactive_color_desc">快捷开关未开启时的颜色</string>
-    <string name="lenovo_systemui_control_center_tile_active_color_title">磁贴颜色(开启后)</string>
+    <string name="lenovo_systemui_control_center_tile_active_color_title">磁贴颜色（开启后）</string>
     <string name="lenovo_systemui_control_center_tile_active_color_desc">快捷开关开启后的颜色</string>
-    <string name="lenovo_systemui_control_center_tile_inactive_alpha_title">磁贴背景色透明度(未开启状态)</string>
+    <string name="lenovo_systemui_control_center_tile_inactive_alpha_title">磁贴背景色透明度（未开启状态）</string>
     <string name="lenovo_systemui_control_center_tile_inactive_alpha_desc">未开启状态的快捷开关背景透明度</string>
-    <string name="lenovo_systemui_control_center_tile_active_alpha_title">磁贴背景色透明度(开启后状态)</string>
+    <string name="lenovo_systemui_control_center_tile_active_alpha_title">磁贴背景色透明度（开启后状态）</string>
     <string name="lenovo_systemui_control_center_tile_active_alpha_desc">已开启状态的快捷开关背景透明度</string>
     <string name="lenovo_systemui_control_center_panel_alpha_title">控制中心整体透明度</string>
     <string name="lenovo_systemui_control_center_panel_alpha_desc">控制中心整体的透明度</string>
@@ -349,27 +363,61 @@
     <string name="lenovo_systemui_control_center_pull_down_blur_radius_title">底层背景模糊强度</string>
     <string name="lenovo_systemui_control_center_pull_down_blur_radius_desc">下拉通知栏时背景的模糊程度</string>
     <string name="lenovo_systemui_control_center_color_format_hint">使用 #AARRGGBB 或 #RRGGBB</string>
+
     <!-- 软件包安装程序 -->
     <string name="package_installer_settings_title">软件包安装程序</string>
-    <string name="package_installer_settings_desc">设置应用安装器的行为</string>
+    <string name="package_installer_settings_desc">配置应用安装器的行为</string>
     <string name="package_installer_disable_scan_title">跳过安全扫描</string>
-    <string name="package_installer_disable_scan_desc">跳过安全扫描，装应用更快</string>
+    <string name="package_installer_disable_scan_desc">跳过安全扫描，节省时间</string>
     <string name="package_installer_always_allow_permission_title">总是给予应用权限</string>
-    <string name="package_installer_always_allow_permission_desc">装应用时自动授予所有权限</string>
+    <string name="package_installer_always_allow_permission_desc">安装应用时，总是允许安装应用所需的权限</string>
     <string name="package_installer_skip_warn_page_title">跳过未上架警告页</string>
-    <string name="package_installer_skip_warn_page_desc">跳过联想的安全警告页面</string>
+    <string name="package_installer_skip_warn_page_desc">自动跳过联想的安全审查警告页面</string>
     <string name="package_installer_disable_installer_ad_title">去广告</string>
-    <string name="package_installer_disable_installer_ad_desc">安装完成后不显示推荐应用</string>
+    <string name="package_installer_disable_installer_ad_desc">安装完成后的界面不再显示广告</string>
     <string name="package_installer_style_title">启用原生安装器</string>
     <string name="package_installer_style_desc">用系统自带的安装界面代替 ZUI 的</string>
     <string name="package_installer_disable_delete_title">不要删除安装包</string>
-    <string name="package_installer_disable_delete_desc">装完应用后保留安装包文件</string>
+    <string name="package_installer_disable_delete_desc">拦截安装器安装完成后的删除安装包行为</string>
 
     <!-- 安全中心 -->
     <string name="safe_center_settings_title">安全中心</string>
-    <string name="safe_center_settings_desc">设置联想安全中心 Hook 功能</string>
+    <string name="safe_center_settings_desc">配置联想安全中心 Hook 功能</string>
     <string name="safe_center_block_scan_title">禁止安全扫描</string>
     <string name="safe_center_block_scan_desc">阻止联想安全中心定期后台安全扫描及相关弹窗</string>
+
+    <!-- 显示参数 -->
+    <string name="display_size_function">DPI、分辨率</string>
+    <string name="display_size_function_desc">自定义修改分辨率和 DPI</string>
+    <string name="display_size_settings_title">DPI、分辨率修改</string>
+    <string name="display_size_settings_desc">自定义分辨率</string>
+    <string name="display_size_current_title">当前显示参数</string>
+    <string name="display_size_current_size">分辨率：%1$d x %2$d</string>
+    <string name="display_size_current_density">DPI：%1$d</string>
+    <string name="display_size_original_values">物理值：%1$s / DPI %2$s</string>
+    <string name="display_size_unknown">未知</string>
+    <string name="display_size_editor_title">DPI、分辨率修改</string>
+    <string name="display_size_warning">警告：修改分辨率、DPI 可能导致触摸失灵、界面错位或无法正常操作！</string>
+    <string name="display_size_dpi_label">DPI</string>
+    <string name="display_size_width_label">宽度</string>
+    <string name="display_size_height_label">高度</string>
+    <string name="display_size_fast_apply">快速应用（Android 7.0+）</string>
+    <string name="display_size_presets">预设模板</string>
+    <string name="display_size_reset_preset">还原</string>
+    <string name="display_size_refresh">刷新</string>
+    <string name="display_size_apply">确定</string>
+    <string name="display_size_load_failed">读取显示参数失败：%1$s</string>
+    <string name="display_size_root_denied">需要 Root 权限</string>
+    <string name="display_size_invalid_input">DPI 范围 120-1000，宽高范围 320-10000</string>
+    <string name="display_size_apply_success">显示参数已修改，请确认是否保留。</string>
+    <string name="display_size_apply_failed">修改显示参数失败：%1$s</string>
+    <string name="display_size_restore_success">已恢复原分辨率和 DPI</string>
+    <string name="display_size_restore_failed">恢复原显示参数失败：%1$s</string>
+    <string name="display_size_defaults_summary">系统默认显示参数</string>
+    <string name="display_size_confirm_title">保留新的显示参数？</string>
+    <string name="display_size_confirm_desc">已应用：%1$s。请在 %2$d 秒内点击确定，否则将自动恢复原分辨率和 DPI。</string>
+    <string name="display_size_confirm_button">确定（%1$d）</string>
+    <string name="display_size_restore_now">恢复</string>
 
     <!-- 外观设置 -->
     <string name="appearance_title">外观</string>
@@ -384,13 +432,13 @@
     <string name="appearance_liquid_glass">液态玻璃效果</string>
     <string name="appearance_liquid_glass_desc">导航栏显示模糊和半透明效果</string>
     <string name="appearance_glass_card_opacity">玻璃卡片透明度</string>
-    <string name="appearance_glass_card_opacity_desc">调整卡片表面不透明度，减少自定义背景上的蒙白感。</string>
+    <string name="appearance_glass_card_opacity_desc">调整卡片表面不透明度，减轻自定义背景上的白色蒙版。</string>
     <string name="appearance_title_text_contrast">标题文字对比度</string>
-    <string name="appearance_title_text_contrast_desc">调整页面和卡片中主要标题文字的对比度。</string>
-    <string name="appearance_description_text_contrast">介绍说明文字对比度</string>
-    <string name="appearance_description_text_contrast_desc">调整副标题、说明和辅助文字的对比度。</string>
+    <string name="appearance_title_text_contrast_desc">调整卡片和页面中标题文字的对比度。</string>
+    <string name="appearance_description_text_contrast">说明文字对比度</string>
+    <string name="appearance_description_text_contrast_desc">调整副标题和说明文字的对比度。</string>
     <string name="appearance_custom_background">自定义图片背景</string>
-    <string name="appearance_custom_background_desc">使用本地图片作为应用背景，会自动裁剪填充不同屏幕尺寸。</string>
+    <string name="appearance_custom_background_desc">使用本地图片作为应用背景，自动裁剪以适配屏幕。</string>
     <string name="appearance_select_background">选择图片</string>
     <string name="appearance_clear_background">清除</string>
     <string name="appearance_background_selected">已选择自定义背景</string>

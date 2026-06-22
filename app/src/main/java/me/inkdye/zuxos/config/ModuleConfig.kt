@@ -72,6 +72,12 @@ object ModuleConfig {
         "lenovo_systemui_control_center_panel_alpha"
     const val LENOVO_SYSTEMUI_CONTROL_CENTER_PULL_DOWN_BLUR_RADIUS =
         "lenovo_systemui_control_center_pull_down_blur_radius"
+    const val LENOVO_VIVO_STYLE_HANGING_ENABLED =
+        "lenovo_vivo_style_hanging_enabled"
+    const val LENOVO_DESKTOP_MODE_FREE_ROTATION =
+        "lenovo_desktop_mode_free_rotation"
+    const val LENOVO_DESKTOP_MODE_ROTATION_MODE =
+        "lenovo_desktop_mode_rotation_mode"
     const val LENOVO_WALLPAPER_CUSTOM_LOCK_VIDEO =
         "lenovo_wallpaper_custom_lock_video"
     const val HOOK_LOGGING_ENABLED = "hook_logging_enabled"
