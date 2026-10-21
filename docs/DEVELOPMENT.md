@@ -7,7 +7,7 @@ project before making changes.
 ## Project Overview
 
 ZUXOS+ is an Android Xposed module for ZUXOS/ZUI-related system enhancements.
-The module contains a Jetpack Compose settings app and several YukiHookAPI hook
+The module contains a Jetpack Compose settings app and several YukiHook hook
 groups for Android system behavior, Android Settings, Lenovo System Update, and
 Package Installer.
 
@@ -18,29 +18,30 @@ navigation effects.
 
 ## Tech Stack
 
-- Kotlin 2.3.21, Java 17 target
-- Android Gradle Plugin 8.10.1
-- Gradle Wrapper 8.11.1
-- Android SDK 36, minSdk 27
+- Kotlin 2.4.20, Java 17 target
+- Android Gradle Plugin 8.13.2
+- Gradle Wrapper 8.14.3
+- Android SDK 37, minSdk 27
 - Jetpack Compose with Material 3 and Compose BOM 2025.05.00
-- YukiHookAPI 1.3.1 for Xposed integration
-- KSP for YukiHookAPI and Hikage code generation
+- YukiHook 1.5.0 for Xposed integration (`YukiHookXposed82Entry` + `YukiHookXposedModule`)
+- KSP for YukiHook and Hikage code generation
 - BetterAndroid, Hikage, KavaRef, DrawableToolbox helper libraries
 - AndroidLiquidGlass Backdrop (`io.github.kyant0:backdrop`) for Liquid Glass
 - SharedPreferences and XSharedPreferences for module configuration
 
 Key project values are defined in `gradle.properties`:
 
-- `project.android.compileSdk=36`
+- `project.android.compileSdk=37`
 - `project.android.targetSdk=36`
 - `project.android.minSdk=27`
 - `project.app.packageName=me.inkdye.zuxos`
-- `project.app.versionName="1.0.0"`
-- `project.app.versionCode=1`
+- `project.app.versionName="alpha2"`
+- `project.app.versionCode=20260623`
 
 Dependency versions are centralized in `gradle/libs.versions.toml`. Repository
 resolution is configured in `settings.gradle.kts` with Google Maven, Maven
-Central, Xposed Maven, and JitPack.
+Central, Xposed Maven, JitPack, and the HighCapable release repository used by
+YukiHook/KavaRef/BetterAndroid.
 
 ## Directory Structure
 
@@ -50,8 +51,6 @@ Central, Xposed Maven, and JitPack.
 │   ├── build.gradle.kts
 │   └── src/main/
 │       ├── AndroidManifest.xml
-│       ├── assets/
-│       │   └── xposed_init
 │       ├── java/me/inkdye/zuxos/
 │       │   ├── application/
 │       │   ├── config/
@@ -89,7 +88,10 @@ Important packages:
 - `application`: app startup and default setting initialization.
 - `config`: cross-process module configuration API.
 - `corepatch`: Android system Core Patch implementations for API 28+.
-- `hook`: Xposed entry point, hook registry, logging bridge, and hook modules.
+- `hook`: Xposed entry point, hook registry, logging bridge, `HookExtensions.kt`
+  member-resolution helpers, and hook modules. `assets/xposed_init` is generated
+  by the YukiHook KSP processor into the build directory for each variant; do
+  not add it back under `src/main`.
 - `logging`: `ContentProvider` bridge and local JSONL hook event storage.
 - `root`: root availability checks and restart commands for target scopes.
 - `ui/activity`: Compose-backed screens and settings pages.
@@ -99,14 +101,17 @@ Important packages:
 
 ## Environment Requirements
 
-- Android Studio compatible with AGP 8.10.x.
+- Android Studio compatible with AGP 8.13.x.
 - JDK 17.
-- Android SDK Platform 36 installed.
+- Android SDK Platform 37 and Build-Tools 37 installed.
 - A device or emulator running Android 8.1+ for the app shell.
 - LSPosed or another compatible Xposed environment for hook testing.
 - Target apps available for the hook group being tested:
-  `android`, `com.android.settings`, `com.lenovo.ota`,
-  `com.android.packageinstaller`, or `com.google.android.packageinstaller`.
+  `android`, `com.android.settings`, `com.android.systemui`,
+  `com.lenovo.ota`, `com.zui.game.service`, `com.zui.launcher`,
+  `com.zui.desktoplauncher`, `com.android.packageinstaller`,
+  `com.google.android.packageinstaller`, `com.zui.safecenter`,
+  `com.lenovo.safecenter`, or `com.zui.wallpapersetting`.
 - Network access for first-time Gradle dependency resolution.
 
 ## Install And Start
@@ -182,14 +187,21 @@ Current hook feature groups are:
 
 ### Hook Entry And Registration
 
-`HookEntry` is annotated with `@InjectYukiHookWithXposed`. Its initializer
-registers hook objects through `Hooks.register(...)`, and `onHook()` filters
-them by `targetPackages`.
+`HookEntry` is annotated with `@YukiHookXposed82Entry` and implements
+`YukiHookXposedModule`. Its initializer registers hook objects through
+`Hooks.register(...)`, and `onHook()` filters them by `targetPackages`.
 
 Hook installation is gated by `ModuleConfig.isEnabled(prefKey, defaultEnabled)`
 unless a hook sets `alwaysRegister = true`. Core Patch is handled separately for
 the `android` package because it chooses an implementation based on
 `Build.VERSION.SDK_INT`.
+
+YukiHook 1.5 removed the old `Class.hook { injectMember { ... } }` DSL. Hook
+code now resolves a `Method`/`Constructor` and calls the new `Member.hook`
+API with `before`, `after`, or `intercept`. `hook/HookExtensions.kt` wraps the
+common lookup patterns (`hookFirstMethod`, `hookFirstMethodAny`,
+`hookFirstMethodByCount`, `hookFirstConstructor`, `hookAllConstructors`) and
+uses the host `ClassLoader`.
 
 ### Module Settings Repository
 
@@ -299,12 +311,18 @@ reads.
        override val targetPackage = "target.package.name"
 
        override fun PackageParam.onHook() {
-           loadApp(targetPackage!!) {
-               // Hook implementation
+           hookFirstMethod("target.Class", "targetMethod", SomeType::class.java) {
+               before {
+                   // Hook implementation
+               }
            }
        }
    }
    ```
+
+   Use `hookFirstMethodAny` when the original code matched by name only, and
+   `hookAllConstructors` for every constructor. Prefer `hostClassLoader` over
+   the removed `appClassLoader` property.
 
 2. Add a setting definition in `SettingsDefinitions.kt`.
 3. Add UI to the relevant settings page.
@@ -342,9 +360,21 @@ installer packages.
 
 ## Known Warnings
 
-Debug builds can emit warnings from generated YukiHookAPI/KSP code about
+Debug builds can emit warnings from generated YukiHook/KSP code about
 invisible references and future Kotlin behavior. They are generated-code
 warnings and do not currently block debug builds.
+
+YukiHook 1.5.0 and BetterAndroid 1.1.6 declare `compileSdk 37` AAR metadata, so
+the project compiles against SDK 37. AGP 8.13.2 is newer than the compile SDK it
+was tested with; `android.suppressUnsupportedCompileSdk=37,37.0` suppresses that
+warning. The app pins `androidx.core` and `androidx.activity` to the versions
+this project already used (1.17.0 / 1.10.1) so it can stay on AGP 8.x; both
+BetterAndroid and YukiHook only reference APIs available in those versions.
+
+Release builds with AGP 8.13.2 emit R8 “error occurred when parsing kotlin
+metadata” warnings because its bundled R8 predates Kotlin 2.4. The build still
+completes and the release APK keeps the generated Xposed entry; upgrade to
+AGP 9.x/newer R8 if Kotlin metadata rewriting becomes necessary.
 
 `ModuleConfig` intentionally uses `MODE_WORLD_READABLE` for Xposed
 cross-process preferences. Do not replace it without validating hook-process
@@ -353,7 +383,7 @@ reads on LSPosed.
 ## Maintenance Recommendations
 
 - Keep `gradle/libs.versions.toml` as the single dependency version source.
-- Update AGP, Kotlin, Compose, and YukiHookAPI together only after a full debug
+- Update AGP, Kotlin, Compose, and YukiHook together only after a full debug
   build and LSPosed smoke test.
 - Add new hook settings through `SettingsDefinitions.kt` or `ModuleConfig`
   instead of scattering raw keys in UI code.

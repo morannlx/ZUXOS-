@@ -55,19 +55,19 @@ object LenovoDesktopModeRotationHook : Hook {
     override fun PackageParam.onHook() {
         hookSystemRotationSettingsAccess()
         when (packageName) {
-            PACKAGE_ANDROID -> hookFrameworkDisplayRotation(appClassLoader)
+            PACKAGE_ANDROID -> hookFrameworkDisplayRotation(hostClassLoader)
             PACKAGE_SYSTEMUI -> {
                 installRotationSettingsWriter()
-                hookPcModeManagerDisplayRotation(appClassLoader)
-                hookPcModeCheckForOrientationHandler(appClassLoader)
-                hookDesktopActivityOrientationChangeHandler(appClassLoader)
-                hookRotationLockTile(appClassLoader)
-                hookDpModeAnimationWindow(appClassLoader)
+                hookPcModeManagerDisplayRotation(hostClassLoader)
+                hookPcModeCheckForOrientationHandler(hostClassLoader)
+                hookDesktopActivityOrientationChangeHandler(hostClassLoader)
+                hookRotationLockTile(hostClassLoader)
+                hookDpModeAnimationWindow(hostClassLoader)
             }
 
             PACKAGE_SETTINGS -> {
                 installRotationSettingsWriter()
-                hookSettingsRotationControllers(appClassLoader)
+                hookSettingsRotationControllers(hostClassLoader)
             }
         }
     }

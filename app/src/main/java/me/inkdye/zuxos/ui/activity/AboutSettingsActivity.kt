@@ -315,10 +315,10 @@ private val acknowledgements = listOf(
         url = "https://github.com/LSPosed/CorePatch.git",
     ),
     AcknowledgementProject(
-        name = "YukiHookAPI",
+        name = "YukiHook",
         shortName = "YK",
         descriptionRes = R.string.about_credit_yukihookapi_desc,
-        url = "https://github.com/HighCapable/YukiHookAPI.git",
+        url = "https://github.com/HighCapable/YukiHook.git",
     ),
 )
 

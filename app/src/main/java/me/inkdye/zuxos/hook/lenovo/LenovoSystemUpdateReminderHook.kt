@@ -5,10 +5,10 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import me.inkdye.zuxos.config.ModuleConfig
 import me.inkdye.zuxos.hook.Hook
+import me.inkdye.zuxos.hook.hookFirstMethod
 
 object LenovoSystemUpdateReminderHook : Hook {
     override val prefKey = ModuleConfig.LENOVO_SYSTEM_UPDATE_HIDE_NEW_VERSION_REMINDER
@@ -55,9 +55,7 @@ object LenovoSystemUpdateReminderHook : Hook {
     }
 
     private fun PackageParam.hookLenovoOta() {
-        "com.lenovo.row.ota.MyApplication".toClass().method {
-            name = "onCreate"
-        }.hook {
+        hookFirstMethod("com.lenovo.row.ota.MyApplication", "onCreate") {
             after {
                 (instance as? Context)?.clearOtaNewVersionState()
             }
@@ -65,22 +63,17 @@ object LenovoSystemUpdateReminderHook : Hook {
 
         OTA_PACKAGE_INFO_CANDIDATES.forEach { className ->
             runCatching {
-                className.toClass().method {
-                    name = "isUpdateFound"
-                }.hook {
-                    replaceAny { false }
+                hookFirstMethod(className, "isUpdateFound") {
+                    intercept(false)
                 }
             }
         }
 
         SERVICE_CONTROLLER_CANDIDATES.forEach { className ->
             runCatching {
-                className.toClass().method {
-                    name = "startNewVersionFound"
-                    param(Context::class.java)
-                }.hook {
+                hookFirstMethod(className, "startNewVersionFound", Context::class.java) {
                     before {
-                        (args(0).any() as? Context)?.clearOtaNewVersionState()
+                        (args[0] as? Context)?.clearOtaNewVersionState()
                         result = null
                     }
                 }
@@ -89,9 +82,7 @@ object LenovoSystemUpdateReminderHook : Hook {
 
         NOTIFICATION_CENTER_CANDIDATES.forEach { className ->
             runCatching {
-                className.toClass().method {
-                    name = "showNewVersionNotification"
-                }.hook {
+                hookFirstMethod(className, "showNewVersionNotification") {
                     before { result = null }
                 }
             }
@@ -99,15 +90,13 @@ object LenovoSystemUpdateReminderHook : Hook {
 
         MAIN_ACTIVITY_CANDIDATES.forEach { className ->
             runCatching {
-                className.toClass().method {
-                    name = "showFragNewVersionFound"
-                }.hook {
+                hookFirstMethod(className, "showFragNewVersionFound") {
                     before {
                         result = null
                         runCatching {
-                            instance?.javaClass?.getDeclaredMethod("showFragCheckingNewVersion")
-                                ?.apply { isAccessible = true }
-                                ?.invoke(instance)
+                            instance.javaClass.getDeclaredMethod("showFragCheckingNewVersion")
+                                .apply { isAccessible = true }
+                                .invoke(instance)
                         }
                     }
                 }
@@ -116,13 +105,10 @@ object LenovoSystemUpdateReminderHook : Hook {
 
         WORKFLOW_MANAGER_CANDIDATES.forEach { className ->
             runCatching {
-                className.toClass().method {
-                    name = "reddot"
-                    param(Context::class.java, Int::class.javaPrimitiveType!!)
-                }.hook {
+                hookFirstMethod(className, "reddot", Context::class.java, Int::class.javaPrimitiveType!!) {
                     before {
-                        if (args(1).int() > 0) {
-                            args(0).any().let { (it as? Context)?.clearOtaNewVersionState() }
+                        if ((args[1] as? Int ?: 0) > 0) {
+                            (args[0] as? Context)?.clearOtaNewVersionState()
                             result = false
                         }
                     }
@@ -132,33 +118,38 @@ object LenovoSystemUpdateReminderHook : Hook {
     }
 
     private fun PackageParam.hookSettingsEntryBadges() {
-        "com.android.settings.SettingsApplication".toClass().method {
-            name = "onCreate"
-        }.hook {
+        hookFirstMethod("com.android.settings.SettingsApplication", "onCreate") {
             after {
                 (instance as? Context)?.clearOtaNewVersionState()
             }
         }
 
-        Settings.Secure::class.java.method {
-            name = "getInt"
-            param(ContentResolver::class.java, String::class.java, Int::class.javaPrimitiveType!!)
-        }.hook {
+        hookFirstMethod(
+            Settings.Secure::class.java,
+            "getInt",
+            ContentResolver::class.java,
+            String::class.java,
+            Int::class.javaPrimitiveType!!,
+        ) {
             before {
-                if (args(1).string() == OTA_NEW_VERSION_FOUND) result = 0
+                if (args[1] as? String == OTA_NEW_VERSION_FOUND) result = 0
             }
         }
     }
 
     private fun PackageParam.hookLauncherBadgeProvider() {
-        ContentResolver::class.java.method {
-            name = "call"
-            param(Uri::class.java, String::class.java, String::class.java, Bundle::class.java)
-        }.hook {
+        hookFirstMethod(
+            ContentResolver::class.java,
+            "call",
+            Uri::class.java,
+            String::class.java,
+            String::class.java,
+            Bundle::class.java,
+        ) {
             before {
-                val uri = args(0).any() as? Uri ?: return@before
-                val method = args(1).any() as? String ?: return@before
-                val extras = args(3).any() as? Bundle ?: return@before
+                val uri = args[0] as? Uri ?: return@before
+                val method = args[1] as? String ?: return@before
+                val extras = args[3] as? Bundle ?: return@before
                 if (uri.toString() != BADGE_URI || method != BADGE_METHOD_SET_COUNT) return@before
                 if (!extras.isSystemUpdateBadgeTarget()) return@before
                 extras.putInt(BADGE_KEY_COUNT, 0)

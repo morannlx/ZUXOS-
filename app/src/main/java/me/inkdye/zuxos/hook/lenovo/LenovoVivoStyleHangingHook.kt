@@ -44,7 +44,7 @@ object LenovoVivoStyleHangingHook : Hook {
     private val taskStates = mutableMapOf<Int, TaskEdgeState>()
 
     override fun PackageParam.onHook() {
-        val classLoader = appClassLoader
+        val classLoader = hostClassLoader
         hookHangingController(classLoader)
         hookWindowDecorationTouch(classLoader)
         hookWindowDecorViewModel(classLoader)

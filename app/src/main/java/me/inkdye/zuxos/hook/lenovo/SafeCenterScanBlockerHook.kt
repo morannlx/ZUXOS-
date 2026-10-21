@@ -1,10 +1,10 @@
 package me.inkdye.zuxos.hook.lenovo
 
 import android.content.Context
-import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import me.inkdye.zuxos.config.ModuleConfig
 import me.inkdye.zuxos.hook.Hook
+import me.inkdye.zuxos.hook.hookFirstMethod
 
 object SafeCenterScanBlockerHook : Hook {
     private val packages = setOf("com.lenovo.safecenter", "com.zui.safecenter")
@@ -17,11 +17,12 @@ object SafeCenterScanBlockerHook : Hook {
     override fun PackageParam.onHook() {
         packages.forEach { target ->
             loadApp(target) {
-                "com.lenovo.safecenter.antivirus.autoscan.AutoOverallScan".toClass().method {
-                    name = "LocalOverallScanVirus"
-                    param(Context::class.java)
-                }.hook {
-                    replaceAny { null }
+                hookFirstMethod(
+                    "com.lenovo.safecenter.antivirus.autoscan.AutoOverallScan",
+                    "LocalOverallScanVirus",
+                    Context::class.java,
+                ) {
+                    intercept(null)
                 }
             }
         }

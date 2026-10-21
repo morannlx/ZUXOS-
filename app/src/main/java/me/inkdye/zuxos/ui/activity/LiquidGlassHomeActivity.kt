@@ -79,7 +79,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import kotlin.math.roundToInt
 import androidx.core.graphics.drawable.toBitmap
-import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.YukiHook
 import com.kyant.backdrop.Backdrop
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberCombinedBackdrop
@@ -1105,7 +1105,7 @@ private fun GlassCard(
 private fun HomePage(cs: AppColorScheme) {
     val context = LocalContext.current
     val rootState = rememberRootUiState()
-    val isXposedActive = YukiHookAPI.Status.isXposedModuleActive || (context as? LiquidGlassHomeActivity)?.isModuleActivated() == true
+    val isXposedActive = YukiHook.Status.isModuleActive || (context as? LiquidGlassHomeActivity)?.isModuleActivated() == true
     val horizontalPadding = pageHorizontalPadding()
 
     LazyColumn(

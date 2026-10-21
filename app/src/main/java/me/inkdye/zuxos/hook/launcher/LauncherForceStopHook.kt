@@ -18,7 +18,7 @@ object LauncherForceStopHook : Hook {
     private const val TAG = "ZUXOS.LauncherForceStop"
 
     override fun PackageParam.onHook() {
-        val classLoader = appClassLoader
+        val classLoader = hostClassLoader
         hookOverviewUtilities(classLoader)
         hookLegacyActivityManagerWrapper(classLoader)
     }

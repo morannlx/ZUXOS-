@@ -28,14 +28,14 @@ object LauncherRecentsMemoryHook : Hook {
     private const val TAG = "ZUXOS.LauncherMemory"
 
     override fun PackageParam.onHook() {
-        hookRecentsView("com.android.quickstep.views.LauncherRecentsView", appClassLoader)
-        hookRecentsView("com.android.quickstep.views.RecentsView", appClassLoader)
-        hookActivityResume("com.android.quickstep.RecentsActivity", appClassLoader)
-        hookActivityResume("com.zui.launcher.drawer.NormalLauncher", appClassLoader)
-        hookActivityResume("com.zui.launcher.drawer.DrawerLauncher", appClassLoader)
-        hookActivityResume("com.zui.launcher.drawer.LearningLauncher", appClassLoader)
-        hookActivityResume("com.android.launcher3.Launcher", appClassLoader)
-        hookLauncherStateChanges("com.android.launcher3.statemanager.StateManager", appClassLoader)
+        hookRecentsView("com.android.quickstep.views.LauncherRecentsView", hostClassLoader)
+        hookRecentsView("com.android.quickstep.views.RecentsView", hostClassLoader)
+        hookActivityResume("com.android.quickstep.RecentsActivity", hostClassLoader)
+        hookActivityResume("com.zui.launcher.drawer.NormalLauncher", hostClassLoader)
+        hookActivityResume("com.zui.launcher.drawer.DrawerLauncher", hostClassLoader)
+        hookActivityResume("com.zui.launcher.drawer.LearningLauncher", hostClassLoader)
+        hookActivityResume("com.android.launcher3.Launcher", hostClassLoader)
+        hookLauncherStateChanges("com.android.launcher3.statemanager.StateManager", hostClassLoader)
     }
 
     private fun hookRecentsView(className: String, classLoader: ClassLoader?) {

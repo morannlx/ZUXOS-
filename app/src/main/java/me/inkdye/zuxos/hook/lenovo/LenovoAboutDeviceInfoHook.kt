@@ -67,7 +67,7 @@ object LenovoAboutDeviceInfoHook : Hook {
     )
 
     override fun PackageParam.onHook() {
-        val classLoader = appClassLoader
+        val classLoader = hostClassLoader
         hookSettingsSecureNames(classLoader)
         hookTopImagePreference(classLoader)
         hookDeviceNameController(classLoader)

@@ -40,7 +40,7 @@ object HookLogger {
                 put(HookLogProvider.KEY_MESSAGE, message)
                 put(HookLogProvider.KEY_STACK_TRACE, throwable?.stackTraceToString())
             }
-            val context = param?.appContext
+            val context = param?.hostApplication
             if (context != null) {
                 write(context, values)
             } else {

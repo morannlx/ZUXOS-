@@ -21,19 +21,19 @@ object LauncherHideIconLabelHook : Hook {
     override fun PackageParam.onHook() {
         val bubbleTextViewClass = XposedHelpers.findClassIfExists(
             "com.android.launcher3.BubbleTextView",
-            appClassLoader,
+            hostClassLoader,
         ) ?: return
         val activeIconViewClass = XposedHelpers.findClassIfExists(
             "com.zui.launcher.ActiveIconView",
-            appClassLoader,
+            hostClassLoader,
         )
         val folderIconClass = XposedHelpers.findClassIfExists(
             "com.android.launcher3.folder.FolderIcon",
-            appClassLoader,
+            hostClassLoader,
         )
         val appPairIconClass = XposedHelpers.findClassIfExists(
             "com.android.launcher3.apppairs.AppPairIcon",
-            appClassLoader,
+            hostClassLoader,
         )
 
         hookWorkspaceIconClass(

@@ -11,11 +11,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import me.inkdye.zuxos.config.ModuleConfig
 import me.inkdye.zuxos.hook.Hook
+import me.inkdye.zuxos.hook.hookFirstMethod
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -37,14 +37,13 @@ object AppInfoExtend : Hook {
             
             // Hook: EntityHeaderController.done(boolean)
             // 当头部视图渲染完毕后，注入扩展信息
-            "com.android.settings.widget.EntityHeaderController".toClass()
-                .method { name = "done"; param(Boolean::class.java) }
-                .hook {
+            hookFirstMethod(
+                "com.android.settings.widget.EntityHeaderController",
+                "done",
+                Boolean::class.java,
+            ) {
                     after {
-                        val controller = instance ?: run {
-                            YLog.warn("AppInfoExtend: instance is null")
-                            return@after
-                        }
+                        val controller = instance
                         
                         // 1. 反射读取 packageName 和 headerView
                         val pkgName: String

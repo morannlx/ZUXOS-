@@ -1,7 +1,7 @@
 # ZUXOS+
 
 [![Xposed Module](https://img.shields.io/badge/Xposed-Module-brightgreen.svg)](https://github.com/morannlx/ZUXOS+)
-[![YukiHookAPI](https://img.shields.io/badge/Framework-YukiHookAPI-blue.svg)](https://github.com/HighCapable/YukiHookAPI)
+[![YukiHook](https://img.shields.io/badge/Framework-YukiHook-blue.svg)](https://github.com/HighCapable/YukiHook)
 
 
 **ZUXOS+** 是一款面向联想 ZUXOS / ZUI 设备的 Xposed 增强模块，主要用于补全系统设置入口、解锁系统功能、优化安装器行为，并提供适配平板界面的 Compose 配置面板。
@@ -75,7 +75,7 @@
 
 - [ZUX-ZTool](https://github.com/qwqawa64/ZUX-ZTool.git)：ZUXOS / ZUI 模块功能参考。
 - [CorePatch](https://github.com/LSPosed/CorePatch.git)：Android 包管理器签名与安装策略hook参考。
-- [YukiHookAPI](https://github.com/HighCapable/YukiHookAPI.git)：Xposed Hook 开发框架。
+- [YukiHook](https://github.com/HighCapable/YukiHook.git)：Xposed Hook 开发框架。
 
 ## 作者
 

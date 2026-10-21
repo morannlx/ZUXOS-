@@ -1,12 +1,13 @@
 package me.inkdye.zuxos.hook.lenovo
 
 import android.content.Context
-import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import java.io.File
 import me.inkdye.zuxos.config.ModuleConfig
 import me.inkdye.zuxos.hook.Hook
+import me.inkdye.zuxos.hook.findHostClass
+import me.inkdye.zuxos.hook.hookFirstMethod
 
 object LenovoGameAssistantFeatureUnlockHook : Hook {
     override val prefKey = ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN
@@ -107,10 +108,7 @@ object LenovoGameAssistantFeatureUnlockHook : Hook {
     private fun PackageParam.hookFeatureIsEnable() {
         FEATURE_GATES.forEach { gate ->
             runCatching {
-                gate.className.toClass().method {
-                    name = "isEnable"
-                    param(Context::class.java)
-                }.hook {
+                hookFirstMethod(gate.className, "isEnable", Context::class.java) {
                     before {
                         if (isEnabled(gate.prefKey)) result = true
                     }
@@ -121,10 +119,7 @@ object LenovoGameAssistantFeatureUnlockHook : Hook {
 
     private fun PackageParam.hookRomFeatureOpenGate() {
         runCatching {
-            "com.zui.game.service.RomFeatures".toClass().method {
-                name = "isFeatureOpen"
-                param(String::class.java)
-            }.hook {
+            hookFirstMethod("com.zui.game.service.RomFeatures", "isFeatureOpen", String::class.java) {
                 before {
                     val key = args.firstOrNull() as? String ?: return@before
                     if (isFeatureForcedOpen(key)) result = true
@@ -135,10 +130,7 @@ object LenovoGameAssistantFeatureUnlockHook : Hook {
 
     private fun PackageParam.hookRepositorySwitchStatusGate() {
         runCatching {
-            "com.zui.game.service.data.RepositoryImpl".toClass().method {
-                name = "getSwitchStatus"
-                param(String::class.java)
-            }.hook {
+            hookFirstMethod("com.zui.game.service.data.RepositoryImpl", "getSwitchStatus", String::class.java) {
                 before {
                     val key = args.firstOrNull() as? String ?: return@before
                     if (isFeatureForcedOpen(key) && !hasRomFeatureKey(key)) result = FEATURE_STATUS_ON
@@ -149,27 +141,27 @@ object LenovoGameAssistantFeatureUnlockHook : Hook {
 
     private fun PackageParam.hookDeviceModelGates() {
         runCatching {
-            "com.zui.util.DeviceUtils".toClass().apply {
-                hookBooleanGetter(this, "isElden", true, ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN)
-                hookBooleanGetter(this, "isEldenRow", false, ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN)
-                hookBooleanGetter(this, "isTOPAZ", false, ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN)
-                hookBooleanGetter(this, "isPad", true) { anyDirectFeatureEnabled() || isEnabled(ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN) }
-                hookBooleanGetter(this, "isRow", false) { isEnabled(ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN) }
+            findHostClass("com.zui.util.DeviceUtils")?.let { target ->
+                hookBooleanGetter(target, "isElden", true, ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN)
+                hookBooleanGetter(target, "isEldenRow", false, ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN)
+                hookBooleanGetter(target, "isTOPAZ", false, ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN)
+                hookBooleanGetter(target, "isPad", true) { anyDirectFeatureEnabled() || isEnabled(ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN) }
+                hookBooleanGetter(target, "isRow", false) { isEnabled(ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN) }
             }
         }
     }
 
     private fun PackageParam.hookSettingsModelGates() {
         runCatching {
-            "com.zui.game.service.p031di.Settings".toClass().apply {
+            findHostClass("com.zui.game.service.p031di.Settings")?.let { target ->
                 ELDEN_TRUE_SETTINGS_GETTERS.forEach { methodName ->
-                    hookBooleanGetter(this, methodName, true, ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN)
+                    hookBooleanGetter(target, methodName, true, ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN)
                 }
                 ELDEN_FALSE_SETTINGS_GETTERS.forEach { methodName ->
-                    hookBooleanGetter(this, methodName, false, ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN)
+                    hookBooleanGetter(target, methodName, false, ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN)
                 }
                 listOf("getIsLegionDevice", "isPad", "getIsLargeScreenDevice").forEach { methodName ->
-                    hookBooleanGetter(this, methodName, true) { anyDirectFeatureEnabled() }
+                    hookBooleanGetter(target, methodName, true) { anyDirectFeatureEnabled() }
                 }
             }
         }
@@ -177,10 +169,7 @@ object LenovoGameAssistantFeatureUnlockHook : Hook {
 
     private fun PackageParam.hookSystemProperties() {
         runCatching {
-            "com.zui.util.SystemPropertyReflect".toClass().method {
-                name = "get"
-                param(String::class.java)
-            }.hook {
+            hookFirstMethod("com.zui.util.SystemPropertyReflect", "get", String::class.java) {
                 before {
                     val key = args.firstOrNull() as? String ?: return@before
                     when (key) {
@@ -202,11 +191,8 @@ object LenovoGameAssistantFeatureUnlockHook : Hook {
 
     private fun PackageParam.hookRomFeatures() {
         runCatching {
-            val featuresClass = "com.zui.game.service.FeaturesBaseOnRomKt".toClass()
-            featuresClass.method {
-                name = "getRomFeatures"
-                emptyParam()
-            }.hook {
+            val featuresClass = findHostClass("com.zui.game.service.FeaturesBaseOnRomKt") ?: return@runCatching
+            hookFirstMethod(featuresClass, "getRomFeatures") {
                 before {
                     if (!isEnabled(ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN)) return@before
                     result = featuresClass.getDeclaredMethod("getELDEN_FEATURES").invoke(null)
@@ -218,12 +204,12 @@ object LenovoGameAssistantFeatureUnlockHook : Hook {
     private fun PackageParam.hookHardwareDisplayFixes() {
         if (packageName != PACKAGE_GAME_SERVICE) return
         runCatching {
-            "com.zui.game.service.util.HWDataInterface".toClass().apply {
-                hookIntGetter(this, "getCpuCurFreq") { getLastCpuCoreCurrentFreq() }
-                hookIntGetter(this, "getCpuCurFreq", Int::class.javaPrimitiveType!!) { getLastCpuCoreCurrentFreq() }
-                hookIntGetter(this, "getCpuMaxFreq") { getLastCpuCoreMaxFreq() }
-                hookIntGetter(this, "getTemp") { readTemperatureFromFile() }
-                hookIntGetter(this, "getThermalTemp", Int::class.javaPrimitiveType!!) { readTemperatureFromFile() }
+            findHostClass("com.zui.game.service.util.HWDataInterface")?.let { target ->
+                hookIntGetter(target, "getCpuCurFreq") { getLastCpuCoreCurrentFreq() }
+                hookIntGetter(target, "getCpuCurFreq", Int::class.javaPrimitiveType!!) { getLastCpuCoreCurrentFreq() }
+                hookIntGetter(target, "getCpuMaxFreq") { getLastCpuCoreMaxFreq() }
+                hookIntGetter(target, "getTemp") { readTemperatureFromFile() }
+                hookIntGetter(target, "getThermalTemp", Int::class.javaPrimitiveType!!) { readTemperatureFromFile() }
             }
         }.onFailure { YLog.error("$moduleName: hook HWDataInterface display fixes failed", it) }
     }
@@ -235,10 +221,7 @@ object LenovoGameAssistantFeatureUnlockHook : Hook {
         valueProvider: () -> Int,
     ) {
         runCatching {
-            targetClass.method {
-                name = methodName
-                if (parameterTypes.isEmpty()) emptyParam() else param(*parameterTypes)
-            }.hook {
+            hookFirstMethod(targetClass, methodName, *parameterTypes) {
                 before {
                     if (!isEnabled(ModuleConfig.LENOVO_GAME_ASSISTANT_SPOOF_ELDEN)) return@before
                     val value = valueProvider()
@@ -264,10 +247,7 @@ object LenovoGameAssistantFeatureUnlockHook : Hook {
         shouldForce: () -> Boolean,
     ) {
         runCatching {
-            targetClass.method {
-                name = methodName
-                emptyParam()
-            }.hook {
+            hookFirstMethod(targetClass, methodName) {
                 before {
                     if (shouldForce()) result = forcedValue
                 }
@@ -351,7 +331,7 @@ object LenovoGameAssistantFeatureUnlockHook : Hook {
 
     private fun PackageParam.hasRomFeatureKey(key: String): Boolean {
         return runCatching {
-            val featuresClass = "com.zui.game.service.FeaturesBaseOnRomKt".toClass()
+            val featuresClass = findHostClass("com.zui.game.service.FeaturesBaseOnRomKt") ?: return@runCatching false
             val romFeatures = featuresClass.getDeclaredMethod("getRomFeatures").invoke(null)
             val keyList = romFeatures.javaClass.getMethod("getKeyList").invoke(romFeatures) as? Iterable<*>
             keyList?.any { featureKey ->

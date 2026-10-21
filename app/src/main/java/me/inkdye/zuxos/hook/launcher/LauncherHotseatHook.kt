@@ -18,7 +18,7 @@ object LauncherHotseatHook : Hook {
     private const val TAG = "ZUXOS.LauncherHotseat"
 
     override fun PackageParam.onHook() {
-        val classLoader = appClassLoader
+        val classLoader = hostClassLoader
         hookHotseatMaxCount(classLoader)
         hookSpaceChecks(classLoader)
         hookDeviceProfile(classLoader)

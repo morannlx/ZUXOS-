@@ -1,7 +1,6 @@
 package me.inkdye.zuxos.corepatch
 
 import android.util.Log
-import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import me.inkdye.zuxos.BuildConfig
@@ -25,7 +24,7 @@ abstract class CorePatchBase(protected val prefs: XSharedPreferences) {
         Class.forName(className, false, cl)
     } catch (e: Throwable) { logDebug("findClass fail: $className"); null }
 
-    /** All subclasses define their hooks here. Called inside loadApp("android"). */
+    /** All subclasses define their hooks here. Called inside the system framework process. */
     open fun onHook(param: PackageParam) { /* override in subclass */ }
 
     /**

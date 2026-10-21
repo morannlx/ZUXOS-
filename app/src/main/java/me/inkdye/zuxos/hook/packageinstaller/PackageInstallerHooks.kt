@@ -9,10 +9,12 @@ import android.view.LayoutInflater
 import android.view.Window
 import android.widget.ListAdapter
 import android.widget.ListView
-import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import me.inkdye.zuxos.config.ModuleConfig
 import me.inkdye.zuxos.hook.Hook
+import me.inkdye.zuxos.hook.hookFirstConstructor
+import me.inkdye.zuxos.hook.hookFirstMethod
+import me.inkdye.zuxos.hook.hookFirstMethodAny
 
 private val packageInstallerPackages = arrayOf(
     "com.android.packageinstaller",
@@ -32,12 +34,13 @@ object PackageInstallerDisableScanHook : PackageInstallerHook {
     override val prefKey = ModuleConfig.PACKAGE_INSTALLER_DISABLE_SCAN
 
     override fun PackageParam.onHook() = loadInstallerHooks {
-        "com.android.packageinstaller.PackageInstallerActivityExtra".toClass().method {
-            name = "startScanApps"
-        }.hook {
+        hookFirstMethodAny(
+            "com.android.packageinstaller.PackageInstallerActivityExtra",
+            "startScanApps",
+        ) {
             before {
                 result = null
-                val activity = instance ?: return@before
+                val activity = instance
                 runCatching {
                     val handler = activity.javaClass.getDeclaredField("mHander").apply { isAccessible = true }
                         .get(activity)
@@ -47,11 +50,12 @@ object PackageInstallerDisableScanHook : PackageInstallerHook {
             }
         }
 
-        "com.android.packageinstaller.PackageInstallerActivityExtra".toClass().method {
-            name = "showResultIfFinish"
-        }.hook {
+        hookFirstMethodAny(
+            "com.android.packageinstaller.PackageInstallerActivityExtra",
+            "showResultIfFinish",
+        ) {
             before {
-                val activity = instance ?: return@before
+                val activity = instance
                 runCatching {
                     activity.javaClass.getDeclaredField("mScanAppResult").apply { isAccessible = true }.setInt(activity, 2)
                     activity.javaClass.getDeclaredField("mCheckSafeInstallResult").apply { isAccessible = true }.setInt(activity, 1)
@@ -60,11 +64,12 @@ object PackageInstallerDisableScanHook : PackageInstallerHook {
             }
         }
 
-        "com.android.packageinstaller.PackageInstallerActivityExtra".toClass().method {
-            name = "bindSafeService"
-        }.hook {
+        hookFirstMethodAny(
+            "com.android.packageinstaller.PackageInstallerActivityExtra",
+            "bindSafeService",
+        ) {
             before {
-                val activity = instance ?: return@before
+                val activity = instance
                 runCatching {
                     activity.javaClass.getDeclaredField("isBind").apply { isAccessible = true }.setBoolean(activity, true)
                     activity.javaClass.getDeclaredField("isConnect").apply { isAccessible = true }.setBoolean(activity, true)
@@ -82,11 +87,12 @@ object PackageInstallerAllowPermissionHook : PackageInstallerHook {
     override val prefKey = ModuleConfig.PACKAGE_INSTALLER_ALWAYS_ALLOW_PERMISSION
 
     override fun PackageParam.onHook() = loadInstallerHooks {
-        "com.android.packageinstaller.PackageInstallerActivityExtra".toClass().method {
-            name = "startCustomInstallConfirm"
-        }.hook {
+        hookFirstMethodAny(
+            "com.android.packageinstaller.PackageInstallerActivityExtra",
+            "startCustomInstallConfirm",
+        ) {
             after {
-                val activity = instance ?: return@after
+                val activity = instance
                 runCatching {
                     val adapter = activity.javaClass.getDeclaredField("mAdapter").apply { isAccessible = true }.get(activity) ?: return@runCatching
                     keepOnlyTrustPermissionItem(adapter)
@@ -97,28 +103,29 @@ object PackageInstallerAllowPermissionHook : PackageInstallerHook {
             }
         }
 
-        "com.android.packageinstaller.extra.PermissionsAdapter".toClass().constructor {
-            param(LayoutInflater::class.java, ArrayList::class.java, Handler::class.java)
-        }.hook {
+        hookFirstConstructor(
+            "com.android.packageinstaller.extra.PermissionsAdapter",
+            LayoutInflater::class.java,
+            ArrayList::class.java,
+            Handler::class.java,
+        ) {
             after {
-                val data = args(1).any() as? MutableList<Any> ?: return@after
+                val data = args[1] as? MutableList<Any> ?: return@after
                 keepOnlyTrustPermissionItem(data)
                 setIntField(instance, "selectId", 2)
             }
         }
 
-        "com.android.packageinstaller.extra.PermissionsAdapter".toClass().method {
-            name = "getCount"
-        }.hook {
+        hookFirstMethodAny(
+            "com.android.packageinstaller.extra.PermissionsAdapter",
+            "getCount",
+        ) {
             after { result = 1 }
         }
 
-        ListView::class.java.method {
-            name = "setAdapter"
-            param(ListAdapter::class.java)
-        }.hook {
+        hookFirstMethod(ListView::class.java, "setAdapter", ListAdapter::class.java) {
             before {
-                val adapter = args(0).any() ?: return@before
+                val adapter = args[0] ?: return@before
                 if (adapter.javaClass.name.contains("PermissionsAdapter")) {
                     setIntField(adapter, "selectId", 2)
                 }
@@ -155,11 +162,12 @@ object PackageInstallerSkipWarnPageHook : PackageInstallerHook {
     override val prefKey = ModuleConfig.PACKAGE_INSTALLER_SKIP_WARN_PAGE
 
     override fun PackageParam.onHook() = loadInstallerHooks {
-        "com.android.packageinstaller.PackageInstallerActivityExtra".toClass().method {
-            name = "onResume"
-        }.hook {
+        hookFirstMethodAny(
+            "com.android.packageinstaller.PackageInstallerActivityExtra",
+            "onResume",
+        ) {
             after {
-                val activity = instance ?: return@after
+                val activity = instance
                 runCatching {
                     val method = activity.javaClass.methods.firstOrNull { it.name == "handleDirectInstallInFindSameAppCase" }
                         ?: activity.javaClass.methods.firstOrNull { it.name == "onDirectInstall" }
@@ -174,9 +182,10 @@ object PackageInstallerDisableInstallerAdHook : PackageInstallerHook {
     override val prefKey = ModuleConfig.PACKAGE_INSTALLER_DISABLE_INSTALLER_AD
 
     override fun PackageParam.onHook() = loadInstallerHooks {
-        "com.android.packageinstaller.InstallSuccessExtra".toClass().method {
-            name = "initRecommendAppsData"
-        }.hook {
+        hookFirstMethodAny(
+            "com.android.packageinstaller.InstallSuccessExtra",
+            "initRecommendAppsData",
+        ) {
             before {
                 result = null
             }
@@ -188,24 +197,24 @@ object PackageInstallerStyleHook : PackageInstallerHook {
     override val prefKey = ModuleConfig.PACKAGE_INSTALLER_STYLE_HOOK
 
     override fun PackageParam.onHook() = loadInstallerHooks {
-        "com.android.packageinstaller.extra.Utils".toClass().method {
-            name = "isCTSandGTS"
-            param(String::class.java)
-        }.hook {
-            replaceAny { true }
+        hookFirstMethod(
+            "com.android.packageinstaller.extra.Utils",
+            "isCTSandGTS",
+            String::class.java,
+        ) {
+            intercept(true)
         }
 
-        "com.android.packageinstaller.extra.Utils".toClass().method {
-            name = "isCTSandGTS"
-            param(String::class.java, Intent::class.java)
-        }.hook {
-            replaceAny { true }
+        hookFirstMethod(
+            "com.android.packageinstaller.extra.Utils",
+            "isCTSandGTS",
+            String::class.java,
+            Intent::class.java,
+        ) {
+            intercept(true)
         }
 
-        Activity::class.java.method {
-            name = "onCreate"
-            param(Bundle::class.java)
-        }.hook {
+        hookFirstMethod(Activity::class.java, "onCreate", Bundle::class.java) {
             before {
                 val activity = instance as? Activity ?: return@before
                 if (activity.packageName !in packageInstallerPackages) return@before
@@ -235,11 +244,12 @@ object PackageInstallerDisableDeleteHook : PackageInstallerHook {
     override val prefKey = ModuleConfig.PACKAGE_INSTALLER_DISABLE_DELETE
 
     override fun PackageParam.onHook() = loadInstallerHooks {
-        "com.android.packageinstaller.InstallSuccessExtra".toClass().method {
-            name = "initView"
-        }.hook {
+        hookFirstMethodAny(
+            "com.android.packageinstaller.InstallSuccessExtra",
+            "initView",
+        ) {
             after {
-                val activity = instance ?: return@after
+                val activity = instance
                 runCatching {
                     activity.javaClass.getDeclaredField("isConfigChanage").apply { isAccessible = true }.getBoolean(activity)
                         .takeIf { !it } ?: return@runCatching

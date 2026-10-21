@@ -20,11 +20,11 @@ object LauncherGridHook : Hook {
         runCatching {
             val gridOptionClass = XposedHelpers.findClassIfExists(
                 "com.android.launcher3.InvariantDeviceProfile\$GridOption",
-                appClassLoader,
+                hostClassLoader,
             ) ?: return
             val displayInfoClass = XposedHelpers.findClassIfExists(
                 "com.android.launcher3.util.DisplayController\$Info",
-                appClassLoader,
+                hostClassLoader,
             ) ?: return
 
             XposedHelpers.findAndHookConstructor(

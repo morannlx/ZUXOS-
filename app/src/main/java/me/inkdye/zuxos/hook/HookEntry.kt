@@ -1,10 +1,11 @@
 package me.inkdye.zuxos.hook
 
 import android.os.Build
-import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
-import com.highcapable.yukihookapi.hook.factory.*
+import com.highcapable.yukihookapi.annotation.xposed.YukiHookXposed82Entry
+import com.highcapable.yukihookapi.hook.factory.configure
+import com.highcapable.yukihookapi.hook.factory.encase
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
+import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import me.inkdye.zuxos.BuildConfig
 import me.inkdye.zuxos.config.ModuleConfig
 import me.inkdye.zuxos.corepatch.CorePatchForQ
@@ -40,8 +41,8 @@ import me.inkdye.zuxos.logging.HookLogLevel
 import me.inkdye.zuxos.logging.HookLogStage
 import de.robv.android.xposed.XSharedPreferences
 
-@InjectYukiHookWithXposed
-class HookEntry : IYukiHookXposedInit {
+@YukiHookXposed82Entry
+object HookEntry : YukiHookXposedModule {
 
     init {
         Hooks.register(
@@ -71,16 +72,17 @@ class HookEntry : IYukiHookXposedInit {
         )
     }
 
-    override fun onInit() = configs {
-        isDebug = true
+    override fun onInit() = configure {
+        debug = true
     }
 
     override fun onHook() = encase {
         loadApp(BuildConfig.APPLICATION_ID) {
-            "me.inkdye.zuxos.ui.activity.LiquidGlassHomeActivity".toClass().method {
-                name = "isModuleActivated"
-            }.hook {
-                replaceAny { true }
+            hookFirstMethod(
+                "me.inkdye.zuxos.ui.activity.LiquidGlassHomeActivity",
+                "isModuleActivated",
+            ) {
+                intercept(true)
             }
         }
 

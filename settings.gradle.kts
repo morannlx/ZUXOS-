@@ -13,6 +13,9 @@ dependencyResolutionManagement {
         mavenCentral()
         maven("https://api.xposed.info/")
         maven("https://jitpack.io")
+        maven("https://raw.githubusercontent.com/HighCapable/maven-repository/main/repository/releases") {
+            content { includeGroupByRegex("com\\.highcapable\\..*") }
+        }
     }
 }
 

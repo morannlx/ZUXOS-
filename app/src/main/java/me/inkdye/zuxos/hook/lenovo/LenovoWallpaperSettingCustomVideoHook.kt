@@ -28,15 +28,15 @@ object LenovoWallpaperSettingCustomVideoHook : Hook {
     private val applyDialogPreview = ThreadLocal<Any?>()
 
     override fun PackageParam.onHook() {
-        hookLocalDynamicList(appClassLoader)
-        hookDynamicSectionInit(appClassLoader)
-        hookDynamicAdapterType(appClassLoader)
-        hookDynamicThumbnail(appClassLoader)
-        hookPreviewResources(appClassLoader)
-        hookPreviewVideo(appClassLoader)
-        hookApplyDialogMarker(appClassLoader)
-        hookApplyDialogOption(appClassLoader)
-        hookApplyCustomVideo(appClassLoader)
+        hookLocalDynamicList(hostClassLoader)
+        hookDynamicSectionInit(hostClassLoader)
+        hookDynamicAdapterType(hostClassLoader)
+        hookDynamicThumbnail(hostClassLoader)
+        hookPreviewResources(hostClassLoader)
+        hookPreviewVideo(hostClassLoader)
+        hookApplyDialogMarker(hostClassLoader)
+        hookApplyDialogOption(hostClassLoader)
+        hookApplyCustomVideo(hostClassLoader)
     }
 
     private fun hookLocalDynamicList(classLoader: ClassLoader?) {

@@ -64,8 +64,6 @@ android {
     }
     lint { checkReleaseBuilds = false }
 
-    // TODO Please visit https://highcapable.github.io/YukiHookAPI/en/api/special-features/host-inject
-    // TODO 请参考 https://highcapable.github.io/YukiHookAPI/zh-cn/api/special-features/host-inject
     // androidResources.additionalParameters += listOf("--allow-reserved-package-id", "--package-id", "0x64")
 }
 
@@ -77,11 +75,16 @@ tasks.withType<KotlinJvmCompile>().configureEach {
 
 dependencies {
     compileOnly(libs.rovo89.xposed.api)
-    ksp(libs.yukihookapi.ksp.xposed)
-    implementation(libs.yukihookapi)
+    ksp(libs.yukihook.compiler)
+    implementation(platform(libs.yukihook.bom))
+    implementation(libs.yukihook.core)
+    implementation(libs.yukihook.runtime.xposed82)
+    implementation(libs.yukihook.extension.kavaref)
 
     // Optional: KavaRef (https://github.com/HighCapable/KavaRef)
+    implementation(platform(libs.kavaref.bom))
     implementation(libs.kavaref.core)
+    implementation(libs.kavaref.android)
     implementation(libs.kavaref.extension)
 
     // Optional: Hikage (https://github.com/BetterAndroid/Hikage)
@@ -124,4 +127,17 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
+}
+
+configurations.configureEach {
+    resolutionStrategy {
+        // YukiHook 1.5.0 的传递依赖会把 core 升到 1.19.0，而它要求 AGP 9.1+。
+        force(
+            "androidx.core:core:1.17.0",
+            "androidx.core:core-ktx:1.17.0",
+            "androidx.activity:activity:1.10.1",
+            "androidx.activity:activity-ktx:1.10.1",
+            "androidx.activity:activity-compose:1.10.1",
+        )
+    }
 }

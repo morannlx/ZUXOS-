@@ -27,7 +27,7 @@ object LenovoSystemUIControlCenterHook : Hook {
     override fun PackageParam.onHook() {
         val prefs = XSharedPreferences(BuildConfig.APPLICATION_ID, ModuleConfig.PREFS_NAME).apply { reload() }
         val config = ControlCenterConfig.from(prefs)
-        val classLoader = appClassLoader
+        val classLoader = hostClassLoader
 
         hookTileBackgroundColors(classLoader, config)
         hookQsContainers(classLoader, config)

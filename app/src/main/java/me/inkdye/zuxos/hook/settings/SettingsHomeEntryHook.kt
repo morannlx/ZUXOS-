@@ -38,7 +38,7 @@ object SettingsHomeEntryHook : Hook {
     private const val HOME_ENTRY_ORDER = -9
 
     override fun PackageParam.onHook() {
-        val classLoader = appClassLoader
+        val classLoader = hostClassLoader
         hookTopLevelEntry(classLoader)
         hookHostSettingsPage(classLoader)
     }

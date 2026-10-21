@@ -3,10 +3,10 @@ package me.inkdye.zuxos.hook.lenovo
 import android.app.Activity
 import android.view.Menu
 import android.view.MenuItem
-import com.highcapable.yukihookapi.hook.factory.*
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import me.inkdye.zuxos.config.ModuleConfig
 import me.inkdye.zuxos.hook.Hook
+import me.inkdye.zuxos.hook.hookFirstMethod
 
 object LenovoSystemUpdateLocalInstallHook : Hook {
     override val prefKey = ModuleConfig.LENOVO_SYSTEM_UPDATE_FORCE_LOCAL_INSTALL
@@ -22,46 +22,35 @@ object LenovoSystemUpdateLocalInstallHook : Hook {
     private const val LOCAL_INSTALL_MENU_NAME = "memu_localInstall"
 
     override fun PackageParam.onHook() {
-        MenuItem::class.java.method {
-            name = "setVisible"
-            param(Boolean::class.javaPrimitiveType!!)
-        }.hook {
+        hookFirstMethod(MenuItem::class.java, "setVisible", Boolean::class.javaPrimitiveType!!) {
             before {
                 val item = instance as? MenuItem ?: return@before
-                if (item.itemId == LOCAL_INSTALL_MENU_ID && args(0).boolean() == false) result = item.setVisible(true)
+                if (item.itemId == LOCAL_INSTALL_MENU_ID && args[0] as? Boolean == false) result = item.setVisible(true)
             }
         }
 
         MAIN_ACTIVITY_CANDIDATES.forEach { mainActivity ->
             runCatching {
-                mainActivity.toClass().method {
-                    name = "onCreateOptionsMenu"
-                    param(Menu::class.java)
-                }.hook {
+                hookFirstMethod(mainActivity, "onCreateOptionsMenu", Menu::class.java) {
                     after {
                         val activity = instance as? Activity ?: return@after
-                        (args(0).any() as? Menu)?.showLocalInstallItem(activity.localInstallMenuId())
+                        (args[0] as? Menu)?.showLocalInstallItem(activity.localInstallMenuId())
                     }
                 }
             }
 
             runCatching {
-                mainActivity.toClass().method {
-                    name = "onPrepareOptionsMenu"
-                    param(Menu::class.java)
-                }.hook {
+                hookFirstMethod(mainActivity, "onPrepareOptionsMenu", Menu::class.java) {
                     after {
                         val activity = instance as? Activity ?: return@after
-                        (args(0).any() as? Menu)?.showLocalInstallItem(activity.localInstallMenuId())
+                        (args[0] as? Menu)?.showLocalInstallItem(activity.localInstallMenuId())
                         instance.setLocalInstallClickCount()
                     }
                 }
             }
 
             runCatching {
-                mainActivity.toClass().method {
-                    name = "clickCountCallBack"
-                }.hook {
+                hookFirstMethod(mainActivity, "clickCountCallBack") {
                     before {
                         instance.setLocalInstallClickCount()
                     }
